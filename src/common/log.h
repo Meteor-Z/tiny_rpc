@@ -1,13 +1,15 @@
 #ifndef TINY_RPC_COMMON_LOG_H
 #define TINY_RPC_COMMON_LOG_H
-
+#include <cstddef>
+#include <iostream>
 #include <memory>
 #include <string>
 #include <fmt/format.h>
 #include <queue>
+#include <sstream>
 
 namespace rpc
-{
+{   
     enum class LogLevel
     {
         Debug = 1,
@@ -34,7 +36,7 @@ namespace rpc
         LogEvent(LogLevel level): m_log_level(level) {}
         LogLevel get_log_level();
         std::string get_file_name();
-        std::string get_log();
+        std::string get_log(); // 格式化，得到日志的信息
     private:
         std::string m_file_name; // 文件名
         std::string m_file_line; // 行号 
@@ -44,9 +46,21 @@ namespace rpc
         LogLevel m_log_level; // 日志级别
         std::shared_ptr<Logger> m_logger; // 日志器
     };
-    
 
-    // 日志器
+    template<typename ... Args>
+    void DEBUG_BLOG(Args... args) 
+    {
+        std::stringstream ssin;
+        (ssin << ... << args); // 折叠表达式
+        std::string message = (new rpc::LogEvent(rpc::LogLevel::Debug)) ->get_log();
+        std::string temp;
+        ssin >> temp;
+        message += temp;
+        rpc::Logger::get_global_logger() -> push_log(message);
+        rpc::Logger::get_global_logger() -> log();
+
+    }
+
     
 }
 #endif
