@@ -1,1 +1,0 @@
-/usr/bin/g++ -g CMakeFiles/tiny_rpc.dir/main.cpp.o -o tiny_rpc  /usr/local/lib/libfmt.a 

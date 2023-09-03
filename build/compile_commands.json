@@ -1,7 +1,0 @@
-[
-{
-  "directory": "/home/lzc/tiny_rpc/build",
-  "command": "/usr/bin/g++   -g -o CMakeFiles/tiny_rpc.dir/main.cpp.o -c /home/lzc/tiny_rpc/main.cpp",
-  "file": "/home/lzc/tiny_rpc/main.cpp"
-}
-]
