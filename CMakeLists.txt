@@ -5,4 +5,5 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_executable(tiny_rpc main.cpp src/common/log.cpp src/common/utils.cpp) 
 
-target_link_libraries(tiny_rpc "/usr/local/lib/libfmt.a")
+# set(CMAKE_CXX_FLAGS "-g") # 可以添加cpp编译选项
+target_link_libraries(tiny_rpc "/usr/local/lib/libfmt.a") # 链接fmt

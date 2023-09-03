@@ -55,9 +55,9 @@ namespace rpc
         std::string message = (new rpc::LogEvent(rpc::LogLevel::Debug)) ->get_log();
         std::string temp;
         ssin >> temp;
-        message += temp;
-        rpc::Logger::get_global_logger() -> push_log(message);
-        rpc::Logger::get_global_logger() -> log();
+        message.append(temp);
+        rpc::Logger::get_global_logger() -> push_log(message); // 将log 推入到队列中
+        rpc::Logger::get_global_logger() -> log(); // 得到log
 
     }
 

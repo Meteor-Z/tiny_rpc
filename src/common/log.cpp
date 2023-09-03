@@ -9,7 +9,7 @@
 
 namespace rpc
 {
-    static Logger* global_logger = nullptr;
+    static Logger* global_logger { nullptr };
     Logger* Logger::get_global_logger()
     {
         if (global_logger) return global_logger;
@@ -35,7 +35,7 @@ namespace rpc
             default: return "UNKNOW";
         }
     }
-    LogLevel LogEvent::get_log_level() { return m_log_level; }
+    LogLevel LogEvent::get_log_level() { return m_log_level; } 
     std::string LogEvent::get_file_name() { return m_file_name; }
     std::string LogEvent::get_log()  // 格式化，得到日志信息
     {
@@ -47,8 +47,8 @@ namespace rpc
         std::string result = fmt::format("[{}][{}年{}月{}日{}时{}分{}秒][文件名 : {}  行号 {}]", loglevel_to_string(m_log_level), now.tm_year + 1900 , now.tm_mon + 1, now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec,__FILE__, __LINE__);
         return result;
     }
-    void Logger::push_log(const std::string& message)
+    void Logger::push_log(const std::string& message) 
     {
-       m_buffer.emplace(message);
+        m_buffer.emplace(message);
     }
 }
