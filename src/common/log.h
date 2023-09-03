@@ -16,8 +16,9 @@ namespace tiny_rpc
     class LogEvent
     {
     public:
-        LogLevel get_log_evel() const noexcept { return m_log_evel; }
-        std::string get_file_name() const noexcept { return m_file_name; }
+        LogLevel get_log_evel();
+        std::string get_file_name();
+        void print_log();
     private:
         std::string m_file_name; // 文件名
         std::string m_file_line; // 行号 
