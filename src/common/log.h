@@ -1,10 +1,10 @@
-#ifndef TINY_RPC_LOG_H
-#define TINY_RPC_LOG_H
+#ifndef TINY_RPC_COMMON_LOG_H
+#define TINY_RPC_COMMON_LOG_H
 
 #include <string>
 #include <fmt/format.h>
 
-namespace tiny_rpc
+namespace rpc
 {
     enum class LogLevel
     {

@@ -2,7 +2,7 @@
 #include <chrono>
 #include <ctime>
 #include <iostream>
-namespace tiny_rpc
+namespace rpc
 {
     LogLevel LogEvent::get_log_evel() { return m_log_evel; }
     std::string LogEvent::get_file_name() { return m_file_name; }
