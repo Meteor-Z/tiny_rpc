@@ -26,6 +26,7 @@ namespace rpc
         }
         return father->FirstChildElement(name.c_str());
     }
+    // tinyxml 只要delete 父亲节点就可以防止内存泄露了，所以这里没有使用智能指针，而是直接使用了裸指针。
     Config::Config(const std::string& xml_file)
     {
         TiXmlDocument* xml_document_ptr = new TiXmlDocument();
@@ -40,8 +41,7 @@ namespace rpc
         TiXmlElement* root_log_ptr = get_son_node(root_ptr, "log");
         TiXmlElement* root_log_level_ptr = get_son_node(root_log_ptr, "log_level");
         std::cout << root_log_level_ptr->GetText() << std::endl;
-
-        
+        delete xml_document_ptr; // 防止内存泄露
 
     }
 }

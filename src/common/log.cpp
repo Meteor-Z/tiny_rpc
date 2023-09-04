@@ -47,7 +47,7 @@ namespace rpc
         std::time_t time_point = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
         auto now = *std::localtime(&time_point);
         
-        m_file_name = __FILE_NAME__;
+        m_file_name = __FILE__;
         m_file_line = __LINE__;
 
         // 最终结果大概是这样的形式:[INFO][2023年9月3日16时21分37秒][文件名:/home/lzc/test_c++/main.cpp 行号 10]
