@@ -1,5 +1,5 @@
-#ifndef TINY_RPC_COMMON_LOG_H
-#define TINY_RPC_COMMON_LOG_H
+#ifndef RPC_COMMON_LOG_H
+#define RPC_COMMON_LOG_H
 #include <cstddef>
 #include <iostream>
 #include <memory>
