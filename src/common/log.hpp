@@ -10,18 +10,21 @@
 
 namespace rpc
 {   
+    
     enum class LogLevel
-    {
+    { 
+        Unknown = -1,
         Debug = 1,
         Info = 2,
-        Error = 3
+        Error = 3,
     };
 
     class Logger
     {
     public:
+        Logger(LogLevel log_level);
         void push_log(const std::string& message);
-        static Logger* get_global_logger();
+        static std::shared_ptr<Logger> get_global_logger();
         void log();
     private:
         LogLevel m_set_level;
@@ -48,13 +51,32 @@ namespace rpc
     };
 
     template<typename ... Args>
-    void DEBUG_BLOG(Args... args) 
+    void DEBUG_LOG(Args... args) 
+    {
+        std::stringstream ssin;
+        (ssin << ... << args); // 折叠表达式
+        std::unique_ptr<rpc::LogEvent> ptr = std::make_unique<rpc::LogEvent>(rpc::LogLevel::Debug);
+        std::string message = ptr->get_log();
+        std::string temp;
+        ssin >> temp;
+        message += temp;
+        rpc::Logger::get_global_logger() -> push_log(message); // 将log 推入到队列中
+        rpc::Logger::get_global_logger() -> log(); // 得到log
+
+    }
+    std::string loglevel_to_string(LogLevel loglevel);
+    LogLevel string_to_loglevel(const std::string& loglevel);
+    
+    
+    // info_log
+    template<typename ... Args>
+    void INFO_LOG(Args... args) 
     {
         std::stringstream ssin;
         (ssin << ... << args); // 折叠表达式
 
         // 这里有可能出现内存泄露
-        std::unique_ptr<rpc::LogEvent> ptr = std::make_unique<rpc::LogEvent>(rpc::LogLevel::Debug);
+        std::unique_ptr<rpc::LogEvent> ptr = std::make_unique<rpc::LogEvent>(rpc::LogLevel::Info);
         std::string message = ptr->get_log();
         std::string temp;
         ssin >> temp;
@@ -63,7 +85,7 @@ namespace rpc
         rpc::Logger::get_global_logger() -> log(); // 得到log
 
     }
-
-    
+    std::string loglevel_to_string(LogLevel loglevel);
+    LogLevel string_to_loglevel(const std::string& loglevel);
 }
 #endif

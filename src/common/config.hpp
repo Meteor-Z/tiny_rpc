@@ -10,8 +10,11 @@ namespace rpc
     {
     public:
         Config(const std::string& xmlfile);
+        static Config* get_global_config();
+        static void set_global_config(const std::string& xml_file);
+        std::string& get_m_log_level();
     private:
-        std::map<std::string, std::string> m_config_values;
+        std::string m_log_level;
 
     };
 }

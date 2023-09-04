@@ -1,22 +1,30 @@
 #include "log.hpp"
+#include "config.hpp"
 #include "utils.hpp"
 
 #include <chrono>
 #include <cstdio>
 #include <ctime>
+#include <fmt/core.h>
 #include <fmt/format.h>
 #include <iostream>
+#include <memory>
 
 
 namespace rpc
 {
-    static Logger* global_logger { nullptr };
-    Logger* Logger::get_global_logger()
+    static std::shared_ptr<Logger> global_logger_ptr { nullptr }; // 使用智能指针了
+
+    std::shared_ptr<Logger> Logger::get_global_logger()
     {
-        if (global_logger) return global_logger;
-        global_logger = new Logger();
-        return global_logger;
+        if (global_logger_ptr) return global_logger_ptr;
+        std::unique_ptr<Config> config_ptr {Config::get_global_config()};
+        LogLevel global_log_level = string_to_loglevel(config_ptr->get_m_log_level());
+        global_logger_ptr.reset(new Logger(global_log_level));
+        return global_logger_ptr;
     }
+
+    Logger::Logger(LogLevel log_level): m_set_level { log_level} {}
     void Logger::log()
     {
         while (!m_buffer.empty()) 
@@ -31,10 +39,18 @@ namespace rpc
         switch (loglevel)
         {
             case LogLevel::Debug: return "Debug";
-            case LogLevel::Info: return "InFo";
+            case LogLevel::Info: return "Info";
             case LogLevel::Error: return "Error";
             default: return "UNKNOW";
         }
+    }
+    LogLevel string_to_loglevel(const std::string& log_level)
+    {
+        if (log_level == "Debug") return LogLevel::Debug;
+        if (log_level == "Info") return LogLevel::Info;
+        if (log_level == "Error") return LogLevel::Error;
+        return LogLevel::Unknown;
+        
     }
     LogLevel LogEvent::get_log_level() { return m_log_level; } 
     std::string LogEvent::get_file_name() { return m_file_name; }
@@ -58,4 +74,5 @@ namespace rpc
     {
         m_buffer.emplace(message);
     }
+    
 }

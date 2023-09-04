@@ -1,4 +1,5 @@
 #include "config.hpp"
+#include <asm-generic/errno.h>
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
@@ -8,6 +9,8 @@
 #include <fmt/format.h>
 namespace rpc
 {
+    static Config* g_config = nullptr;
+
     static TiXmlElement* get_son_node(TiXmlDocument* father, const std::string& name)
     {
         if (!father->FirstChildElement(name.c_str()))
@@ -36,12 +39,24 @@ namespace rpc
             std::cout << "配置目录启动失败！不能正确读取到文件" << std::endl;
             exit(1);
         }
+    
         // 这个是root节点的指针
         TiXmlElement* root_ptr = get_son_node(xml_document_ptr, "root");
         TiXmlElement* root_log_ptr = get_son_node(root_ptr, "log");
         TiXmlElement* root_log_level_ptr = get_son_node(root_log_ptr, "log_level");
-        std::cout << root_log_level_ptr->GetText() << std::endl;
+        m_log_level = root_log_level_ptr->GetText();
         delete xml_document_ptr; // 防止内存泄露
 
     }
+    Config* Config::get_global_config()
+    {
+        return g_config;
+    }
+
+    void  Config::set_global_config(const std::string& xml_file)
+    {
+        if (!g_config) g_config = new Config(xml_file);
+    }
+    std::string& Config::get_m_log_level() { return m_log_level; }
+
 }
