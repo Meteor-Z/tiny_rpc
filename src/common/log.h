@@ -38,13 +38,13 @@ namespace rpc
         std::string get_file_name();
         std::string get_log(); // 格式化，得到日志的信息
     private:
-        std::string m_file_name; // 文件名
-        std::string m_file_line; // 行号 
-        int m_time; // 当前时间
-        int m_pid; // 进程号
-        int m_thread_pid; // 线程号
+        std::string m_file_name { }; // 文件名
+        std::string m_file_line { }; // 行号 
+        int m_time { 0 }; // 当前时间
+        int m_pid { 0 }; // 进程号
+        int m_thread_pid { 0 }; // 线程号
         LogLevel m_log_level; // 日志级别
-        std::shared_ptr<Logger> m_logger; // 日志器
+        std::shared_ptr<Logger> m_logger { nullptr }; // 日志器
     };
 
     template<typename ... Args>
@@ -52,10 +52,13 @@ namespace rpc
     {
         std::stringstream ssin;
         (ssin << ... << args); // 折叠表达式
-        std::string message = (new rpc::LogEvent(rpc::LogLevel::Debug)) ->get_log();
+
+        // 这里有可能出现内存泄露
+        std::unique_ptr<rpc::LogEvent> ptr = std::make_unique<rpc::LogEvent>(rpc::LogLevel::Debug);
+        std::string message = ptr->get_log();
         std::string temp;
         ssin >> temp;
-        message.append(temp);
+        message += temp; 
         rpc::Logger::get_global_logger() -> push_log(message); // 将log 推入到队列中
         rpc::Logger::get_global_logger() -> log(); // 得到log
 
