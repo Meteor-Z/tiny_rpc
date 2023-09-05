@@ -13,7 +13,6 @@ namespace rpc
     {
         pid_t get_pid();
         pid_t get_thread_id();
-        void cloe();
     }
 }
 #endif
