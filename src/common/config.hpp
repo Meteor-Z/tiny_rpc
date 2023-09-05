@@ -2,6 +2,7 @@
 #define RPC_COMMON_CONFIG_H
 
 #include <map>
+#include <memory>
 #include <string>
 
 namespace rpc
@@ -10,7 +11,7 @@ namespace rpc
     {
     public:
         Config(const std::string& xmlfile);
-        static Config* get_global_config();
+        static std::shared_ptr<Config> get_global_config();
         static void set_global_config(const std::string& xml_file);
         std::string& get_m_log_level();
     private:

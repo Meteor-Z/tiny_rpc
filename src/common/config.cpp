@@ -9,7 +9,7 @@
 #include <fmt/format.h>
 namespace rpc
 {
-    static Config* g_config = nullptr;
+    static std::shared_ptr<Config> g_config { nullptr };
 
     static TiXmlElement* get_son_node(TiXmlDocument* father, const std::string& name)
     {
@@ -32,7 +32,7 @@ namespace rpc
     // tinyxml 只要delete 父亲节点就可以防止内存泄露了，所以这里没有使用智能指针，而是直接使用了裸指针。
     Config::Config(const std::string& xml_file)
     {
-        TiXmlDocument* xml_document_ptr = new TiXmlDocument();
+        std::unique_ptr<TiXmlDocument> xml_document_ptr = std::make_unique<TiXmlDocument>();
         bool rt = xml_document_ptr->LoadFile(xml_file.c_str());
         if (!xml_document_ptr->LoadFile(xml_file.c_str())) 
         {
@@ -41,22 +41,15 @@ namespace rpc
         }
     
         // 这个是root节点的指针
-        TiXmlElement* root_ptr = get_son_node(xml_document_ptr, "root");
+        TiXmlElement* root_ptr = get_son_node(xml_document_ptr.get(), "root");
         TiXmlElement* root_log_ptr = get_son_node(root_ptr, "log");
         TiXmlElement* root_log_level_ptr = get_son_node(root_log_ptr, "log_level");
         m_log_level = root_log_level_ptr->GetText();
-        delete xml_document_ptr; // 防止内存泄露
 
     }
-    Config* Config::get_global_config()
-    {
-        return g_config;
-    }
+    std::shared_ptr<Config> Config::get_global_config() { return g_config; }
 
-    void  Config::set_global_config(const std::string& xml_file)
-    {
-        if (!g_config) g_config = new Config(xml_file);
-    }
+    void  Config::set_global_config(const std::string& xml_file) { if (!g_config) g_config = std::make_shared<Config>(xml_file); }
     std::string& Config::get_m_log_level() { return m_log_level; }
 
 }

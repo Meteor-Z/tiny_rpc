@@ -18,7 +18,7 @@ namespace rpc
     std::shared_ptr<Logger> Logger::get_global_logger()
     {
         if (global_logger_ptr) return global_logger_ptr;
-        std::unique_ptr<Config> config_ptr {Config::get_global_config()};
+        std::shared_ptr<Config> config_ptr {Config::get_global_config() };
         LogLevel global_log_level = string_to_loglevel(config_ptr->get_m_log_level());
         global_logger_ptr.reset(new Logger(global_log_level));
         return global_logger_ptr;
