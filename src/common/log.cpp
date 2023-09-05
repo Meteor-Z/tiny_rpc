@@ -43,6 +43,10 @@ namespace rpc
             case LogLevel::Error: return "Error";
             default: return "UNKNOW";
         }
+        if (loglevel == LogLevel::Debug) return "Debug";
+        if (loglevel == LogLevel::Info) return "Info";
+        if (loglevel == LogLevel::Error) return "Error";
+        return "Unkown";
     }
     LogLevel string_to_loglevel(const std::string& log_level)
     {
