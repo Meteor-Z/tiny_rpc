@@ -16,7 +16,6 @@ namespace rpc
         std::string& get_m_log_level();
     private:
         std::string m_log_level;
-
     };
 }
 

@@ -20,6 +20,7 @@ namespace rpc
         }
         return father->FirstChildElement(name.c_str());
     }
+    
     static TiXmlElement* get_son_node(TiXmlElement* father, const std::string& name)
     {
         if (!father->FirstChildElement(name.c_str()))
@@ -29,6 +30,7 @@ namespace rpc
         }
         return father->FirstChildElement(name.c_str());
     }
+
     // tinyxml 只要delete 父亲节点就可以防止内存泄露了，所以这里没有使用智能指针，而是直接使用了裸指针。
     Config::Config(const std::string& xml_file)
     {
@@ -39,7 +41,6 @@ namespace rpc
             std::cout << "配置目录启动失败！不能正确读取到文件" << std::endl;
             exit(1);
         }
-    
         // 这个是root节点的指针
         TiXmlElement* root_ptr = get_son_node(xml_document_ptr.get(), "root");
         TiXmlElement* root_log_ptr = get_son_node(root_ptr, "log");
@@ -47,6 +48,7 @@ namespace rpc
         m_log_level = root_log_level_ptr->GetText();
 
     }
+
     std::shared_ptr<Config> Config::get_global_config() { return g_config; }
 
     void  Config::set_global_config(const std::string& xml_file) { if (!g_config) g_config = std::make_shared<Config>(xml_file); }
