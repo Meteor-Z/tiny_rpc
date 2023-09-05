@@ -7,11 +7,8 @@ add_executable(tiny_rpc main.cpp src/common/log.cpp src/common/utils.cpp src/com
 
 set(CMAKE_CXX_FLAGS "-g") # 调试的可以添加cpp编译选项
 
-# 设置编译器为clang
-SET(CMAKE_C_COMPILER /usr/bin/clang) 
-SET(CMAKE_CXX_COMPILER /usr/bin/clang++)
 
 target_link_libraries(tiny_rpc
     "/usr/local/lib/libfmt.a" # fmt
-    "/usr/local/lib/tinyxml/libtinyxml.a" # tinyxml
-    "/usr/local/lib/libgtest.a") # gtest
+    "/usr/local/lib/tinyxml/libtinyxml.a") # tinyxml
+    # "/usr/local/lib/libgtest.a") # gtest
