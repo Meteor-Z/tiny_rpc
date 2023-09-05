@@ -9,15 +9,15 @@
 #include <fmt/format.h>
 #include <memory>
 #include <mutex>
+#include <queue>
 
 namespace rpc
 {   
-    static std::mutex mtx;
+    static std::mutex pop_log_mtx;
+    static std::mutex push_log_mtx;
     static std::shared_ptr<Logger> global_logger_ptr { nullptr }; // 使用智能指针了
 
     LogLevel Logger::get_log_level() const  { return m_set_level; }
-    
-    void Logger::push_log(const std::string& message) { m_buffer.emplace(message); }
     
     std::shared_ptr<Logger> Logger::get_global_logger() { return global_logger_ptr; }
 
@@ -27,6 +27,13 @@ namespace rpc
 
     std::string LogEvent::get_file_name() { return m_file_name; }
 
+    // 这里也要加锁
+    void Logger::push_log(const std::string& message) 
+    { 
+        std::lock_guard<std::mutex> guard { push_log_mtx };
+        m_buffer.emplace(message); 
+    }
+
     void Logger::init_global_logger()
     {
         std::shared_ptr<Config> config_ptr { Config::get_global_config() };
@@ -35,13 +42,15 @@ namespace rpc
         global_logger_ptr.reset(new Logger(global_log_level));
     }
 
+    // 这里需要锁
     void Logger::log()
     {  
-        std::lock_guard<std::mutex> guard { mtx };
+        std::lock_guard<std::mutex> lock_ptr { pop_log_mtx };
+       
+
         while (!m_buffer.empty()) 
         {
-            std::string message = m_buffer.front();
-            std::cout << message << std::endl;
+            std::cout << m_buffer.front() << std::endl;
             m_buffer.pop();
         }
     }
@@ -62,8 +71,17 @@ namespace rpc
         return LogLevel::Unknown;
         
     }
-
-    std::string LogEvent::get_log()  // 得到日志，并且进行格式化
+    void DEBUG_LOG(const std::string_view& old_message, const std::source_location file)
+    {
+        if (rpc::Logger::get_global_logger()->get_log_level() >= rpc::LogLevel::Debug)
+        {
+            std::unique_ptr<rpc::LogEvent> ptr = std::make_unique<rpc::LogEvent>(rpc::LogLevel::Debug);
+            std::string message = ptr->get_log(file.file_name(), file.line()); //+ std::string { old_message };
+            rpc::Logger::get_global_logger() -> push_log(message); // 将log 推入到队列中
+            rpc::Logger::get_global_logger() -> log(); // 得到log
+        }
+    }
+    std::string LogEvent::get_log(const std::string& file, int line)  // 得到日志，并且进行格式化
     {
         // 得到线程号和进程号
         m_pid = rpc::utils::get_pid();
@@ -71,8 +89,8 @@ namespace rpc
         std::time_t time_point = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
         auto now = *std::localtime(&time_point);
         
-        m_file_name = __FILE__;
-        m_file_line = __LINE__;
+        m_file_name = file;
+        m_file_line = line;
 
         // 最终结果大概是这样的形式:[INFO][2023年9月3日16时21分37秒][文件名:/home/lzc/test_c++/main.cpp 行号 10]
         std::string result = fmt::format("[{}][{}年{}月{}日{}时{}分{}秒][文件名:{},行号 {},进程号: {} 线程号:{}]", loglevel_to_string(m_log_level), now.tm_year + 1900 , now.tm_mon + 1, now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec,__FILE__, __LINE__,m_pid, m_thread_pid);
