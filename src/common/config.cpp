@@ -12,6 +12,12 @@ namespace rpc
 {
     static std::shared_ptr<Config> g_config { nullptr };
 
+    std::shared_ptr<Config> Config::get_global_config() { return g_config; }
+
+    void  Config::set_global_config(const std::string& xml_file) { if (!g_config) g_config = std::make_shared<Config>(xml_file); }
+    
+    std::string& Config::get_m_log_level() { return m_log_level; }
+
     static TiXmlElement* get_son_node(TiXmlDocument* father, const std::string& name)
     {
         if (!father->FirstChildElement(name.c_str()))
@@ -47,12 +53,8 @@ namespace rpc
         TiXmlElement* root_log_ptr = get_son_node(root_ptr, "log");
         TiXmlElement* root_log_level_ptr = get_son_node(root_log_ptr, "log_level");
         m_log_level = root_log_level_ptr->GetText();
-
     }
 
-    std::shared_ptr<Config> Config::get_global_config() { return g_config; }
-
-    void  Config::set_global_config(const std::string& xml_file) { if (!g_config) g_config = std::make_shared<Config>(xml_file); }
-    std::string& Config::get_m_log_level() { return m_log_level; }
+   
 
 }
