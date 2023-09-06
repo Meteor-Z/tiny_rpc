@@ -48,7 +48,7 @@ namespace rpc
         std::string get_log(const std::string& file, int line); // 格式化，得到日志的信息
     private:
         std::string m_file_name { }; // 文件名
-        std::string m_file_line { }; // 行号 
+        int m_file_line { }; // 行号 
         int m_time { 0 }; // 当前时间
         int m_pid { 0 }; // 进程号
         int m_thread_pid { 0 }; // 线程号
@@ -56,7 +56,9 @@ namespace rpc
         std::shared_ptr<Logger> m_logger { nullptr }; // 日志器
     };
 
-    void DEBUG_LOG(const std::string_view& old_message, const std::source_location& file = std::source_location::current());
+    void DEBUG_LOG(const std::string_view& old_message, const std::source_location& location = std::source_location::current());
+    void INFO_LOG(const std::string_view& old_message, const std::source_location& location = std::source_location::current());
+    void ERROR_LOG(const std::string_view& old_message, const std::source_location& location = std::source_location::current());
     std::string loglevel_to_string(LogLevel loglevel);
     LogLevel string_to_loglevel(const std::string& loglevel);
 

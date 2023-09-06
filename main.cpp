@@ -10,8 +10,8 @@ void test()
     for (int i = 0; i < 100; i++)
     {
         rpc::DEBUG_LOG("debug_log_1");
-        rpc::DEBUG_LOG("debug_log_2");
-        rpc::DEBUG_LOG("DEBUG_LOG_3");
+        rpc::ERROR_LOG("debug_log_2");
+        rpc::INFO_LOG("DEBUG_LOG_3");
     }
    
 }

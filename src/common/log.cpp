@@ -54,7 +54,36 @@ namespace rpc
             m_buffer.pop();
         }
     }
-
+    void DEBUG_LOG(const std::string_view& old_message, const std::source_location& location)
+    {
+        if (rpc::Logger::get_global_logger()->get_log_level() <= rpc::LogLevel::Debug)
+        {
+            std::unique_ptr<rpc::LogEvent> ptr = std::make_unique<rpc::LogEvent>(rpc::LogLevel::Debug);
+            std::string message = ptr->get_log(location.file_name(), location.line()) + " " + std::string { old_message };
+            rpc::Logger::get_global_logger() -> push_log(message); // 将log 推入到队列中
+            rpc::Logger::get_global_logger() -> log(); // 得到log
+        }
+    }
+    void INFO_LOG(const std::string_view& old_message, const std::source_location& location)
+    {
+        if (rpc::Logger::get_global_logger()->get_log_level() <= rpc::LogLevel::Info)
+        {
+            std::unique_ptr<rpc::LogEvent> ptr = std::make_unique<rpc::LogEvent>(rpc::LogLevel::Info);
+            std::string message = ptr->get_log(location.file_name(), location.line()) + " " + std::string { old_message };
+            rpc::Logger::get_global_logger() -> push_log(message); // 将log 推入到队列中
+            rpc::Logger::get_global_logger() -> log(); // 得到log
+        }
+    }
+    void ERROR_LOG(const std::string_view& old_message, const std::source_location& location)
+    {
+        if (rpc::Logger::get_global_logger()->get_log_level() <= rpc::LogLevel::Error)
+        {
+            std::unique_ptr<rpc::LogEvent> ptr = std::make_unique<rpc::LogEvent>(rpc::LogLevel::Error);
+            std::string message = ptr->get_log(location.file_name(), location.line()) + " " + std::string { old_message };
+            rpc::Logger::get_global_logger() -> push_log(message); // 将log 推入到队列中
+            rpc::Logger::get_global_logger() -> log(); // 得到log
+        }
+    }
     std::string loglevel_to_string(LogLevel loglevel)
     {
         if (loglevel == LogLevel::Debug) return "Debug";
@@ -71,17 +100,8 @@ namespace rpc
         return LogLevel::Unknown;
         
     }
-    void DEBUG_LOG(const std::string_view& old_message, const std::source_location file)
-    {
-        if (rpc::Logger::get_global_logger()->get_log_level() >= rpc::LogLevel::Debug)
-        {
-            std::unique_ptr<rpc::LogEvent> ptr = std::make_unique<rpc::LogEvent>(rpc::LogLevel::Debug);
-            std::string message = ptr->get_log(file.file_name(), file.line()); //+ std::string { old_message };
-            rpc::Logger::get_global_logger() -> push_log(message); // 将log 推入到队列中
-            rpc::Logger::get_global_logger() -> log(); // 得到log
-        }
-    }
-    std::string LogEvent::get_log(const std::string& file, int line)  // 得到日志，并且进行格式化
+
+    std::string LogEvent::get_log(const std::string& file_name, int file_line)  // 得到日志，并且进行格式化
     {
         // 得到线程号和进程号
         m_pid = rpc::utils::get_pid();
@@ -89,11 +109,11 @@ namespace rpc
         std::time_t time_point = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
         auto now = *std::localtime(&time_point);
         
-        m_file_name = file;
-        m_file_line = line;
+        m_file_name = file_name;
+        m_file_line = file_line;
 
         // 最终结果大概是这样的形式:[INFO][2023年9月3日16时21分37秒][文件名:/home/lzc/test_c++/main.cpp 行号 10]
-        std::string result = fmt::format("[{}][{}年{}月{}日{}时{}分{}秒][文件名:{},行号 {},进程号: {} 线程号:{}]", loglevel_to_string(m_log_level), now.tm_year + 1900 , now.tm_mon + 1, now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec,__FILE__, __LINE__,m_pid, m_thread_pid);
+        std::string result = fmt::format("[{}][{}年{}月{}日{}时{}分{}秒][文件名 {}:{}, 进程号: {} 线程号:{}]", loglevel_to_string(m_log_level), now.tm_year + 1900 , now.tm_mon + 1, now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec, m_file_name, m_file_line, m_pid, m_thread_pid);
         return result;
     }
    
