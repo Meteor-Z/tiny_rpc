@@ -9,21 +9,10 @@ namespace rpc
 {
     WakeUPEvent::WakeUPEvent(int fd) : Fd_Event(fd) { }
     WakeUPEvent:: ~WakeUPEvent() { }
-    void WakeUPEvent::init()
-    {
-        m_read_callback = [&]() 
-        {
-            char buf[8];
-            while (read(m_fd, buf, 8) == -1 && errno != EAGAIN) 
-            {
-                
-            }
-            DEBUG_LOG(fmt::format("read full bytes wakeup fd[{}]", m_fd));
-        };
-    }
+    // yes
     void WakeUPEvent::wakeup()
     {
-        char buf[8] = { "a" };
+        char buf[8] = { 'a' };
         int rt = write(m_fd, buf, 8);
         if (rt != 8)
         {

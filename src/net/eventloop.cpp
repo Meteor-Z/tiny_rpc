@@ -33,9 +33,9 @@ namespace rpc
 
         m_thread_id = rpc::utils::get_thread_id();
 
-        m_epoll_fd = epoll_create(10); // 随便传入
+        m_epoll_fd = epoll_create(10); // 随便传入 现代操作系统已经不用管这个数字了
 
-        if (m_epoll_fd == -1)
+        if (m_epoll_fd == -1) // 例程申请不了
         {
             ERROR_LOG(fmt::format("failed to epoll_create(),error info {}", errno));
             exit(0);
@@ -83,15 +83,15 @@ namespace rpc
         add_epoll_event(m_wakeup_fd_event);
         
     }
-    // 好
+
     void EventLoop::loop()
     {
         while (!m_stop_flag)
         {
-            std::lock_guard<std::mutex> lock { m_mtx };
+            std::unique_lock<std::mutex> lock { m_mtx };
             std::queue<std::function<void()>> temp_tasks;
-            m_pending_tasks.swap(temp_tasks); // ?
-            // 这里有可能有锁
+            m_pending_tasks.swap(temp_tasks);
+            lock.unlock();
             while (!temp_tasks.empty())
             {
                 std::function<void()> cb = temp_tasks.front();
@@ -152,6 +152,7 @@ namespace rpc
     {
 
     }
+    // yes
     void EventLoop::add_epoll_event(Fd_Event* event)
     {
         if (is_in_loop_thread()) 
@@ -167,7 +168,7 @@ namespace rpc
             add_task(cb, true);
         }
     }
-    // 只是将所有的事件放在这个任务里面
+    // yes
     void EventLoop::delete_epoll_event(Fd_Event* event)
     {
         if (is_in_loop_thread()) delete_from_epoll(event);
@@ -175,15 +176,17 @@ namespace rpc
         {
             auto cb = [this, event]()
             {
-                delete_epoll_event(event);
+                delete_from_epoll(event);
             };
             add_task(cb, true);
         }
     }
+    // yes
     bool EventLoop::is_in_loop_thread()
     {
         return m_thread_id == rpc::utils::get_thread_id();
     }
+    // yes
     void EventLoop::add_task(std::function<void()> task, bool is_wake_up)
     {
         std::lock_guard<std::mutex> lock { m_mtx };
@@ -203,13 +206,13 @@ namespace rpc
         } 
         epoll_event tmp = event->get_epoll_event(); 
 
-        rpc::INFO_LOG(fmt::format("epoll_event.events = %d", (int)tmp.events)); 
+        rpc::INFO_LOG(fmt::format("epoll_event.events = {}", (int)tmp.events)); 
         int rt = epoll_ctl(m_epoll_fd, op, event->get_fd(), &tmp); 
         if (rt == -1) { 
         rpc::ERROR_LOG(fmt::format("failed epoll_ctl when add fd, errno={}, error={}", errno, strerror(errno))); 
         } 
         m_listen_fds.insert(event->get_fd()); 
-        rpc::DEBUG_LOG(fmt::format("add event success, fd[%d]", event->get_fd())); 
+        rpc::DEBUG_LOG(fmt::format("add event success, fd[{}]", event->get_fd())); 
     }
 
     void EventLoop::delete_from_epoll(Fd_Event* event)

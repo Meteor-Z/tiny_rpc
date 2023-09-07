@@ -43,9 +43,9 @@ namespace rpc
         global_logger_ptr.reset(new Logger(global_log_level));
     }
 
-    // 这里需要锁
     void Logger::log()
     {  
+        // 这个需要锁
         std::lock_guard<std::mutex> lock_ptr { pop_log_mtx };
        
         while (!m_buffer.empty()) 

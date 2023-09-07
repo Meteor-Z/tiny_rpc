@@ -3,6 +3,7 @@
 #include <sys/epoll.h>
 namespace rpc
 {
+    // yes
     Fd_Event::Fd_Event(int fd) : m_fd(fd)
     {
         std::memset(&m_listen_events, 0, sizeof(m_listen_events));
@@ -18,6 +19,8 @@ namespace rpc
         if (event_type == TriggerEvent::IN_EVENT) return m_read_callback;
         else return m_write_callback;
     }
+
+    // yes 
     void Fd_Event::listen(TriggerEvent event_type, std::function<void()> callback)
     {
         if (event_type == TriggerEvent::IN_EVENT)

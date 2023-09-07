@@ -9,7 +9,6 @@ namespace rpc
     public:
         WakeUPEvent(int fd);
         ~WakeUPEvent();
-        void init();
         void wakeup();
     };
 }
