@@ -1,6 +1,7 @@
 #ifndef RPC_NET_EVENTLOOP_H
 #define RPC_NET_EVENTLOOP_H
 
+#include <memory>
 #include <thread>
 #include <set>
 #include <queue>
@@ -10,7 +11,7 @@
 #include "wakeup_fd_event.hpp"
 namespace rpc
 {
-    class EventLoop
+    class EventLoop : public std::enable_shared_from_this<EventLoop>
     {
     public:
         EventLoop();
@@ -31,12 +32,11 @@ namespace rpc
     private:
         pid_t m_thread_id { 0 }; // 线程号
         int m_epoll_fd { 0 }; // epoll 句柄
-        int m_wake_up_fd { 0 }; 
+        int m_wakeup_fd { 0 };
 
         WakeUPEvent* m_wakeup_fd_event { nullptr };
-
         bool m_stop_flag { false }; 
-        std::set<int> m_listen_fds; // 监听的套接字
+        std::set<int> m_listen_fds; // 监听的套接字，存入的是文件描述符
         std::queue<std::function<void()>> m_pending_tasks; // 好好好，很c++ style
         std::mutex m_mtx;
     };

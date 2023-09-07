@@ -18,8 +18,8 @@ namespace rpc
         ~Fd_Event();
         std::function<void()> handler(TriggerEvent event_type);
         void listen(TriggerEvent event_type, std::function<void()> callback);
-        int get_fd() const;
-        epoll_event get_epoll_event();
+        int get_fd() const noexcept;
+        epoll_event get_epoll_event() const noexcept;
     protected:
         int m_fd { -1 };
         epoll_event m_listen_events { };

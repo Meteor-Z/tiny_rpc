@@ -5,6 +5,8 @@
 
 
 #include <filesystem>
+#include <memory>
+#include <mutex>
 #include <thread>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -18,8 +20,8 @@ int main()
     rpc::Config::set_global_config("/home/lzc/tiny_rpc/conf/rpc.xml");
 
     rpc::Logger::init_global_logger();
-    rpc::EventLoop* eventloop = new rpc::EventLoop();
-
+    // rpc::EventLoop* eventloop = new rpc::EventLoop();
+    std::unique_ptr<rpc::EventLoop> eventloop_ptr = std::make_unique<rpc::EventLoop>();
     int listenfd = socket(AF_INET, SOCK_STREAM, 0);
     if (listenfd == -1) {
         rpc::ERROR_LOG("listenfd = -1");
@@ -55,9 +57,9 @@ int main()
         rpc::DEBUG_LOG(fmt::format("success get client fd[{}], peer addr: [{}:{}]", clientfd, inet_ntoa(peer_addr.sin_addr), ntohs(peer_addr.sin_port)));
 
     });
-    eventloop->add_epoll_event(&event);
+    eventloop_ptr->add_epoll_event(&event);
     
-    eventloop->loop();
+    eventloop_ptr->loop();
 
     return 0;
 }

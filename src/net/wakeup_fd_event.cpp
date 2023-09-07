@@ -9,7 +9,6 @@ namespace rpc
 {
     WakeUPEvent::WakeUPEvent(int fd) : Fd_Event(fd) { }
     WakeUPEvent:: ~WakeUPEvent() { }
-    // yes
     void WakeUPEvent::wakeup()
     {
         char buf[8] = { 'a' };

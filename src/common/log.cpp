@@ -80,8 +80,8 @@ namespace rpc
         {
             std::unique_ptr<rpc::LogEvent> ptr = std::make_unique<rpc::LogEvent>(rpc::LogLevel::Error);
             std::string message = ptr->get_log(location.file_name(), location.line()) + " " + std::string { old_message };
-            rpc::Logger::get_global_logger() -> push_log(message); // 将log 推入到队列中
-            rpc::Logger::get_global_logger() -> log(); // 得到log
+            rpc::Logger::get_global_logger()->push_log(message); // 将log 推入到队列中
+            rpc::Logger::get_global_logger()->log(); // 得到log
         }
     }
     std::string loglevel_to_string(LogLevel loglevel)

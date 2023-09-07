@@ -4,23 +4,20 @@
 namespace rpc
 {
     // yes
-    Fd_Event::Fd_Event(int fd) : m_fd(fd)
-    {
-        std::memset(&m_listen_events, 0, sizeof(m_listen_events));
-        
-    }
-    Fd_Event::~Fd_Event()
-    {
-
-    }
-    // yes
+    Fd_Event::Fd_Event(int fd) : m_fd(fd) { std::memset(&m_listen_events, 0, sizeof(m_listen_events)); }
+    
+    Fd_Event::~Fd_Event() { }
+    
+    int Fd_Event::get_fd() const noexcept{ return m_fd; }
+    
+    epoll_event Fd_Event::get_epoll_event() const noexcept { return m_listen_events; }
+    
     std::function<void()> Fd_Event::handler(TriggerEvent event_type)
     {
         if (event_type == TriggerEvent::IN_EVENT) return m_read_callback;
-        else return m_write_callback;
+        return m_write_callback;
     }
 
-    // yes 
     void Fd_Event::listen(TriggerEvent event_type, std::function<void()> callback)
     {
         if (event_type == TriggerEvent::IN_EVENT)
@@ -34,11 +31,8 @@ namespace rpc
         } 
          m_listen_events.data.ptr = this;
     }
-    int Fd_Event::get_fd() const {
-        return m_fd;
-    }
-    epoll_event Fd_Event::get_epoll_event()
-    {
-        return m_listen_events;
-    }
+
+  
+    
+    
 }
