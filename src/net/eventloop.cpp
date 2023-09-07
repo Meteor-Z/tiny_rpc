@@ -113,12 +113,12 @@ namespace rpc
 
     void EventLoop::wake_up()
     {
-
+        m_wakeup_fd_event->wakeup();
     }
 
     void EventLoop::stop()
     {
-
+        m_stop_flag = true;
     }
     void EventLoop::deal_wake_up()
     {

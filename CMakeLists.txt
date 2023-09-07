@@ -3,7 +3,14 @@ cmake_minimum_required(VERSION 3.22.1)
 project(tiny_rpc)
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(tiny_rpc main.cpp src/common/log.cpp src/common/utils.cpp src/common/config.cpp) 
+add_executable(tiny_rpc 
+    main.cpp 
+    src/common/log.cpp 
+    src/common/utils.cpp 
+    src/common/config.cpp
+    src/net/eventloop.cpp
+    src/net/fd_event.cpp
+    src/net/wakeup_fd_event.cpp) 
 
 set(CMAKE_CXX_FLAGS "-g") # 调试的可以添加cpp编译选项
 
