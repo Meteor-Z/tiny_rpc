@@ -18,8 +18,7 @@ namespace rpc
             {
                 
             }
-            DEBUG_LOG(fmt::format("read full bytes wakeup fd {}", m_fd));
-
+            DEBUG_LOG(fmt::format("read full bytes wakeup fd[{}]", m_fd));
         };
     }
     void WakeUPEvent::wakeup()
@@ -30,5 +29,6 @@ namespace rpc
         {
             ERROR_LOG(fmt::format("write to wakeup fd less 8 bytes fd {}", m_fd));
         }   
+        rpc::DEBUG_LOG("success read 8 byts");
     }
 }

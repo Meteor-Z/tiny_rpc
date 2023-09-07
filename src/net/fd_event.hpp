@@ -22,7 +22,7 @@ namespace rpc
         epoll_event get_epoll_event();
     protected:
         int m_fd { -1 };
-        epoll_event m_listen_events;
+        epoll_event m_listen_events { };
         std::function<void()> m_read_callback;
         std::function<void()> m_write_callback;
     };

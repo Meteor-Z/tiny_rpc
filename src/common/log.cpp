@@ -10,6 +10,7 @@
 #include <memory>
 #include <mutex>
 #include <queue>
+#include <source_location>
 
 namespace rpc
 {   
@@ -47,7 +48,6 @@ namespace rpc
     {  
         std::lock_guard<std::mutex> lock_ptr { pop_log_mtx };
        
-
         while (!m_buffer.empty()) 
         {
             std::cout << m_buffer.front() << std::endl;
