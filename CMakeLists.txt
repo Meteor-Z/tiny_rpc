@@ -21,15 +21,21 @@ add_executable(event_loop_test
     src/net/fd_event.cpp
     src/net/wakeup_fd_event.cpp) 
 
+
 set(CMAKE_CXX_FLAGS "-g") # 调试的可以添加cpp编译选项
+set(libtinyxml "${CMAKE_SOURCE_DIR}/lib/tinyxml/libtinyxml.a")
+
+include_directories("include")
 
 
 target_link_libraries(event_loop_test
     "/usr/local/lib/libfmt.a" # fmt
-    "/usr/local/lib/tinyxml/libtinyxml.a") # tinyxml
+    ${libtinyxml}
+) # tinyxml
     # "/usr/local/lib/libgtest.a") # gtest
 
 target_link_libraries(tiny_rpc
-"/usr/local/lib/libfmt.a" # fmt
-"/usr/local/lib/tinyxml/libtinyxml.a") # tinyxml
+    "/usr/local/lib/libfmt.a"  # fmt
+    ${libtinyxml}
+) # tinyxml
 # "/usr/local/lib/libgtest.a") # gtest
