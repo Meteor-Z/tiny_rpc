@@ -50,9 +50,7 @@ namespace rpc
         init_wakeup_fd_event();
 
         INFO_LOG(fmt::format("在{}线程下成功创建", m_thread_id));
-        std::cout << "yes" << std::endl;
         thread_current_eventloop = this;
-        std::cout << "ji" << std::endl;
     }
 
     EventLoop::~EventLoop()
@@ -60,7 +58,7 @@ namespace rpc
         close(m_epoll_fd);
         if (m_wakeup_fd_event)
         {
-            delete m_wakeup_fd_event;
+            delete  m_wakeup_fd_event;
             m_wakeup_fd_event = nullptr;
         } 
     }

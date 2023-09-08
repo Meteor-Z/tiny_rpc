@@ -11,7 +11,7 @@
 #include "wakeup_fd_event.hpp"
 namespace rpc
 {
-    class EventLoop : public std::enable_shared_from_this<EventLoop>
+    class EventLoop
     {
     public:
         EventLoop();
@@ -31,14 +31,14 @@ namespace rpc
         void init_wakeup_fd_event();
     private:
         pid_t m_thread_id { 0 }; // 线程号
-        int m_epoll_fd { 0 }; // epoll 句柄
-        int m_wakeup_fd { 0 };
+        int m_epoll_fd { 0 }; // epoll 句柄 这里是 epoll 例程
+        int m_wakeup_fd { 0 }; // 唤醒的一个文件标识符
 
-        WakeUPEvent* m_wakeup_fd_event { nullptr };
+        WakeUPEvent* m_wakeup_fd_event { nullptr }; // 唤醒的事件
         bool m_stop_flag { false }; 
         std::set<int> m_listen_fds; // 监听的套接字，存入的是文件描述符
         std::queue<std::function<void()>> m_pending_tasks; // 好好好，很c++ style
-        std::mutex m_mtx;
+        std::mutex m_mtx; // 这个是锁
     };
 }
 
