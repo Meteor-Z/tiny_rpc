@@ -15,8 +15,8 @@ namespace rpc
         int rt = write(m_fd, buf, 8);
         if (rt != 8)
         {
-            ERROR_LOG(fmt::format("write to wakeup fd less 8 bytes fd {}", m_fd));
+            rpc::utils::ERROR_LOG(fmt::format("write to wakeup fd less 8 bytes fd {}", m_fd));
         }   
-        rpc::DEBUG_LOG("success read 8 byts");
+        rpc::utils::DEBUG_LOG("success read 8 byts");
     }
 }

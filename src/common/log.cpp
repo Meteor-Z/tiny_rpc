@@ -54,54 +54,58 @@ namespace rpc
             m_buffer.pop();
         }
     }
-    void DEBUG_LOG(const std::string_view& old_message, const std::source_location& location)
+    namespace utils
     {
-        if (rpc::Logger::get_global_logger()->get_log_level() <= rpc::LogLevel::Debug)
+        void DEBUG_LOG(const std::string_view& old_message, const std::source_location& location)
         {
-            std::unique_ptr<rpc::LogEvent> ptr = std::make_unique<rpc::LogEvent>(rpc::LogLevel::Debug);
-            std::string message = ptr->get_log(location.file_name(), location.line()) + " " + std::string { old_message };
-            rpc::Logger::get_global_logger() -> push_log(message); // 将log 推入到队列中
-            rpc::Logger::get_global_logger() -> log(); // 得到log
+            if (rpc::Logger::get_global_logger()->get_log_level() <= rpc::LogLevel::Debug)
+            {
+                std::unique_ptr<rpc::LogEvent> ptr = std::make_unique<rpc::LogEvent>(rpc::LogLevel::Debug);
+                std::string message = ptr->get_log(location.file_name(), location.line()) + " " + std::string { old_message };
+                rpc::Logger::get_global_logger() -> push_log(message); // 将log 推入到队列中
+                rpc::Logger::get_global_logger() -> log(); // 得到log
+            }
+        }
+        void INFO_LOG(const std::string_view& old_message, const std::source_location& location)
+        {
+            if (rpc::Logger::get_global_logger()->get_log_level() <= rpc::LogLevel::Info)
+            {
+                std::unique_ptr<rpc::LogEvent> ptr = std::make_unique<rpc::LogEvent>(rpc::LogLevel::Info);
+                std::string message = ptr->get_log(location.file_name(), location.line()) + " " + std::string { old_message };
+                rpc::Logger::get_global_logger() -> push_log(message); // 将log 推入到队列中
+                rpc::Logger::get_global_logger() -> log(); // 得到log
+            }
+        }
+        void ERROR_LOG(const std::string_view& old_message, const std::source_location& location)
+        {
+            if (rpc::Logger::get_global_logger()->get_log_level() <= rpc::LogLevel::Error)
+            {
+                std::unique_ptr<rpc::LogEvent> ptr = std::make_unique<rpc::LogEvent>(rpc::LogLevel::Error);
+                std::string message = ptr->get_log(location.file_name(), location.line()) + " " + std::string { old_message };
+                rpc::Logger::get_global_logger()->push_log(message); // 将log 推入到队列中
+                rpc::Logger::get_global_logger()->log(); // 得到log
+            }
         }
     }
-    void INFO_LOG(const std::string_view& old_message, const std::source_location& location)
+    
+    std::string loglevel_to_string(rpc::LogLevel loglevel)
     {
-        if (rpc::Logger::get_global_logger()->get_log_level() <= rpc::LogLevel::Info)
-        {
-            std::unique_ptr<rpc::LogEvent> ptr = std::make_unique<rpc::LogEvent>(rpc::LogLevel::Info);
-            std::string message = ptr->get_log(location.file_name(), location.line()) + " " + std::string { old_message };
-            rpc::Logger::get_global_logger() -> push_log(message); // 将log 推入到队列中
-            rpc::Logger::get_global_logger() -> log(); // 得到log
-        }
-    }
-    void ERROR_LOG(const std::string_view& old_message, const std::source_location& location)
-    {
-        if (rpc::Logger::get_global_logger()->get_log_level() <= rpc::LogLevel::Error)
-        {
-            std::unique_ptr<rpc::LogEvent> ptr = std::make_unique<rpc::LogEvent>(rpc::LogLevel::Error);
-            std::string message = ptr->get_log(location.file_name(), location.line()) + " " + std::string { old_message };
-            rpc::Logger::get_global_logger()->push_log(message); // 将log 推入到队列中
-            rpc::Logger::get_global_logger()->log(); // 得到log
-        }
-    }
-    std::string loglevel_to_string(LogLevel loglevel)
-    {
-        if (loglevel == LogLevel::Debug) return "Debug";
-        if (loglevel == LogLevel::Info) return "Info";
-        if (loglevel == LogLevel::Error) return "Error";
+        if (loglevel == rpc::LogLevel::Debug) return "Debug";
+        if (loglevel == rpc::LogLevel::Info) return "Info";
+        if (loglevel == rpc::LogLevel::Error) return "Error";
         return "Unkown";
     }
 
-    LogLevel string_to_loglevel(const std::string& log_level)
+    rpc::LogLevel string_to_loglevel(const std::string& log_level)
     {
-        if (log_level == "Debug") return LogLevel::Debug;
-        if (log_level == "Info") return LogLevel::Info;
-        if (log_level == "Error") return LogLevel::Error;
-        return LogLevel::Unknown;
+        if (log_level == "Debug") return rpc::LogLevel::Debug;
+        if (log_level == "Info") return rpc::LogLevel::Info;
+        if (log_level == "Error") return rpc::LogLevel::Error;
+        return rpc::LogLevel::Unknown;
         
     }
 
-    std::string LogEvent::get_log(const std::string& file_name, int file_line)  // 得到日志，并且进行格式化
+    std::string rpc::LogEvent::get_log(const std::string& file_name, int file_line)  // 得到日志，并且进行格式化
     {
         // 得到线程号和进程号
         m_pid = rpc::utils::get_pid();

@@ -55,10 +55,14 @@ namespace rpc
         LogLevel m_log_level; // 日志级别
         std::shared_ptr<Logger> m_logger { nullptr }; // 日志器
     };
-
-    void DEBUG_LOG(const std::string_view& old_message, const std::source_location& location = std::source_location::current());
-    void INFO_LOG(const std::string_view& old_message, const std::source_location& location = std::source_location::current());
-    void ERROR_LOG(const std::string_view& old_message, const std::source_location& location = std::source_location::current());
+    
+    namespace utils
+    {
+        void DEBUG_LOG(const std::string_view& old_message, const std::source_location& location = std::source_location::current());
+        void INFO_LOG(const std::string_view& old_message, const std::source_location& location = std::source_location::current());
+        void ERROR_LOG(const std::string_view& old_message, const std::source_location& location = std::source_location::current());
+    }
+    
     std::string loglevel_to_string(LogLevel loglevel);
     LogLevel string_to_loglevel(const std::string& loglevel);
 
