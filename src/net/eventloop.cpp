@@ -84,18 +84,16 @@ namespace rpc
         add_epoll_event(m_wakeup_fd_event);
         
     }
-
+    
     void EventLoop::loop()
     {
         while (!m_stop_flag)
         {
-            // 缩到下面的unlock()那里就可以了
+            // 缩到下面的unlock()那里就可以了 如何全部锁住，就寄了
             std::unique_lock<std::mutex> lock { m_mtx };
             std::queue<std::function<void()>> temp_tasks;
             m_pending_tasks.swap(temp_tasks);
             lock.unlock();
-
-            // 可能会有空值
             
             while (!temp_tasks.empty())
             {
@@ -103,8 +101,8 @@ namespace rpc
                 temp_tasks.pop();
                 if (cb) cb();
             }
-
-
+            
+            // 循环的时候如何判断怎么执行,事件大于这个定时器的时候，如何才能大于这个事件,
             int timeout = global_max_timeout;
             
             epoll_event result_event [global_epoll_max];
@@ -127,14 +125,13 @@ namespace rpc
 
                     if (trigger_event.events & EPOLLIN) 
                     {
-
-                        rpc::utils::DEBUG_LOG(fmt::format("fd {} trigger EPOLLERROR event", fd_event_ptr->get_fd()));
+                        rpc::utils::DEBUG_LOG(fmt::format("fd {} trigger EPOLLIN event", fd_event_ptr->get_fd()));
                         add_task(fd_event_ptr->handler(Fd_Event::TriggerEvent::IN_EVENT));
                     }
 
                     if (trigger_event.events & EPOLLOUT)
                     {
-                        rpc::utils::DEBUG_LOG(fmt::format("fd {} trigger EPOLLIN event", fd_event_ptr->get_fd()));
+                        rpc::utils::DEBUG_LOG(fmt::format("fd {} trigger EPOLLOUT event", fd_event_ptr->get_fd()));
                         add_task(fd_event_ptr->handler(Fd_Event::TriggerEvent::OUT_EVENT));
                     }
                 }

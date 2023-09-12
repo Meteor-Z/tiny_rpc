@@ -25,15 +25,16 @@ add_executable(event_loop_test
 set(CMAKE_CXX_FLAGS "-g") # 调试的可以添加cpp编译选项
 set(libtinyxml "${CMAKE_SOURCE_DIR}/lib/tinyxml/libtinyxml.a")
 
-include_directories("include")
+include_directories("include") # 将头文件包含进来
 
-
+# 链接
 target_link_libraries(event_loop_test
     "/usr/local/lib/libfmt.a" # fmt
     ${libtinyxml}
 ) # tinyxml
     # "/usr/local/lib/libgtest.a") # gtest
 
+# 链接
 target_link_libraries(tiny_rpc
     "/usr/local/lib/libfmt.a"  # fmt
     ${libtinyxml}

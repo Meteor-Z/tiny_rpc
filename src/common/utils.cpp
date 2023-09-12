@@ -1,6 +1,8 @@
 #include "utils.hpp"
+#include <bits/types/struct_timeval.h>
 #include <unistd.h>
 #include <sys/syscall.h>
+#include "sys/time.h"
 
 namespace rpc
 {
@@ -19,6 +21,14 @@ namespace rpc
         {
             if (g_pid != 0) return g_pid;
             return getpid();
+        }
+        // 这里要学一下，草
+        int64_t get_now_ms()
+        {
+            timeval value;
+            gettimeofday(&value, nullptr);
+            return value.tv_sec * 1000 + value.tv_usec / 1000;
+
         }
     }
 }

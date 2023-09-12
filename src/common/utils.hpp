@@ -13,6 +13,7 @@ namespace rpc
     {
         pid_t get_pid();
         pid_t get_thread_id();
+        int64_t get_now_ms();
     }
 }
 #endif

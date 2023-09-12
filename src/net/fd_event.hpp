@@ -15,6 +15,7 @@ namespace rpc
             OUT_EVENT = EPOLLOUT,
         };
         Fd_Event(int fd); // 将事件进行初始化，并且初始化 epoll_event
+        Fd_Event();
         ~Fd_Event();
         std::function<void()> handler(TriggerEvent event_type);
         void listen(TriggerEvent event_type, std::function<void()> callback);

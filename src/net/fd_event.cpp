@@ -5,8 +5,8 @@ namespace rpc
 {
     // yes
     Fd_Event::Fd_Event(int fd) : m_fd(fd) { std::memset(&m_listen_events, 0, sizeof(m_listen_events)); }
-    
-    Fd_Event::~Fd_Event() { }
+    Fd_Event::Fd_Event() {}
+    Fd_Event::~Fd_Event() { memset(&m_listen_events, 0, sizeof(m_listen_events)); }
     
     int Fd_Event::get_fd() const noexcept{ return m_fd; }
     
