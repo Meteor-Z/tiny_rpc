@@ -14,6 +14,7 @@
 #include "../common/log.hpp"
 #include "../common/utils.hpp"
 #include "fd_event.hpp"
+#include "time/time_event.hpp"
 #include "wakeup_fd_event.hpp"
 
 
@@ -48,6 +49,7 @@ namespace rpc
         }
 
         init_wakeup_fd_event();
+        init_timer();
 
         rpc::utils::INFO_LOG(fmt::format("在{}线程下成功创建", m_thread_id));
         thread_current_eventloop = this;
@@ -55,12 +57,18 @@ namespace rpc
 
     EventLoop::~EventLoop()
     {
+        // 先这样处理，因为这样也是线程不安全的
         close(m_epoll_fd);
         if (m_wakeup_fd_event)
         {
             delete  m_wakeup_fd_event;
             m_wakeup_fd_event = nullptr;
         } 
+        if (m_timer)
+        {
+            delete m_timer;
+            m_timer = nullptr; 
+        }
     }
     void EventLoop::init_wakeup_fd_event()
     {
@@ -145,6 +153,16 @@ namespace rpc
         rpc::utils::INFO_LOG("wakeup....");
         m_wakeup_fd_event->wakeup();
     }
+    void EventLoop::init_timer()
+    {
+        m_timer = new Timer();  
+        add_epoll_event(m_timer); // 将这个事件存存放到这个事件中
+    }
+
+    void EventLoop::add_timer_event(rpc::TimerEvent::s_ptr shard_ptr)
+    {
+        m_timer->add_time_event(shard_ptr);
+    }
 
     void EventLoop::stop()
     {
@@ -183,7 +201,7 @@ namespace rpc
     }
     bool EventLoop::is_in_loop_thread() { return m_thread_id == rpc::utils::get_thread_id(); }
 
-    void EventLoop::add_task(std::function<void()> task, bool is_wake_up)
+    void EventLoop:: add_task(std::function<void()> task, bool is_wake_up)
     {
         std::lock_guard<std::mutex> lock { m_mtx };
         m_pending_tasks.push(task);

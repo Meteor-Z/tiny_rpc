@@ -1,5 +1,5 @@
-#ifndef RPC_NET_TIME_H
-#define RPC_NET_TIME_H
+#ifndef RPC_NET_TIMER_H
+#define RPC_NET_TIMER_H
 
 #include "time_event.hpp"
 #include "../src/net/fd_event.hpp"

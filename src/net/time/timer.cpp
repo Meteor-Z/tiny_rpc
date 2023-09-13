@@ -1,4 +1,4 @@
-#include "time.hpp"
+#include "timer.hpp"
 #include "../src/common/log.hpp"
 #include "../src/common/utils.hpp"
 #include "time_event.hpp"
@@ -45,7 +45,7 @@ namespace rpc
         {
             if ((read(m_fd, buf, 8) == -1) && errno == EAGAIN) break;
         }
-        int64_t now_time = rpc::utils::get_now_ms();
+        int64_t now_time = rpc::utils::get_now_ms(); // 当前的事件
 
         std::vector<TimerEvent::s_ptr> temp;
         std::vector<std::pair<int64_t, std::function<void()>>> tasks;
@@ -101,22 +101,25 @@ namespace rpc
         int64_t inteval { 0 };
         if (it->second->get_arrive_time() > now)
         {
-            inteval = it->second->get_arrive_time();
+            inteval = it->second->get_arrive_time() - now;
         } else 
         {
             inteval = 100;
         }
         timespec ts;
+        std::memset(&ts, 0, sizeof(ts));
         ts.tv_sec = inteval / 1000;
         ts.tv_nsec = (inteval % 1000) * 1000000;
 
         itimerspec value;
+        std::memset(&value, 0, sizeof(value));
         value.it_value = ts;
         int rt = timerfd_settime(m_fd, 0, &value, nullptr);
         if (rt != 0)
         {
-            rpc::utils::ERROR_LOG(fmt::format("timerfd_settime error, errno = {} error = {}", errno, stderr(errno)));
+            rpc::utils::ERROR_LOG(fmt::format("timerfd_settime error, errno = {} error = {}", errno, strerror(errno)));
         }
+        rpc::utils::DEBUG_LOG(fmt::format("timer reset to {}", now + inteval));
     }
     void Timer::add_time_event(TimerEvent::s_ptr event)
     {
