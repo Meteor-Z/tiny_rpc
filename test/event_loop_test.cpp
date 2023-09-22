@@ -17,7 +17,7 @@
 int main()
 {
 
-    // 设置
+    // 设置日志库
     rpc::Config::set_global_config("/home/lzc/tiny_rpc/conf/rpc.xml");
 
     rpc::Logger::init_global_logger();
@@ -25,7 +25,7 @@ int main()
     int listenfd = socket(AF_INET, SOCK_STREAM, 0);
     if (listenfd == -1) 
     {
-        rpc::utils::ERROR_LOG("listenfd = -1");
+        rpc::utils::ERROR_LOG("listenfd = -1 创建套接字失败");
         exit(0);
     }
 
@@ -40,6 +40,7 @@ int main()
     inet_aton("127.0.0.1", &addr.sin_addr);
 
     int bind_is_ok = bind(listenfd, reinterpret_cast<sockaddr*>(&addr), sizeof(addr));
+    
     if (bind_is_ok != 0) 
     {
         rpc::utils::ERROR_LOG("bind() error");

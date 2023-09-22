@@ -5,10 +5,9 @@ set(CMAKE_CXX_STANDARD 23)
 
 
 # 设置头文件
-set(libtinyxml "${CMAKE_SOURCE_DIR}/lib/tinyxml/libtinyxml.a")
+set(libtinyxml "${CMAKE_SOURCE_DIR}/third_party/include/tinyxml/libtinyxml.a")
 set(libfmt "/usr/local/lib/libfmt.a")
 
-include_directories("include") # 将头文件包含进来
 add_executable (tiny_rpc 
     main.cpp 
     src/common/log.cpp 

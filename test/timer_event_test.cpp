@@ -74,6 +74,5 @@ int main()
     );
     eventloop_ptr->add_timer_event(timer_event);
     eventloop_ptr->loop();
-
     return 0;
 }

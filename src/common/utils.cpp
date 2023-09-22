@@ -28,7 +28,6 @@ namespace rpc
             timeval value;
             gettimeofday(&value, nullptr);
             return value.tv_sec * 1000 + value.tv_usec / 1000;
-
         }
     }
 }

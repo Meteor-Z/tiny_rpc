@@ -97,7 +97,7 @@ namespace rpc
     {
         while (!m_stop_flag)
         {
-            // 缩到下面的unlock()那里就可以了 如何全部锁住，就寄了
+            // 缩到下面的unlock()那里就可以了 如果全部锁住，因为下面的函数也用到了这个锁了，这里要改成函数式的
             std::unique_lock<std::mutex> lock { m_mtx };
             std::queue<std::function<void()>> temp_tasks;
             m_pending_tasks.swap(temp_tasks);
