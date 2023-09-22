@@ -1,7 +1,7 @@
-#include "timer.hpp"
-#include "../src/common/log.hpp"
-#include "../src/common/utils.hpp"
-#include "time_event.hpp"
+#include "net/time/timer.hpp"
+#include "common/log.hpp"
+#include "common/utils.hpp"
+#include "net/time/time_event.hpp"
 #include <asm-generic/errno-base.h>
 #include <bits/types/struct_itimerspec.h>
 #include <bits/types/struct_timespec.h>

@@ -1,8 +1,9 @@
-#include "../src/common/log.hpp"
-#include "../src/common/config.hpp"
-#include "../src/net/eventloop.hpp"
-#include "../src/net/fd_event.hpp"
-#include "../src/net/time/time_event.hpp"
+// #include "../src/common/log.hpp"
+#include "common/log.hpp"
+#include "common/config.hpp"
+#include "net/eventloop.hpp"
+#include "net/fd_event.hpp"
+#include "net/time/time_event.hpp"
 
 #include <filesystem>
 #include <memory>

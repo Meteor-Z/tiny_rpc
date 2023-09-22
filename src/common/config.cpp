@@ -1,5 +1,5 @@
-#include "config.hpp"
-#include "log.hpp"
+#include "common/config.hpp"
+#include "common/log.hpp"
 #include <asm-generic/errno.h>
 #include <cstddef>
 #include <cstdio>

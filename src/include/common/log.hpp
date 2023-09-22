@@ -1,5 +1,6 @@
 #ifndef RPC_COMMON_LOG_H
 #define RPC_COMMON_LOG_H
+
 #include <memory>
 #include <stop_token>
 #include <string>
