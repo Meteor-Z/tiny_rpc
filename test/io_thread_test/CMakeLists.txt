@@ -1,16 +1,6 @@
 
 add_executable(io_thread_test test_io_thread_group.cpp)
 
-# message(WARNING ${CMAKE_SOURCE_DIR})
-set(libtinyxml ${CMAKE_SOURCE_DIR}/third_party/lib/tinyxml/libtinyxml.a)
-set(libfmt /usr/local/lib/libfmt.a)
-
-
-
-include_directories(${CMAKE_SOURCE_DIR}/third_party/include) # 增加搜索的头文件
-
-# message(${CMAKE_SOURCE_DIR}/src/include)
-target_include_directories(io_thread_test PRIVATE ${CMAKE_SOURCE_DIR}/src/include) # 增加一个搜索头文件
 
 
 set(libs
