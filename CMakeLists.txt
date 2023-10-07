@@ -8,8 +8,8 @@ set(CMAKE_CXX_STANDARD 23)
 set(libtinyxml "${CMAKE_SOURCE_DIR}/third_party/lib/tinyxml/libtinyxml.a")
 set(libfmt "/usr/local/lib/libfmt.a")
 
-include_directories(third_party/include) # 增加搜索的头文件
-include_directories(src/include) # 设置要搜索的头文件
+include_directories(third_party) # 增加搜索的头文件
+include_directories(src) # 设置要搜索的头文件
 
 set(all_libraries
     src/common/log.cpp 
