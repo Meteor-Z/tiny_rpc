@@ -1,8 +1,6 @@
 
 add_executable(io_thread_test test_io_thread_group.cpp)
 
-
-
 set(libs
     ${CMAKE_SOURCE_DIR}/src/common/log.cpp 
     ${CMAKE_SOURCE_DIR}/src/common/utils.cpp 
