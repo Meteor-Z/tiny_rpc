@@ -7,8 +7,10 @@ set(libfmt /usr/local/lib/libfmt.a)
 
 
 
-# include_directories(${CMAKE_SOURCE_DIR}/third_party/include) # 增加搜索的头文件
-target_include_directories(io_thread_test PRIVATE ${CMAKE_SOURCE_DIR}/src/include/) # 增加一个搜索头文件
+include_directories(${CMAKE_SOURCE_DIR}/third_party/include) # 增加搜索的头文件
+
+# message(${CMAKE_SOURCE_DIR}/src/include)
+# target_include_directories(io_thread_test PRIVATE ${CMAKE_SOURCE_DIR}/src/include) # 增加一个搜索头文件
 
 
 set(libs
@@ -27,4 +29,4 @@ target_link_libraries(io_thread_test
     ${libs}
 )
 
-add_test(NAME io_thread_test COMMAND io_thread_test)
+add_test(NAME test COMMAND io_thread_test)
