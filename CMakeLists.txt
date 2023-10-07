@@ -20,13 +20,59 @@ set(all_libraries
     src/net/time/time_event.cpp
     src/net/time/timer.cpp
 )
+
+set(test_io_thread_all_libraries
+    src/common/log.cpp 
+    src/common/utils.cpp 
+    src/common/config.cpp
+    src/net/eventloop.cpp
+    src/net/fd_event.cpp
+    src/net/wakeup_fd_event.cpp
+    src/net/time/time_event.cpp
+    src/net/time/timer.cpp
+    src/net/io_thread/io_thread.cpp
+)
+set(test_io_thread_group_all_libraries
+    src/common/log.cpp 
+    src/common/utils.cpp 
+    src/common/config.cpp
+    src/net/eventloop.cpp
+    src/net/fd_event.cpp
+    src/net/wakeup_fd_event.cpp
+    src/net/time/time_event.cpp
+    src/net/time/timer.cpp
+    src/net/io_thread/io_thread.cpp
+    src/net/io_thread/io_thread_group.cpp
+)
 add_executable (tiny_rpc
     main.cpp
     ${all_libraries}
 )
+
 target_include_directories(tiny_rpc PRIVATE src/include) # 组织代码结构 并且只是这个生成文件
 target_link_libraries(tiny_rpc
 ${libtinyxml}
 ${libfmt}
-
 )   
+
+add_executable(test_io_thread
+    test/test_io_thread.cpp
+    ${test_io_thread_all_libraries})
+
+target_include_directories(test_io_thread PRIVATE src/include) # 组织代码结构 并且只是这个生成文件
+target_link_libraries(test_io_thread
+${libtinyxml}
+${libfmt}
+)
+
+add_executable(test_io_thread_group
+    test/test_io_thread_group.cpp
+    ${test_io_thread_group_all_libraries})
+
+target_include_directories(test_io_thread_group PRIVATE src/include) # 组织代码结构 并且只是这个生成文件
+target_link_libraries(test_io_thread_group
+${libtinyxml}
+${libfmt}
+
+
+)

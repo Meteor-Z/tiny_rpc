@@ -1,4 +1,3 @@
-// #include "../src/common/log.hpp"
 #include "common/log.hpp"
 #include "common/config.hpp"
 #include "net/eventloop.hpp"

@@ -13,7 +13,7 @@ namespace rpc
    void TimerEvent::reset_arrive_time()
    {
       m_arrive_time = rpc::utils::get_now_ms() + m_interval;
-      rpc::utils::DEBUG_LOG(fmt::format("success create event, wile execute at {}", m_arrive_time));
+      rpc::utils::DEBUG_LOG(fmt::format("success create event, in execute at {}", m_arrive_time));
    }
     // 这是一个函数哦~
    TimerEvent::TimerEvent(int64_t interval, bool repeat, std::function<void()> task) 
