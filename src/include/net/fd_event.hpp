@@ -4,9 +4,11 @@
 #include <functional>
 #include <sys/epoll.h>
 
-namespace rpc {
+namespace rpc 
+{
     // 将这个进行封装
-    class Fd_Event {
+    class Fd_Event 
+    {
     public:
         enum class TriggerEvent {
             IN_EVENT = EPOLLIN,

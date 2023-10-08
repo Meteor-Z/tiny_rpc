@@ -13,8 +13,10 @@
 #include <functional>
 #include <mutex>
 
-namespace rpc {
-    class EventLoop {
+namespace rpc 
+{
+    class EventLoop 
+    {
     public:
         EventLoop();
         ~EventLoop();

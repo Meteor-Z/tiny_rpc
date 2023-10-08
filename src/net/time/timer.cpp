@@ -141,8 +141,7 @@ namespace rpc {
         if (it != end) {
             m_pending_events.erase(it);
         }
-        
+
         rpc::utils::DEBUG_LOG(fmt::format("success delete time_event at arrive {}", event->get_arrive_time()));
-        
     }
 }

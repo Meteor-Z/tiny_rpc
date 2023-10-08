@@ -6,8 +6,10 @@
 #include <memory>
 #include <semaphore>
 
-namespace rpc {
-    class IOThread {
+namespace rpc 
+{
+    class IOThread 
+    {
     public:     
         static void* Main(void* arg);
         void join();
