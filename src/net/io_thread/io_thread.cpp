@@ -8,17 +8,14 @@
 #include <semaphore.h>
 
 namespace rpc {
-
     std::shared_ptr<EventLoop> IOThread::get_eventloop() { return m_event_loop; }
     void IOThread::start() { sem_post(&m_start_semphore); }
-    void IOThread::join() {
-        pthread_join(m_thread, nullptr);
-    }
+    void IOThread::join() { pthread_join(m_thread, nullptr); }
     IOThread::IOThread() {
-
         // 初始化信号量
         int rt = sem_init(&m_init_semphore, 0, 0); 
         assert(rt == 0);
+
         rt = sem_init(&m_start_semphore, 0, 0);
         assert(rt == 0);
 
@@ -37,7 +34,6 @@ namespace rpc {
         sem_destroy(&m_init_semphore); // 信号量摧毁掉
         sem_destroy(&m_start_semphore);
         pthread_join(m_thread, nullptr); // 等待线程结束
-        
     }
 
     void* IOThread::Main(void* args) {
@@ -49,7 +45,6 @@ namespace rpc {
         sem_post(&thread_ptr->m_init_semphore);
         rpc::utils::DEBUG_LOG(fmt::format("IOThread {} wait start semaphore", thread_ptr->m_thread_id));
         
-
         // 这里是进行阻塞，直到 运行了 start 任务，才会开始 event loop 循环
         sem_wait(&thread_ptr->m_start_semphore); 
         rpc::utils::DEBUG_LOG(fmt::format("IOThread {} start loop", thread_ptr->m_thread_id));

@@ -39,13 +39,10 @@ add_library(io_thread_libs STATIC
     ${CMAKE_SOURCE_DIR}/src/net/wakeup_fd_event.cpp
     ${CMAKE_SOURCE_DIR}/src/net/io_thread/io_thread.cpp
     ${CMAKE_SOURCE_DIR}/src/net/io_thread/io_thread_group.cpp
-    
 )
-target_link_libraries(io_thread_test    
-    io_thread_libs
-    ${TINYXML}
-    ${LIBFMT}
-    
-)
+# 依赖
+target_link_libraries(io_thread_test PUBLIC io_thread_libs)
+target_link_libraries(io_thread_test PUBLIC ${TINYXML})
+target_link_libraries(io_thread_test PUBLIC ${LIBFMT})
 
 add_test(NAME test COMMAND io_thread_test)

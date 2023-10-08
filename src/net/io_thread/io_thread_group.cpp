@@ -3,8 +3,6 @@
 #include <optional>
 
 namespace rpc {
-
- 
     IOThreadGroup::IOThreadGroup(int size) : m_size { size } {
         m_io_thread_groups.resize(m_size);
 
@@ -14,9 +12,7 @@ namespace rpc {
         }
     }
 
-    IOThreadGroup::~IOThreadGroup() {
-
-    }
+    IOThreadGroup::~IOThreadGroup() { }
     
     void IOThreadGroup::start() {
         for (int i = 0; i < m_io_thread_groups.size(); i++) {
@@ -30,6 +26,7 @@ namespace rpc {
         }
         return m_io_thread_groups[m_idx++];
     }
+    
     void IOThreadGroup::join() {
         for (int i = 0; i < m_io_thread_groups.size(); i++) {
             m_io_thread_groups[i]->join();

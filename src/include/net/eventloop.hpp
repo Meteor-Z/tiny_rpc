@@ -13,14 +13,11 @@
 #include <functional>
 #include <mutex>
 
-namespace rpc
-{
-    class EventLoop
-    {
+namespace rpc {
+    class EventLoop {
     public:
         EventLoop();
         ~EventLoop();
-        
         void loop();
         void wake_up();
         void stop();
@@ -39,7 +36,6 @@ namespace rpc
         pid_t m_thread_id { 0 }; // 线程号
         int m_epoll_fd { 0 }; // epoll 句柄 这里是 epoll 例程
         int m_wakeup_fd { 0 }; // 唤醒的一个文件标识符
-
         WakeUPEvent* m_wakeup_fd_event { nullptr }; // 唤醒的事件
         bool m_stop_flag { false }; 
         std::set<int> m_listen_fds; // 监听的套接字，存入的是文件描述符

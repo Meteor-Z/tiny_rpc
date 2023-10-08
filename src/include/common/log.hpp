@@ -15,17 +15,15 @@
 
 namespace rpc
 {   
-    
-    enum class LogLevel
-    { 
+    // enum class 能够限制范围
+    enum class LogLevel { 
         Unknown = -1,
         Debug = 1,
         Info = 2,
         Error = 3,
     };
 
-    class Logger
-    {
+    class Logger {
     public:
         static void init_global_logger();
         Logger(LogLevel log_level);
@@ -36,12 +34,10 @@ namespace rpc
     private:
         LogLevel m_set_level;
         std::queue<std::string> m_buffer;
-
     };
     
     // 日志事件
-    class LogEvent
-    {
+    class LogEvent {
     public:
         LogEvent(LogLevel level): m_log_level(level) { }
         LogLevel get_log_level();
@@ -57,8 +53,7 @@ namespace rpc
         std::shared_ptr<Logger> m_logger { nullptr }; // 日志器
     };
     
-    namespace utils
-    {
+    namespace utils {
         void DEBUG_LOG(const std::string_view& old_message, const std::source_location& location = std::source_location::current());
         void INFO_LOG(const std::string_view& old_message, const std::source_location& location = std::source_location::current());
         void ERROR_LOG(const std::string_view& old_message, const std::source_location& location = std::source_location::current());
