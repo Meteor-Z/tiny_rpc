@@ -1,6 +1,5 @@
 #include "common/config.hpp"
 #include "common/log.hpp"
-#include <asm-generic/errno.h>
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
