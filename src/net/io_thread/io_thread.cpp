@@ -9,8 +9,11 @@
 
 namespace rpc {
     std::shared_ptr<EventLoop> IOThread::get_eventloop() { return m_event_loop; }
+
     void IOThread::start() { sem_post(&m_start_semphore); }
+    
     void IOThread::join() { pthread_join(m_thread, nullptr); }
+    
     IOThread::IOThread() {
         // 初始化信号量
         int rt = sem_init(&m_init_semphore, 0, 0); 
@@ -29,6 +32,7 @@ namespace rpc {
 
         assert(rt == 0);
     }
+
     IOThread::~IOThread() {
         m_event_loop->stop();
         sem_destroy(&m_init_semphore); // 信号量摧毁掉
@@ -52,5 +56,4 @@ namespace rpc {
         
         return nullptr;
     }
-
 }

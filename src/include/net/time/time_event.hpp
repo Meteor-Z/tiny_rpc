@@ -5,10 +5,8 @@
 #include <functional>
 #include <memory>
 
-namespace rpc
-{
-    class TimerEvent
-    {
+namespace rpc {
+    class TimerEvent {
     public:
         using s_ptr = std::shared_ptr<TimerEvent>;
         TimerEvent(int64_t interval, bool repeat, std::function<void()> task);

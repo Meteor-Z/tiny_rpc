@@ -7,11 +7,9 @@
 #include <map>
 #include <mutex>
 
-namespace rpc
-{
+namespace rpc {
     // 这是一个定时器
-    class Timer: public Fd_Event
-    {
+    class Timer: public Fd_Event {
     public:
         Timer();
         ~Timer();

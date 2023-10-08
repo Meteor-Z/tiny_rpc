@@ -22,7 +22,9 @@ namespace rpc {
     static thread_local EventLoop* thread_current_eventloop;
     static constexpr int global_max_timeout = 10000;
     static constexpr int global_epoll_max = 10;
+
     bool EventLoop::is_in_loop_thread() { return m_thread_id == rpc::utils::get_thread_id(); }
+    
     EventLoop::EventLoop() {
         if (thread_current_eventloop != nullptr) {
             rpc::utils::ERROR_LOG("创建eventloop失败,这个线程已经有了");
