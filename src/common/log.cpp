@@ -34,14 +34,16 @@ namespace rpc
         m_buffer.emplace(message); 
     }
 
-    void Logger::init_global_logger() {
+    void Logger::init_global_logger() 
+    {
         std::shared_ptr<Config> config_ptr { Config::get_global_config() };
         LogLevel global_log_level = string_to_loglevel(config_ptr->get_m_log_level());
         fmt::println("初始化LogLevel {}", loglevel_to_string(global_log_level));
         global_logger_ptr.reset(new Logger(global_log_level));
     }
 
-    void Logger::log() {  
+    void Logger::log() 
+    {  
         // 这个需要锁
         std::lock_guard<std::mutex> lock_ptr { pop_log_mtx };
        
@@ -50,9 +52,11 @@ namespace rpc
             m_buffer.pop();
         }
     }
-    namespace utils {
+    namespace utils 
+    {
 
-        void DEBUG_LOG(const std::string_view& old_message, const std::source_location& location) {
+        void DEBUG_LOG(const std::string_view& old_message, const std::source_location& location) 
+        {
             if (rpc::Logger::get_global_logger()->get_log_level() <= rpc::LogLevel::Debug) {
                 std::unique_ptr<rpc::LogEvent> ptr = std::make_unique<rpc::LogEvent>(rpc::LogLevel::Debug);
                 std::string message = ptr->get_log(location.file_name(), location.line()) + " " + std::string { old_message };
@@ -61,7 +65,8 @@ namespace rpc
             }
         }
 
-        void INFO_LOG(const std::string_view& old_message, const std::source_location& location) {
+        void INFO_LOG(const std::string_view& old_message, const std::source_location& location) 
+        {
             if (rpc::Logger::get_global_logger()->get_log_level() <= rpc::LogLevel::Info) {
                 std::unique_ptr<rpc::LogEvent> ptr = std::make_unique<rpc::LogEvent>(rpc::LogLevel::Info);
                 std::string message = ptr->get_log(location.file_name(), location.line()) + " " + std::string { old_message };
@@ -70,7 +75,8 @@ namespace rpc
             }
         }
 
-        void ERROR_LOG(const std::string_view& old_message, const std::source_location& location) {
+        void ERROR_LOG(const std::string_view& old_message, const std::source_location& location) 
+        {
             if (rpc::Logger::get_global_logger()->get_log_level() <= rpc::LogLevel::Error)
             {
                 std::unique_ptr<rpc::LogEvent> ptr = std::make_unique<rpc::LogEvent>(rpc::LogLevel::Error);
@@ -81,14 +87,16 @@ namespace rpc
         }
     }
     
-    std::string loglevel_to_string(rpc::LogLevel loglevel) {
+    std::string loglevel_to_string(rpc::LogLevel loglevel) 
+    {
         if (loglevel == rpc::LogLevel::Debug) return "Debug";
         if (loglevel == rpc::LogLevel::Info) return "Info";
         if (loglevel == rpc::LogLevel::Error) return "Error";
         return "Unkown";
     }
 
-    rpc::LogLevel string_to_loglevel(const std::string& log_level) {
+    rpc::LogLevel string_to_loglevel(const std::string& log_level)
+     {
         if (log_level == "Debug") return rpc::LogLevel::Debug;
         if (log_level == "Info") return rpc::LogLevel::Info;
         if (log_level == "Error") return rpc::LogLevel::Error;
@@ -97,7 +105,8 @@ namespace rpc
     }
 
     // 得到日志，并且进行格式化
-    std::string rpc::LogEvent::get_log(const std::string& file_name, int file_line) {
+    std::string rpc::LogEvent::get_log(const std::string& file_name, int file_line) 
+    {
         m_pid = rpc::utils::get_pid(); // 得到线程
         m_thread_pid = rpc::utils::get_thread_id();
 
