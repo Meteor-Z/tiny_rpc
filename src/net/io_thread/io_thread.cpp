@@ -7,14 +7,16 @@
 #include <cassert>
 #include <semaphore.h>
 
-namespace rpc {
+namespace rpc 
+{
     std::shared_ptr<EventLoop> IOThread::get_eventloop() { return m_event_loop; }
 
     void IOThread::start() { sem_post(&m_start_semphore); }
     
     void IOThread::join() { pthread_join(m_thread, nullptr); }
     
-    IOThread::IOThread() {
+    IOThread::IOThread() 
+    {
         // 初始化信号量
         int rt = sem_init(&m_init_semphore, 0, 0); 
         assert(rt == 0);
@@ -33,14 +35,16 @@ namespace rpc {
         assert(rt == 0);
     }
 
-    IOThread::~IOThread() {
+    IOThread::~IOThread() 
+    {
         m_event_loop->stop();
         sem_destroy(&m_init_semphore); // 信号量摧毁掉
         sem_destroy(&m_start_semphore);
         pthread_join(m_thread, nullptr); // 等待线程结束
     }
 
-    void* IOThread::Main(void* args) {
+    void* IOThread::Main(void* args) 
+    {
         std::shared_ptr<IOThread> thread_ptr { static_cast<IOThread*>(args) };
         thread_ptr->m_event_loop = std::make_shared<EventLoop>();
         thread_ptr->m_thread_id = rpc::utils::get_thread_id();

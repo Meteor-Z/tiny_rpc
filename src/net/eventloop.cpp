@@ -82,7 +82,8 @@ namespace rpc
     void EventLoop::init_wakeup_fd_event() 
     {
         m_wakeup_fd = eventfd(0, EFD_NONBLOCK);
-        if (m_wakeup_fd < 0) {
+        if (m_wakeup_fd < 0) 
+        {
             rpc::utils::ERROR_LOG(fmt::format("failed to create eventloop,, eventfd create error ,error info {}", errno));
             exit(1);
         }
@@ -102,14 +103,16 @@ namespace rpc
     
     void EventLoop::loop() 
     {
-        while (!m_stop_flag) {
+        while (!m_stop_flag) 
+        {
             // 缩到下面的unlock()那里就可以了 如果全部锁住，因为下面的函数也用到了这个锁了，这里要改成函数式的
             std::unique_lock<std::mutex> lock { m_mtx };
             std::queue<std::function<void()>> temp_tasks;
             m_pending_tasks.swap(temp_tasks);
             lock.unlock();
             
-            while (!temp_tasks.empty()) {
+            while (!temp_tasks.empty()) 
+            {
                 std::function<void()> cb = temp_tasks.front();
                 temp_tasks.pop();
                 if (cb) cb();
@@ -228,6 +231,7 @@ namespace rpc
         { 
             op = EPOLL_CTL_MOD; 
         } 
+
         epoll_event tmp = event->get_epoll_event(); 
 
         rpc::utils::INFO_LOG(fmt::format("epoll_event.events = {}", (int)tmp.events)); 

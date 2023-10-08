@@ -2,7 +2,8 @@
 #include "net/time/time_event.hpp"
 #include "common/utils.hpp"
 // #include "src/common/utils.hpp"
-namespace rpc {
+namespace rpc 
+{
    int64_t TimerEvent::get_arrive_time() { return m_arrive_time; }
 
    bool TimerEvent::is_cancel() { return m_is_cancel; }
@@ -13,12 +14,14 @@ namespace rpc {
    
    std::function<void()> TimerEvent::get_callback() { return m_task; }
 
-   void TimerEvent::reset_arrive_time() {
+   void TimerEvent::reset_arrive_time() 
+   {
       m_arrive_time = rpc::utils::get_now_ms() + m_interval;
       rpc::utils::DEBUG_LOG(fmt::format("success create event, in execute at {}", m_arrive_time));
    }
    
-   TimerEvent::TimerEvent(int64_t interval, bool repeat, std::function<void()> task):m_interval(interval), m_is_repeat(repeat), m_task(task) {
+   TimerEvent::TimerEvent(int64_t interval, bool repeat, std::function<void()> task):m_interval(interval), m_is_repeat(repeat), m_task(task) 
+   {
       m_arrive_time = rpc::utils::get_now_ms() + m_interval; // 当前毫秒 + 间隔点
    }
    
