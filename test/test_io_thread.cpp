@@ -17,9 +17,11 @@
 #include <cstring>
 #include <unistd.h>
 
-void test_io_thread() {
+void test_io_thread() 
+{
     int listenfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (listenfd == -1) {
+    if (listenfd == -1) 
+    {
         rpc::utils::ERROR_LOG(fmt::format("listend fd = -1"));
         std::exit(0);
     }   
@@ -31,18 +33,22 @@ void test_io_thread() {
     addr.sin_family = AF_INET;
     inet_aton("127.0.0.1", &addr.sin_addr);
     int rt = bind(listenfd, reinterpret_cast<sockaddr*>(&addr), sizeof(addr));
-    if (rt != 0) {
+    if (rt != 0) 
+    {
         rpc::utils::ERROR_LOG(fmt::format("bind error"));
         std::exit(0);
     }
     rt = listen(listenfd, 100);
-    if (rt != 0) {
+    if (rt != 0) 
+    {
         rpc::utils::ERROR_LOG("listen error");
         std::exit(0);
     }
+
     rpc::Fd_Event event { listenfd };
 
-    event.listen(rpc::Fd_Event::TriggerEvent::IN_EVENT, [listenfd]() {
+    event.listen(rpc::Fd_Event::TriggerEvent::IN_EVENT, [listenfd]() 
+    {
         sockaddr_in peer_addr;
         socklen_t addr_len = sizeof(peer_addr);
         memset(&peer_addr, 0, sizeof(peer_addr));
@@ -51,7 +57,8 @@ void test_io_thread() {
         rpc::utils::DEBUG_LOG(fmt::format("success get client fd[{}], peer addr: [{}:{}]", client_fd, inet_ntoa(peer_addr.sin_addr), ntohs(peer_addr.sin_port)));
     });
     int i = 0;
-    rpc::TimerEvent::s_ptr timer_event_ptr = std::make_shared<rpc::TimerEvent>(1000, true, [&i]() {
+    rpc::TimerEvent::s_ptr timer_event_ptr = std::make_shared<rpc::TimerEvent>(1000, true, [&i]() 
+    {
         rpc::utils::INFO_LOG(fmt::format("trigger timer event, count = {}", i++));
     });
 
@@ -62,7 +69,8 @@ void test_io_thread() {
     io_thread.join();
 }
 
-int main() {
+int main() 
+{
    rpc::Config::set_global_config("/home/lzc/tiny_rpc/conf/rpc.xml");
     rpc::Logger::init_global_logger();
     std::unique_ptr<rpc::EventLoop> eventloop_ptr = std::make_unique<rpc::EventLoop>();
