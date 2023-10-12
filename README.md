@@ -1,10 +1,16 @@
 # tiny_rpc
 
-## 如何使用
+## 编译相关
+
+编译环境：Arch Linux
+编译器版本： clang 16.06
+C++版本： C++20
+
+注意：用到了c++中的`std::source_location()`，低版本的编译器可能对c++20支持不好，导致查找不到相关的定义。
 
 ### 必装的库
 
-do something ...
+// do something
 
 ### 命令
 
