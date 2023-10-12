@@ -46,7 +46,7 @@ namespace rpc {
 
     socklen_t IPNetAddr::get_sock_len() { return sizeof(m_addr); }
 
-    int IPNetAddr::get_family() { return AF_INET; }
+    int IPNetAddr::set_family() { return AF_INET; }
 
     std::string IPNetAddr::to_string() { return std::string { fmt::format("{}:{}", m_ip, m_port)}; }
 }

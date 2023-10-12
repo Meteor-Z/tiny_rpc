@@ -11,10 +11,10 @@
 namespace rpc {
     class NetAddr {
     public:
-        virtual std::shared_ptr<sockaddr> get_sock_addr() = 0;
+        virtual sockaddr* get_sock_addr() = 0;
         virtual socklen_t get_sock_len() = 0;
         virtual int set_family() = 0;
-        virtual std::string addr_to_string() = 0;
+        virtual std::string to_string() = 0;
         
     private:
     };
@@ -26,7 +26,7 @@ namespace rpc {
         IPNetAddr(sockaddr_in addr);
         sockaddr* get_sock_addr();
         socklen_t get_sock_len();
-        int get_family();
+        int set_family();
         std::string to_string();
     private:
         std::string m_ip { };
