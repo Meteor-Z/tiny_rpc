@@ -7,11 +7,9 @@
 #include <map>
 #include <mutex>
 
-namespace rpc 
-{
+namespace rpc {
     // 这是一个定时器
-    class Timer: public Fd_Event 
-    {
+    class Timer: public Fd_Event {
     public:
         Timer();
         ~Timer();
@@ -21,7 +19,6 @@ namespace rpc
     private:
         void reset_arrive_time();
     private:
-        
         std::multimap<int64_t, TimerEvent::s_ptr> m_pending_events;
         std::mutex m_mtx;
     };

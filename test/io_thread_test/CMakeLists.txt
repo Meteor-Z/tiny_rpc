@@ -41,8 +41,8 @@ add_library(io_thread_libs STATIC
     ${CMAKE_SOURCE_DIR}/src/net/io_thread/io_thread_group.cpp
 )
 # 依赖
-target_link_libraries(io_thread_test PUBLIC io_thread_libs)
-target_link_libraries(io_thread_test PUBLIC ${TINYXML})
-target_link_libraries(io_thread_test PUBLIC ${LIBFMT})
+target_link_libraries(io_thread_test PRIVATE io_thread_libs)
+target_link_libraries(io_thread_test PRIVATE ${TINYXML})
+target_link_libraries(io_thread_test PRIVATE ${LIBFMT})
 
-add_test(NAME test COMMAND io_thread_test)
+add_test(NAME test COMMAND io_thread_test) # 这个是添加一个子cmake目录。

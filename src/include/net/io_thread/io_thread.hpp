@@ -6,16 +6,13 @@
 #include <memory>
 #include <semaphore>
 
-namespace rpc 
-{
-    class IOThread 
-    {
+namespace rpc {
+    class IOThread {
     public:     
         static void* Main(void* arg);
         void join();
         IOThread();
         ~IOThread();
-
         std::shared_ptr<EventLoop> get_eventloop();
         void start(); // 开始 event_loop 循环
     private:

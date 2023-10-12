@@ -18,11 +18,9 @@
 #include <cstring>
 #include <unistd.h>
 
-void test_io_thread() 
-{
+void test_io_thread() {
     int listenfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (listenfd == -1) 
-    {
+    if (listenfd == -1) {
         rpc::utils::ERROR_LOG(fmt::format("listend fd = -1"));
         std::exit(0);
     }   
@@ -33,24 +31,22 @@ void test_io_thread()
     addr.sin_port = htons(11451);
     addr.sin_family = AF_INET;
     inet_aton("127.0.0.1", &addr.sin_addr);
+
     int rt = bind(listenfd, reinterpret_cast<sockaddr*>(&addr), sizeof(addr));
-    if (rt != 0) 
-    {
+    if (rt != 0) {
         rpc::utils::ERROR_LOG(fmt::format("bind error"));
         std::exit(0);
     }
 
     rt = listen(listenfd, 100);
-    if (rt != 0) 
-    {
+    if (rt != 0) {
         rpc::utils::ERROR_LOG("listen error");
         std::exit(0);
     }
 
     rpc::Fd_Event event { listenfd };
 
-    event.listen(rpc::Fd_Event::TriggerEvent::IN_EVENT, [listenfd]() 
-    {
+    event.listen(rpc::Fd_Event::TriggerEvent::IN_EVENT, [listenfd]() {
         sockaddr_in peer_addr;
         socklen_t addr_len = sizeof(peer_addr);
         memset(&peer_addr, 0, sizeof(peer_addr));
@@ -83,9 +79,8 @@ void test_io_thread()
 
 }
 
-int main() 
-{
-   rpc::Config::set_global_config("/home/lzc/tiny_rpc/conf/rpc.xml");
+int main() {
+    rpc::Config::set_global_config("/home/lzc/tiny_rpc/conf/rpc.xml");
     rpc::Logger::init_global_logger();
     std::unique_ptr<rpc::EventLoop> eventloop_ptr = std::make_unique<rpc::EventLoop>();
     test_io_thread();

@@ -11,10 +11,8 @@
 #include <memory>
 #include <vector>
 
-namespace rpc 
-{
-    class IOThreadGroup 
-    {
+namespace rpc {
+    class IOThreadGroup {
     public:
         IOThreadGroup(int size);
         ~IOThreadGroup();
