@@ -1,17 +1,18 @@
 #include "net/tcp/tcp_buffer.hpp"
 #include "common/log.hpp"
+
+#include <fmt/format.h>
+
 #include <cstring>
 #include <memory_resource>
 #include <vector>
-#include <fmt/format.h>
+
 
 namespace rpc {
     
     TcpBuffer::TcpBuffer(int size) { m_buffer.resize(size); }
 
-    TcpBuffer:: ~TcpBuffer() {
-
-    }
+    TcpBuffer:: ~TcpBuffer() { }
 
     int TcpBuffer:: can_read_bytes_num() { return m_write_index - m_read_index; }
 
