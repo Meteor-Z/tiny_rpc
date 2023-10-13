@@ -13,8 +13,9 @@ namespace rpc {
     public:
         virtual sockaddr* get_sock_addr() = 0;
         virtual socklen_t get_sock_len() = 0;
-        virtual int set_family() = 0;
+        virtual int get_family() = 0;
         virtual std::string to_string() = 0;
+        virtual bool check_valid() = 0;
         
     private:
     };
@@ -26,8 +27,9 @@ namespace rpc {
         IPNetAddr(sockaddr_in addr);
         sockaddr* get_sock_addr();
         socklen_t get_sock_len();
-        int set_family();
+        int get_family();
         std::string to_string();
+        bool check_valid();
     private:
         std::string m_ip { };
         uint16_t m_port { 0 };

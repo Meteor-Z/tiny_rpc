@@ -15,6 +15,7 @@ namespace rpc {
         m_addr.sin_family = AF_INET; // ipv4端口
         m_addr.sin_addr.s_addr = inet_addr(m_ip.c_str()); // ip地址
         m_addr.sin_port = htons(m_port);    
+        rpc::utils::DEBUG_LOG("IPNetAddr init success.");
     }
 
     IPNetAddr::IPNetAddr(std::string_view addr) {
@@ -34,19 +35,35 @@ namespace rpc {
         m_addr.sin_family = AF_INET;
         m_addr.sin_addr.s_addr = inet_addr(m_ip.c_str());
         m_addr.sin_port = htons(m_port);
-        
+        rpc::utils::DEBUG_LOG("IPNetAddr init success.");
     }
 
     IPNetAddr::IPNetAddr(sockaddr_in addr): m_addr(addr) {
         m_ip = std::string(inet_ntoa(m_addr.sin_addr));
         m_port = ntohs(m_addr.sin_port);
+        rpc::utils::DEBUG_LOG("IPNetAddr init success.");
     }
 
+    bool IPNetAddr::check_valid() {
+        if (m_ip.empty() || m_port == 0) { 
+            return false; 
+        }
+        
+        // 转换失败
+        if (inet_addr(m_ip.c_str()) == INADDR_NONE) {
+            return false;
+        }
+
+        return true;
+        
+    }
+
+    // todo! 有机会将这个东西改掉！返回一个指针太不安全了，而且这个sizeof也不大，也就16
     sockaddr* IPNetAddr::get_sock_addr() { return reinterpret_cast<sockaddr*>(&m_addr); }
 
     socklen_t IPNetAddr::get_sock_len() { return sizeof(m_addr); }
 
-    int IPNetAddr::set_family() { return AF_INET; }
+    int IPNetAddr::get_family() { return AF_INET; }
 
     std::string IPNetAddr::to_string() { return std::string { fmt::format("{}:{}", m_ip, m_port)}; }
-}
+} // namespace rpc
