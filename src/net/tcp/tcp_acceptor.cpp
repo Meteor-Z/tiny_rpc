@@ -12,7 +12,8 @@
 
 namespace rpc {
     TcpAcceptor::TcpAcceptor(std::shared_ptr<NetAddr> local_addr): m_local_addr(local_addr) {
-        if (local_addr->check_valid()) {
+        if (!local_addr->check_valid()) {
+            // std::cout <<local_addr->to_string() << std::endl;
             rpc::utils::ERROR_LOG(fmt::format("invalid local addr {}", local_addr->to_string()));
             std::exit(0);
         }        
@@ -68,6 +69,10 @@ namespace rpc {
             return false;
         }
         
+    }
+
+    int TcpAcceptor::get_listend_fd() {
+        return m_listenfd; 
     }
 
     TcpAcceptor::~TcpAcceptor() {

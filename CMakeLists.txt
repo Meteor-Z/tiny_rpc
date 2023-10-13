@@ -9,3 +9,4 @@ include_directories(${CMAKE_SOURCE_DIR}/third_party/include)
 
 add_subdirectory(test/io_thread_group)
 add_subdirectory(test/tcp)
+add_subdirectory(test/tcp_server)

@@ -19,6 +19,7 @@ namespace rpc {
         TcpAcceptor(std::shared_ptr<NetAddr> local_addr);
         ~TcpAcceptor();
         int accept();
+        int get_listend_fd();
     private:
         std::shared_ptr<NetAddr> m_local_addr;
         int m_family { -1 }; // 协议族

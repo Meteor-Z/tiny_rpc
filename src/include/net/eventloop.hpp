@@ -15,7 +15,7 @@
 
 namespace rpc 
 {
-    class EventLoop 
+    class EventLoop: public std::enable_shared_from_this<EventLoop>
     {
     public:
         EventLoop();
@@ -28,6 +28,8 @@ namespace rpc
         bool is_in_loop_thread();
         void add_task(std::function<void()> task, bool is_wake_up = false);
         void add_timer_event(rpc::TimerEvent::s_ptr shard_ptr); //添加定时任务
+    public:
+        static std::shared_ptr<EventLoop> get_current_eventloop(); // 获得当前线程的eventloop对象，如果没有，那么就构造一个
     private:
         void deal_wake_up();
         void add_to_epoll(Fd_Event* event);

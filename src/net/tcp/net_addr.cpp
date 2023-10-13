@@ -46,19 +46,20 @@ namespace rpc {
 
     bool IPNetAddr::check_valid() {
         if (m_ip.empty() || m_port == 0) { 
+            std::cout << "寄了" << std::endl;
             return false; 
         }
         
         // 转换失败
         if (inet_addr(m_ip.c_str()) == INADDR_NONE) {
+            std::cout << "这寄了" << std::endl;
             return false;
         }
 
         return true;
         
     }
-
-    // todo! 有机会将这个东西改掉！返回一个指针太不安全了，而且这个sizeof也不大，也就16
+    
     sockaddr* IPNetAddr::get_sock_addr() { return reinterpret_cast<sockaddr*>(&m_addr); }
 
     socklen_t IPNetAddr::get_sock_len() { return sizeof(m_addr); }

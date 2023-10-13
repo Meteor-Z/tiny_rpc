@@ -5,6 +5,7 @@
 #include <functional>
 #include <memory>
 #include <mutex>
+#include <new>
 #include <queue>
 #include <sys/socket.h>
 #include <sys/epoll.h>
@@ -19,7 +20,7 @@
 
 
 namespace rpc {
-    static thread_local EventLoop* thread_current_eventloop;
+    static thread_local std::shared_ptr<EventLoop> thread_current_eventloop { nullptr };
     static constexpr int global_max_timeout = 10000;
     static constexpr int global_epoll_max = 10;
 
@@ -54,7 +55,8 @@ namespace rpc {
         init_timer();
 
         rpc::utils::INFO_LOG(fmt::format("在{}线程下成功创建", m_thread_id));
-        thread_current_eventloop = this;
+        // thread_current_eventloop = shared_from_this();
+        thread_current_eventloop = std::shared_ptr<EventLoop>(this) ;
     }
 
     EventLoop::~EventLoop() {
@@ -159,63 +161,60 @@ namespace rpc {
         wake_up();
     }
 
+   std::shared_ptr<EventLoop> EventLoop::get_current_eventloop() {
+        if (!thread_current_eventloop) {
+            thread_current_eventloop = std::make_shared<EventLoop>();   
+        }
 
+        return thread_current_eventloop; 
+   }
 
-    void EventLoop::add_epoll_event(Fd_Event* event) 
-    {
-        if (is_in_loop_thread()) 
-        {
+    void EventLoop::add_epoll_event(Fd_Event* event) {
+        if (is_in_loop_thread()) {
             add_to_epoll(event);
-        } else 
-        {
+        } else {
             auto cb = [this, event]() {
                 add_to_epoll(event);
-
             };
+
             add_task(cb, true);
         }
     }
 
-    void EventLoop::delete_epoll_event(Fd_Event* event) 
-    {
-        if (is_in_loop_thread()) 
-        {
+    void EventLoop::delete_epoll_event(Fd_Event* event) {
+        if (is_in_loop_thread()) {
             delete_from_epoll(event);
-        } else 
-        {
-            auto cb = [this, event]()
-            {
+        } else {
+            auto cb = [this, event]() {
                 delete_from_epoll(event);
             };
+
             add_task(cb, true);
         }
     }
 
 
 
-    void EventLoop:: add_task(std::function<void()> task, bool is_wake_up)
-    {
+    void EventLoop:: add_task(std::function<void()> task, bool is_wake_up) {
         std::lock_guard<std::mutex> lock { m_mtx };
         m_pending_tasks.push(task);
         if (is_wake_up) wake_up();
     }
 
-    void EventLoop::add_to_epoll(Fd_Event* event) 
-    {
+    void EventLoop::add_to_epoll(Fd_Event* event) {
         auto it = m_listen_fds.find(event->get_fd()); 
         int op = EPOLL_CTL_ADD; 
 
-        if (it != m_listen_fds.end())
-        { 
+        if (it != m_listen_fds.end()) { 
             op = EPOLL_CTL_MOD; 
         } 
 
         epoll_event tmp = event->get_epoll_event(); 
 
         rpc::utils::INFO_LOG(fmt::format("epoll_event.events = {}", (int)tmp.events)); 
+
         int rt = epoll_ctl(m_epoll_fd, op, event->get_fd(), &tmp); // 注册 添加事件
-        if (rt == -1)
-        { 
+        if (rt == -1) { 
             rpc::utils::ERROR_LOG(fmt::format("failed epoll_ctl when add fd, errno={}, error={}", errno, strerror(errno))); 
         } 
 
@@ -223,8 +222,7 @@ namespace rpc {
         rpc::utils::DEBUG_LOG(fmt::format("add event success, fd[{}]", event->get_fd())); 
     }
 
-    void EventLoop::delete_from_epoll(Fd_Event* event)
-    {
+    void EventLoop::delete_from_epoll(Fd_Event* event) {
         auto it = m_listen_fds.find(event->get_fd()); 
         if (it == m_listen_fds.end()) { 
             return; 
@@ -234,13 +232,11 @@ namespace rpc {
         epoll_event tmp = event->get_epoll_event(); 
 
         int rt = epoll_ctl(m_epoll_fd, op, event->get_fd(), nullptr); 
-        if (rt == -1)
-        { 
+        if (rt == -1) { 
             rpc::utils::ERROR_LOG(fmt::format("failed epoll_ctl when add fd, errno={}, error={}", errno, strerror(errno))); 
         } 
 
         m_listen_fds.erase(event->get_fd()); 
         rpc::utils::DEBUG_LOG(fmt::format("delete event success, fd[{}]", event->get_fd())); 
-
     }
 }
