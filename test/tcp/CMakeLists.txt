@@ -26,6 +26,6 @@ add_library(tcp_libs STATIC
 # 依赖
 target_link_libraries(tcp PRIVATE tcp_libs)
 target_link_libraries(tcp PRIVATE ${TINYXML})
-target_link_libraries(tcp PRIVATE ${LIBFMT})
+target_link_libraries(tcp PRIVATE fmt)
 
 add_test(NAME test COMMAND tcp) # 这个是添加一个子cmake目录。

@@ -24,6 +24,6 @@ add_library(event_loop_libs STATIC
 target_link_libraries(event_loop PRIVATE event_loop_libs)
 target_link_libraries(event_loop PRIVATE ${TINYXML})
 target_link_libraries(event_loop PRIVATE ${LIBFMT})
-target_link_directories(event_loop PRIVATE fmt)
+target_link_libraries(event_loop PRIVATE fmt)
 
 add_test(NAME event_loop COMMAND event_loop) # 这个是添加一个子cmake目录。

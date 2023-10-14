@@ -24,6 +24,6 @@ add_library(timer_event_libs STATIC
 # 依赖
 target_link_libraries(timer_event PRIVATE timer_event_libs)
 target_link_libraries(timer_event PRIVATE ${TINYXML})
-target_link_libraries(timer_event PRIVATE ${LIBFMT})
+target_link_libraries(timer_event PRIVATE fmt)
 
 add_test(NAME timer_event_test COMMAND timer_event) # 这个是添加一个子cmake目录。

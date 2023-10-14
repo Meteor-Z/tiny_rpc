@@ -34,6 +34,6 @@ add_library(io_thread_libs STATIC
 # 依赖
 target_link_libraries(io_thread_group PRIVATE io_thread_libs)
 target_link_libraries(io_thread_group PRIVATE ${TINYXML})
-target_link_libraries(io_thread_group PRIVATE ${LIBFMT})
+target_link_libraries(io_thread_group PRIVATE fmt)
 
 add_test(NAME test COMMAND io_thread_group) # 这个是添加一个子cmake目录。

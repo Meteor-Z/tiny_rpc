@@ -28,6 +28,6 @@ add_library(tcp_server_libs STATIC
 # 依赖
 target_link_libraries(tcp_server PRIVATE tcp_server_libs)
 target_link_libraries(tcp_server PRIVATE ${TINYXML})
-target_link_libraries(tcp_server PRIVATE ${LIBFMT})
+target_link_libraries(tcp_server PRIVATE fmt)
 
 add_test(NAME tcp_server COMMAND tcp_server) # 这个是添加一个子cmake目录。
