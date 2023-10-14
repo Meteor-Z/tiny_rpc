@@ -33,6 +33,7 @@ namespace rpc {
         std::cout << "4 " + m_local_addr->to_string() << std::endl;
         m_acceptor = std::make_shared<TcpAcceptor>(m_local_addr);
         std::cout << "5 -----" << std::endl;
+        // 这里寄了
         m_main_event_loop = EventLoop::get_current_eventloop();
         m_io_thread_group = std::make_shared<IOThreadGroup>(2);
         

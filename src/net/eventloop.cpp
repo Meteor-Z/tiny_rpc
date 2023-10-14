@@ -56,7 +56,9 @@ namespace rpc {
 
         rpc::utils::INFO_LOG(fmt::format("在{}线程下成功创建", m_thread_id));
         // thread_current_eventloop = shared_from_this();
-        thread_current_eventloop = std::shared_ptr<EventLoop>(this) ;
+
+        // 这里不能这样使用，如果这样使用，就寄了
+        // thread_current_eventloop = std::shared_ptr<EventLoop>(this) ;
     }
 
     EventLoop::~EventLoop() {
