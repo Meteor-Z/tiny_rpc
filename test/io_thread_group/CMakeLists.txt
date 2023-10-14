@@ -13,12 +13,6 @@ include_directories(${CMAKE_SOURCE_DIR}/third_party/tinyxml/include)
 # 这个是tinyxml的lib库
 find_library(TINYXML tinyxml ${CMAKE_SOURCE_DIR}/third_party/tinyxml/lib)
 
-if (TINYXML) 
-    message("yes")
-else ()
-    message("no")
-endif()
-
 add_library(io_thread_libs STATIC
     ${CMAKE_SOURCE_DIR}/src/common/config.cpp
     ${CMAKE_SOURCE_DIR}/src/common/log.cpp
