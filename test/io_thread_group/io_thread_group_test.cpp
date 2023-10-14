@@ -80,8 +80,8 @@ void test_io_thread() {
 }
 
 int main() {
-    rpc::Config::set_global_config("/home/lzc/tiny_rpc/conf/rpc.xml");
-    rpc::Logger::init_global_logger();
+rpc::Config::set_global_config("/home/lzc/tiny_rpc/conf/rpc.xml");
+rpc::Logger::init_global_logger();
     std::unique_ptr<rpc::EventLoop> eventloop_ptr = std::make_unique<rpc::EventLoop>();
     test_io_thread();
 }

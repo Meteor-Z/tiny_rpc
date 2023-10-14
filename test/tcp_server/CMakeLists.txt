@@ -1,25 +1,13 @@
 add_executable(tcp_server tcp_server_test.cpp)
 
 include_directories(${CMAKE_SOURCE_DIR}/src/include)
-include_directories(${CMAKE_SOURCE_DIR}/third_party/include)
 
-# 找到依赖库
-find_library(LIBFMT fmt /usr/local/lib)
-find_library(TINYXML tinyxml ${CMAKE_SOURCE_DIR}/third_party/lib/tinyxml)
+# 这个是tinyxml的头文件
+include_directories(${CMAKE_SOURCE_DIR}/third_party/tinyxml/include)
 
-# 如果找到了这个库
-if (LIBFMT)
-    message(STATUS "找到了这个库 libfmt: ${LIBFMT}")
-else ()
-    message(FATAL_ERROR "libfmt not found")
-endif ()
+# 这个是tinyxml的lib库
+find_library(TINYXML tinyxml ${CMAKE_SOURCE_DIR}/third_party/tinyxml/lib)
 
-# 如果找到了这个库
-if (TINYXML)
-    message(STATUS "找到了这个库: ${TINYXML}")
-else ()
-    message(FATAL_ERROR "这个库没有找到")
-endif ()
 
 add_library(tcp_server_libs STATIC
     ${CMAKE_SOURCE_DIR}/src/common/config.cpp

@@ -1,25 +1,13 @@
 # 测试 event_loop
 add_executable(event_loop event_loop_test.cpp)
 
-include_directories(${CMAKE_SOURCE_DIR}/src/include)
-include_directories(${CMAKE_SOURCE_DIR}/third_party/include)
+include_directories(${CMAKE_SOURCE_DIR}/src/include) # 自身的头文件
 
-find_library(LIBFMT fmt /usr/local/lib)
-find_library(TINYXML tinyxml ${CMAKE_SOURCE_DIR}/third_party/lib/tinyxml)
+# 这个是tinyxml的头文件
+include_directories(${CMAKE_SOURCE_DIR}/third_party/tinyxml/include)
 
-if (LIBFMT)
-    message(STATUS "找到了这个库 libfmt: ${LIBFMT}")
-else ()
-    message(FATAL_ERROR "libfmt not found")
-endif ()
-
-
-
-if (TINYXML)
-    message(STATUS "找到了这个库: ${TINYXML}")
-else ()
-    message(FATAL_ERROR "这个库没有找到")
-endif ()
+# 这个是tinyxml的lib库
+find_library(TINYXML tinyxml ${CMAKE_SOURCE_DIR}/third_party/tinyxml/lib)
 
 add_library(event_loop_libs STATIC
     ${CMAKE_SOURCE_DIR}/src/common/config.cpp
@@ -36,5 +24,6 @@ add_library(event_loop_libs STATIC
 target_link_libraries(event_loop PRIVATE event_loop_libs)
 target_link_libraries(event_loop PRIVATE ${TINYXML})
 target_link_libraries(event_loop PRIVATE ${LIBFMT})
+target_link_directories(event_loop PRIVATE fmt)
 
 add_test(NAME event_loop COMMAND event_loop) # 这个是添加一个子cmake目录。
