@@ -5,10 +5,9 @@ set(CMAKE_CXX_STANDARD 23)
 
 # 这个是查询的链接
 include_directories(${CMAKE_SOURCE_DIR}/src/include)
-# include_directories(${CMAKE_SOURCE_DIR}/third_party/fmt/include)
+include_directories(${CMAKE_SOURCE_DIR}/third_party/fmt/include)
 
 add_subdirectory(third_party/fmt)
-add_subdirectory(third_party/tinyxml)
 
 # 以下是测试文件
 add_subdirectory(test/timer_event)
