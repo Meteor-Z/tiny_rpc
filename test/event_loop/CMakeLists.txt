@@ -1,13 +1,15 @@
 # 测试 event_loop
 add_executable(event_loop event_loop_test.cpp)
 
-include_directories(${CMAKE_SOURCE_DIR}/src/include) # 自身的头文件
+# 自身的头文件
+include_directories(${CMAKE_SOURCE_DIR}/src/include)
 
-# 这个是tinyxml的头文件
-include_directories(${CMAKE_SOURCE_DIR}/third_party/tinyxml/include)
+
+# # 这个是tinyxml的头文件
+# include_directories(${CMAKE_SOURCE_DIR}/third_party/tinyxml/include)
 
 # 这个是tinyxml的lib库
-find_library(TINYXML tinyxml ${CMAKE_SOURCE_DIR}/third_party/tinyxml/lib)
+# find_library(TINYXML tinyxml ${CMAKE_SOURCE_DIR}/third_party/tinyxml/lib)
 
 add_library(event_loop_libs STATIC
     ${CMAKE_SOURCE_DIR}/src/common/config.cpp

@@ -17,8 +17,6 @@ add_library(tcp_libs STATIC
     ${CMAKE_SOURCE_DIR}/src/net/eventloop.cpp
     ${CMAKE_SOURCE_DIR}/src/net/fd_event.cpp
     ${CMAKE_SOURCE_DIR}/src/net/wakeup_fd_event.cpp
-    # ${CMAKE_SOURCE_DIR}/src/net/io_thread/io_thread.cpp
-    # ${CMAKE_SOURCE_DIR}/src/net/io_thread/io_thread_group.cpp
     ${CMAKE_SOURCE_DIR}/src/net/tcp/net_addr.cpp
 
 
