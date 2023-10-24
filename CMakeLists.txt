@@ -3,15 +3,14 @@ cmake_minimum_required(VERSION 3.22.1)
 project(tiny_rpc)
 set(CMAKE_CXX_STANDARD 23)
 
-# 查看时间
+# 显示编译时间
 set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_COMMAND} -E time")
 set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "${CMAKE_COMMAND} -E time")
-# 这个是查询的链接
+
+
 include_directories(${CMAKE_SOURCE_DIR}/src/include)
-include_directories(${CMAKE_SOURCE_DIR}/third_party/fmt/include)
 
 add_subdirectory(third_party/fmt)
-
 # 以下是测试文件
 add_subdirectory(test/timer_event)
 add_subdirectory(test/event_loop)
