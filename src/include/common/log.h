@@ -6,8 +6,6 @@
 #include <fmt/format.h>
 #include <queue>
 #include <sstream>
-
-
 #include <iostream>
 #include <string_view>
 #include <source_location>

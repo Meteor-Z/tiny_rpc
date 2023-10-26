@@ -1,8 +1,3 @@
-#ifndef RPC_NET_TCP_BUFFER_H
-#define RPC_NET_TCP_BUFFER_H
-
-#include <string>
-#include <vector>
 /**
 
 
@@ -12,12 +7,13 @@
     |                           |
     |                           |
  ---------------------------------------------
-
-
-
-
-
 */
+
+#ifndef RPC_NET_TCP_BUFFER_H
+#define RPC_NET_TCP_BUFFER_H
+
+#include <string>
+#include <vector>
 namespace rpc {
 class TcpBuffer {
 public:
