@@ -1,10 +1,10 @@
-#include "common/config.hpp"
-#include "common/log.hpp"
-#include "net/tcp/net_addr.hpp"
-#include "net/tcp/tcp_server.hpp"
-
 #include <iostream>
 #include <memory>
+#include "common/config.h"
+#include "common/log.h"
+#include "net/tcp/net_addr.h"
+#include "net/tcp/tcp_server.h"
+
 
 void test_tcp_server() {
     std::shared_ptr<rpc::IPNetAddr> addr = std::make_shared<rpc::IPNetAddr>("127.0.0.1", 1245);

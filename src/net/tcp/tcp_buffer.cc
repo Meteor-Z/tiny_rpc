@@ -52,7 +52,7 @@ namespace rpc {
         m_read_index +=read_size;
     }
 
-    void TcpBuffer::ajust_read_index(int size) {
+    void TcpBuffer::adjust_read_index(int size) {
         int j = m_read_index + size;
         if (j >= m_buffer.size()) {
             rpc::utils::ERROR_LOG(fmt::format("ajust_read_index() error, invalid size {}, old_read_index {}, buffer size{}",
@@ -64,7 +64,7 @@ namespace rpc {
         
     }
 
-    void TcpBuffer::ajust_write_index(int size) {
+    void TcpBuffer::adjust_write_index(int size) {
        int j = m_write_index + size;
         if (j >= m_buffer.size()) {
             rpc::utils::ERROR_LOG(fmt::format("ajust_read_index() error, invalid size {}, old_read_index {}, buffer size{}",

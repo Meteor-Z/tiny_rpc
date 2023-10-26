@@ -2,7 +2,6 @@
 #define RPC_COMMON_LOG_H
 
 #include <memory>
-// #include <stop_token>
 #include <string>
 #include <fmt/format.h>
 #include <queue>

@@ -9,9 +9,8 @@ socket()            bind()            listen()         accept()
 #ifndef RPC_NET_TCP_TCP_ACCEPTOR_H
 #define RPC_NET_TCP_TCP_ACCEPTOR_H
 
-#include <net/tcp/net_addr.hpp>
-
 #include <memory>
+#include <net/tcp/net_addr.h>
 
 namespace rpc {
     class TcpAcceptor {

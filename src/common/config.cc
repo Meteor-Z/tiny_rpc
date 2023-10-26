@@ -1,13 +1,12 @@
-#include "common/config.hpp"
-#include "common/log.hpp"
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
-#include <tinyxml/tinyxml.h>
-
 #include <memory>
 #include <iostream>
+#include <tinyxml/tinyxml.h>
 #include <fmt/format.h>
+#include "common/config.h"
+#include "common/log.h"
 namespace rpc
 {
     static std::shared_ptr<Config> g_config { nullptr };

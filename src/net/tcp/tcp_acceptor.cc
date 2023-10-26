@@ -1,14 +1,12 @@
-#include "common/log.hpp"
-#include "net/tcp/net_addr.hpp"
-#include <asm-generic/socket.h>
-#include <cerrno>
-#include <cstring>
-#include <fmt/core.h>
-#include <net/tcp/tcp_acceptor.hpp>
-
 #include <sys/socket.h>
 #include <fcntl.h>
 #include <system_error>
+#include <cerrno>
+#include <cstring>
+#include <fmt/core.h>
+#include "common/log.h"
+#include "net/tcp/net_addr.h"
+#include <net/tcp/tcp_acceptor.h>
 
 namespace rpc {
     TcpAcceptor::TcpAcceptor(std::shared_ptr<NetAddr> local_addr): m_local_addr(local_addr) {

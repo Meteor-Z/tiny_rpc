@@ -1,6 +1,6 @@
-#include "common/config.hpp"
-#include "common/log.hpp"
-#include "net/tcp/net_addr.hpp"
+#include "common/config.h"
+#include "common/log.h"
+#include "net/tcp/net_addr.h"
 
 int main() {
     rpc::Config::set_global_config("/home/lzc/tiny_rpc/conf/rpc.xml");

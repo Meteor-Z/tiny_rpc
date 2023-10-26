@@ -1,6 +1,6 @@
-#include "net/tcp/net_addr.hpp"
-#include "common/log.hpp"
-#include "net/tcp/tcp_buffer.hpp"
+#include "net/tcp/net_addr.h"
+#include "common/log.h"
+#include "net/tcp/tcp_buffer.h"
 
 #include <cstring>
 #include <fmt/core.h>
