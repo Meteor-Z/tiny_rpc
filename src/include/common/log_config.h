@@ -2,10 +2,6 @@
 LogConfig.h
 LogConfig初始化，给定一个地址，然后读取xml文件，
 
-
-
-
-
 */
 
 #ifndef RPC_COMMON_CONFIG_H

@@ -16,15 +16,22 @@ pid_t get_thread_id() {
 }
 
 pid_t get_pid() {
-    if (g_pid != 0)
+    if (g_pid != 0) {
         return g_pid;
+    }
     return getpid();
 }
 
-// 这里要学一下，草
+// struct timeval {
+//     long tv_sec;  // 秒
+//     long tv_usec; // 微秒
+// };
+
+
 int64_t get_now_ms() {
     timeval value;
     gettimeofday(&value, nullptr);
+    // 秒 * 1000 + 微秒 / 1000 = 毫秒
     return value.tv_sec * 1000 + value.tv_usec / 1000;
 }
 } // namespace utils

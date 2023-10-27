@@ -18,9 +18,9 @@ int main()
 {
 
     // 设置
-    rpc::Config::set_global_config("/home/lzc/tiny_rpc/conf/rpc.xml");
+    rpc::LogConfig::SET_GLOBAL_CONFIG("/home/lzc/tiny_rpc/conf/rpc.xml");
 
-    rpc::Logger::init_global_logger();
+    rpc::Logger::INIT_GLOBAL_LOGGER();
     std::unique_ptr<rpc::EventLoop> eventloop_ptr = std::make_unique<rpc::EventLoop>();
     int listenfd = socket(AF_INET, SOCK_STREAM, 0);
     if (listenfd == -1) 
