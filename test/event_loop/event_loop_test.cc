@@ -52,8 +52,8 @@ int main() {
         exit(1);
     }
 
-    rpc::Fd_Event event(listenfd); // 创建一个描述符文件
-    event.listen(rpc::Fd_Event::TriggerEvent::IN_EVENT, [listenfd]() {
+    rpc::FdEvent event(listenfd); // 创建一个描述符文件
+    event.listen(rpc::FdEvent::TriggerEvent::IN_EVENT, [listenfd]() {
         sockaddr_in client_addr;
         socklen_t addr_len = sizeof(client_addr);
         memset(&client_addr, 0, sizeof(client_addr));

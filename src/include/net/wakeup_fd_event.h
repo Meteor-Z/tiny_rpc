@@ -4,7 +4,7 @@
 #include "net/fd_event/fd_event.h"
 
 namespace rpc {
-    class WakeUPEvent : public Fd_Event {
+    class WakeUPEvent : public FdEvent {
     public:
         WakeUPEvent(int fd);
         ~WakeUPEvent();

@@ -43,9 +43,9 @@ void test_io_thread() {
         std::exit(0);
     }
 
-    rpc::Fd_Event event{listenfd};
+    rpc::FdEvent event{listenfd};
 
-    event.listen(rpc::Fd_Event::TriggerEvent::IN_EVENT, [listenfd]() {
+    event.listen(rpc::FdEvent::TriggerEvent::IN_EVENT, [listenfd]() {
         sockaddr_in peer_addr;
         socklen_t addr_len = sizeof(peer_addr);
         memset(&peer_addr, 0, sizeof(peer_addr));

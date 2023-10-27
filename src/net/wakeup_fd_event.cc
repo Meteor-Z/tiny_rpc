@@ -6,7 +6,7 @@
 #include "common/log.h"
 namespace rpc 
 {
-    WakeUPEvent::WakeUPEvent(int fd) : Fd_Event(fd) { }
+    WakeUPEvent::WakeUPEvent(int fd) : FdEvent(fd) { }
     WakeUPEvent:: ~WakeUPEvent() { }
     void WakeUPEvent::wakeup() 
     {
