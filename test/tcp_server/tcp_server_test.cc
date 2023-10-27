@@ -1,6 +1,6 @@
 #include <iostream>
 #include <memory>
-#include "common/config.h"
+#include "common/log_config.h"
 #include "common/log.h"
 #include "net/tcp/net_addr.h"
 #include "net/tcp/tcp_server.h"
@@ -15,7 +15,7 @@ void test_tcp_server() {
 }
 
 int main() {
-    rpc::Config::set_global_config("/home/lzc/tiny_rpc/conf/rpc.xml");
-    rpc::Logger::init_global_logger();
+    rpc::LogConfig::SET_GLOBAL_CONFIG("/home/lzc/tiny_rpc/conf/rpc.xml");
+    rpc::Logger::INIT_GLOBAL_LOGGER();
     test_tcp_server(); 
 }

@@ -10,20 +10,20 @@
 #include "common/log.h"
 #include "net/io_thread/io_thread.h"
 
-
 namespace rpc {
-    class IOThreadGroup {
-    public:
-        IOThreadGroup(int size);
-        ~IOThreadGroup();
-        void start();
-        void join();
-        std::shared_ptr<IOThread> get_io_thread();
-    private:
-        int m_size { 0 };
-        std::vector<std::shared_ptr<IOThread>> m_io_thread_groups;
-        int m_idx { -1 };
-    };
-}
+class IOThreadGroup {
+public:
+    IOThreadGroup(int size);
+    ~IOThreadGroup();
+    void start();
+    void join();
+    std::shared_ptr<IOThread> get_io_thread();
+
+private:
+    int m_size{0};
+    std::vector<std::shared_ptr<IOThread>> m_io_thread_groups;
+    int m_idx{-1};
+};
+} // namespace rpc
 
 #endif
