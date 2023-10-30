@@ -22,10 +22,10 @@ public:
     epoll_event get_epoll_event() const noexcept;
 
 protected:
-    int m_fd{-1};
-    epoll_event m_listen_events{};
-    std::function<void()> m_read_callback{nullptr};
-    std::function<void()> m_write_callback{nullptr};
+    int m_fd { -1 };
+    epoll_event m_listen_events {};
+    std::function<void()> m_read_callback { nullptr };
+    std::function<void()> m_write_callback { nullptr };
 };
 } // namespace rpc
 #endif
