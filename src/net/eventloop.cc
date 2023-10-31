@@ -63,6 +63,7 @@ EventLoop::EventLoop() {
     init_timer();
 
     rpc::utils::INFO_LOG(fmt::format("在{}线程下成功创建", m_thread_id));
+    
     // thread_current_eventloop = shared_from_this();
     // std::shared_ptr 不能这样使用
     // thread_current_eventloop = std::shared_ptr<EventLoop>(this) ;
@@ -82,6 +83,7 @@ EventLoop::~EventLoop() {
         m_timer = nullptr;
     }
 }
+
 
 void EventLoop::init_wakeup_fd_event() {
     m_wakeup_fd = eventfd(0, EFD_NONBLOCK);
