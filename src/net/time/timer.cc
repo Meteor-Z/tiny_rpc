@@ -5,13 +5,12 @@
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
-#include <fmt/core.h>
-#include <fmt/format.h>
 #include <functional>
 #include <memory>
-#include <mutex>
 #include <sys/select.h>
 #include <sys/timerfd.h>
+#include <mutex>
+#include <fmt/core.h>
 #include "net/time/timer.h"
 #include "common/log.h"
 #include "common/utils.h"
@@ -37,7 +36,7 @@ void Timer::on_time() {
 
     int64_t now_time = rpc::utils::get_now_ms(); // 当前的事件
 
-    std::vector<TimerEvent::s_ptr> temp;
+    std::vector<std::shared_ptr<TimerEvent>> temp;
     std::vector<std::pair<int64_t, std::function<void()>>> tasks;
     std::unique_lock<std::mutex> lock{m_mtx};
     auto it = m_pending_events.begin();
@@ -111,7 +110,7 @@ void Timer::reset_arrive_time() {
     rpc::utils::DEBUG_LOG(fmt::format("timer reset to {}", now + inteval));
 }
 
-void Timer::add_time_event(TimerEvent::s_ptr event) {
+void Timer::add_time_event(std::shared_ptr<TimerEvent> event) {
     std::unique_lock<std::mutex> unique_lock{m_mtx}; // 需要加锁
     // 需不需重新设置超时事件
     bool is_reset_timerfd{false};
@@ -132,7 +131,7 @@ void Timer::add_time_event(TimerEvent::s_ptr event) {
     }
 }
 
-void Timer::delete_time_event(TimerEvent::s_ptr event) {
+void Timer::delete_time_event(std::shared_ptr<TimerEvent> event) {
     event->set_cancel(true);
     std::unique_lock<std::mutex> unique_lock{m_mtx};
     auto begin = m_pending_events.lower_bound(event->get_arrive_time());

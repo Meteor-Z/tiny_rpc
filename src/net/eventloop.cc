@@ -178,7 +178,7 @@ void EventLoop::init_timer() {
     add_epoll_event(m_timer); // 将这个事件存存放到这个事件中
 }
 
-void EventLoop::add_timer_event(rpc::TimerEvent::s_ptr shard_ptr) {
+void EventLoop::add_timer_event(std::shared_ptr<TimerEvent> shard_ptr) {
     m_timer->add_time_event(shard_ptr);
 }
 

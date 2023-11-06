@@ -47,7 +47,7 @@ public:
 
     void add_task(std::function<void()> task, bool is_wake_up = false);
 
-    void add_timer_event(rpc::TimerEvent::s_ptr shard_ptr); // 添加定时任务
+    void add_timer_event(std::shared_ptr<TimerEvent> shard_ptr); // 添加定时任务
 public:
     // 得到全局对象EventLoop
     static std::shared_ptr<EventLoop> get_current_eventloop();

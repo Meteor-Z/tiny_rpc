@@ -13,8 +13,13 @@
 
 namespace rpc {
 namespace utils {
+// 得到进程号
 pid_t get_pid();
+
+// 得到线程号x
 pid_t get_thread_id();
+
+// 得到当前时间[点]
 int64_t get_now_ms();
 } // namespace utils
 } // namespace rpc
