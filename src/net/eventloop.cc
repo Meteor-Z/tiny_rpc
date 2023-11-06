@@ -28,14 +28,17 @@ static constexpr int G_EPOLL_MAX_TIMEOUT = 10000;
 // epoll 最大的监听事件
 static constexpr int G_EPOLL_MAX_EVENTS = 10;
 
-bool EventLoop::is_in_loop_thread() { return m_thread_id == rpc::utils::get_thread_id(); }
+bool EventLoop::is_in_current_loop_thread() {
+    return m_thread_id == rpc::utils::get_thread_id();
+}
 
 void EventLoop::deal_wake_up() {}
 
 EventLoop::EventLoop() {
     if (thread_current_eventloop != nullptr) {
-        rpc::utils::ERROR_LOG(
-            fmt::format("eventloop is not nullptr, error info = {}", errno));
+        rpc::utils::ERROR_LOG(fmt::format(
+            "eventloop is not nullptr, failed to creat event loop, error info = {}",
+            errno));
         exit(0);
     }
 
@@ -63,7 +66,7 @@ EventLoop::EventLoop() {
     init_timer();
 
     rpc::utils::INFO_LOG(fmt::format("在{}线程下成功创建", m_thread_id));
-    
+
     // thread_current_eventloop = shared_from_this();
     // std::shared_ptr 不能这样使用
     // thread_current_eventloop = std::shared_ptr<EventLoop>(this) ;
@@ -84,8 +87,8 @@ EventLoop::~EventLoop() {
     }
 }
 
-
 void EventLoop::init_wakeup_fd_event() {
+    // 非阻塞
     m_wakeup_fd = eventfd(0, EFD_NONBLOCK);
     if (m_wakeup_fd < 0) {
         rpc::utils::ERROR_LOG(fmt::format(
@@ -126,12 +129,13 @@ void EventLoop::loop() {
             }
         }
 
-        // 循环的时候如何判断怎么执行,事件大于这个定时器的时候，如何才能大于这个事件,
-        int timeout = G_EPOLL_MAX_TIMEOUT;
+        // 等到的最大时间
+        int time_out = G_EPOLL_MAX_TIMEOUT;
 
         epoll_event result_event[G_EPOLL_MAX_EVENTS];
 
-        int epoll_num = epoll_wait(m_epoll_fd, result_event, G_EPOLL_MAX_EVENTS, timeout);
+        int epoll_num =
+            epoll_wait(m_epoll_fd, result_event, G_EPOLL_MAX_EVENTS, time_out);
         rpc::utils::DEBUG_LOG(fmt::format("epoll_wait。。。 rt = {}", epoll_num));
 
         if (epoll_num < 0) {
@@ -139,7 +143,7 @@ void EventLoop::loop() {
         } else {
             // 将事件进行处理
             for (int i = 0; i < epoll_num; i++) {
-                // trigger 触发的意思。。。 取出触发事件，然后进行处理
+                // trigger 意思： 触发
                 epoll_event trigger_event = result_event[i];
                 std::unique_ptr<FdEvent> fd_event_ptr = std::make_unique<FdEvent>(
                     *static_cast<FdEvent*>(trigger_event.data.ptr));
@@ -192,17 +196,16 @@ std::shared_ptr<EventLoop> EventLoop::get_current_eventloop() {
 }
 
 void EventLoop::add_epoll_event(FdEvent* event) {
-    if (is_in_loop_thread()) {
+    if (is_in_current_loop_thread()) {
         add_to_epoll(event);
     } else {
         auto cb = [this, event]() { add_to_epoll(event); };
-
         add_task(cb, true);
     }
 }
 
 void EventLoop::delete_epoll_event(FdEvent* event) {
-    if (is_in_loop_thread()) {
+    if (is_in_current_loop_thread()) {
         delete_from_epoll(event);
     } else {
         auto cb = [this, event]() { delete_from_epoll(event); };
@@ -211,13 +214,17 @@ void EventLoop::delete_epoll_event(FdEvent* event) {
     }
 }
 
-void EventLoop::add_task(std::function<void()> task, bool is_wake_up) {
+void EventLoop::add_task(std::function<void()> task, bool is_wake_up /* = false */) {
     std::lock_guard<std::mutex> lock { m_mtx };
     m_pending_tasks.push(task);
-    if (is_wake_up)
+    if (is_wake_up) {
         wake_up();
+    }
 }
 
+// EPOLL_CTL_ADD: 添加一个新的文件描述符
+// EPOLL_CTL_MOD: 修改一个已经在epoll描述符中的内容
+// epoll_ctl: 对epoll实例中的数据进行修改。
 void EventLoop::add_to_epoll(FdEvent* event) {
     auto it = m_listen_fds.find(event->get_fd());
     int op = EPOLL_CTL_ADD;
@@ -240,6 +247,7 @@ void EventLoop::add_to_epoll(FdEvent* event) {
     rpc::utils::DEBUG_LOG(fmt::format("add event success, fd[{}]", event->get_fd()));
 }
 
+// EPOLL_CTL_DEL: 删除当前文件描述符
 void EventLoop::delete_from_epoll(FdEvent* event) {
     auto it = m_listen_fds.find(event->get_fd());
     if (it == m_listen_fds.end()) {
@@ -249,12 +257,14 @@ void EventLoop::delete_from_epoll(FdEvent* event) {
     int op = EPOLL_CTL_DEL;
     epoll_event tmp = event->get_epoll_event();
 
+    // 删除掉
     int rt = epoll_ctl(m_epoll_fd, op, event->get_fd(), nullptr);
     if (rt == -1) {
         rpc::utils::ERROR_LOG(fmt::format(
             "failed epoll_ctl when add fd, errno={}, error={}", errno, strerror(errno)));
     }
 
+    // 在监听中也将这个进行删除
     m_listen_fds.erase(event->get_fd());
     rpc::utils::DEBUG_LOG(fmt::format("delete event success, fd[{}]", event->get_fd()));
 }

@@ -1,5 +1,9 @@
 /*
 EventLoop类，
+一直循环下去，当检测到事件的时候就会立刻返回，往里面加入事件，
+
+#
+
 */
 
 #ifndef RPC_NET_EVENTLOOP_H
@@ -32,11 +36,14 @@ public:
     // 停止，但是一般不会停止，在服务器上会一直运行
     void stop();
 
+    // 添加epoll_event事件
     void add_epoll_event(FdEvent* event);
 
+    // 删除epoll_event事件
     void delete_epoll_event(FdEvent* event);
 
-    bool is_in_loop_thread();
+    // 是否是当前函数线程
+    bool is_in_current_loop_thread();
 
     void add_task(std::function<void()> task, bool is_wake_up = false);
 
@@ -46,10 +53,13 @@ public:
     static std::shared_ptr<EventLoop> get_current_eventloop();
 
 private:
+    // 处理wake_up事件
     void deal_wake_up();
 
+    // 添加事件
     void add_to_epoll(FdEvent* event);
 
+    // 删除当前事件
     void delete_from_epoll(FdEvent* event);
 
     //  初始化wakeup_fd

@@ -10,7 +10,7 @@ C++版本： C++20
 
 ### 必装的库
 
-// do something
+1. git submodule update --init --recursive: 更新以下子模块
 
 ### 命令
 

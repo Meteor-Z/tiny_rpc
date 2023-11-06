@@ -4,6 +4,7 @@
 #include "net/wakeup_fd_event.h"
 #include "net/fd_event/fd_event.h"
 #include "common/log.h"
+
 namespace rpc 
 {
     WakeUPEvent::WakeUPEvent(int fd) : FdEvent(fd) { }

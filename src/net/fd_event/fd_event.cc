@@ -16,9 +16,11 @@ epoll_event FdEvent::get_epoll_event() const noexcept {
     return m_listen_events;
 }
 
+// 如果是读事件，那么就执行读回掉函数，否则，就是写回调函数
 std::function<void()> FdEvent::handler(TriggerEvent event_type) {
-    if (event_type == TriggerEvent::IN_EVENT)
+    if (event_type == TriggerEvent::IN_EVENT) {
         return m_read_callback;
+    }
     return m_write_callback;
 }
 
