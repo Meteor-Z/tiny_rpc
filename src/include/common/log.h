@@ -10,7 +10,6 @@ LogEvent: 事件，当前事件
 #ifndef RPC_COMMON_LOG_H
 #define RPC_COMMON_LOG_H
 
-#include <fmt/format.h>
 #include <iostream>
 #include <memory>
 #include <queue>
@@ -18,6 +17,7 @@ LogEvent: 事件，当前事件
 #include <sstream>
 #include <string>
 #include <string_view>
+#include <fmt/format.h>
 
 namespace rpc {
 // enum class 能够限制范围

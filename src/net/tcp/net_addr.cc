@@ -1,12 +1,11 @@
-#include "net/tcp/net_addr.h"
-#include "common/log.h"
-#include "net/tcp/tcp_buffer.h"
-
 #include <cstring>
 #include <fmt/core.h>
 #include <netinet/in.h>
 #include <string>
 #include <sys/socket.h>
+#include "net/tcp/net_addr.h"
+#include "common/log.h"
+#include "net/tcp/tcp_buffer.h"
 
 namespace rpc {
     IPNetAddr::IPNetAddr(std::string_view ip, uint16_t port) : m_ip(ip), m_port(port) {

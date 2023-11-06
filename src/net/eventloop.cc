@@ -97,7 +97,7 @@ void EventLoop::init_wakeup_fd_event() {
     }
 
     rpc::utils::INFO_LOG(fmt::format("wakeup fd = {}", m_wakeup_fd));
-    m_wakeup_fd_event = new WakeUPEvent(m_wakeup_fd); // 事件唤醒
+    m_wakeup_fd_event = new WakeUpFdEvent(m_wakeup_fd); // 事件唤醒
     m_wakeup_fd_event->listen(FdEvent::TriggerEvent::IN_EVENT, [this]() {
         char buf[8];
         while (read(m_wakeup_fd, buf, 8) != -1 && errno != EAGAIN) {

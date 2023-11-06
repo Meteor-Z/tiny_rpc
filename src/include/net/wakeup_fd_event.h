@@ -1,4 +1,5 @@
 /*
+WakeUp
 唤醒事件，如果想要唤醒eventloop,就往里面加入事件，然后事件做出回应，eventloop就会`epoll_wait`，然后相当于唤醒了
 
 */
@@ -8,11 +9,11 @@
 #include "net/fd_event/fd_event.h"
 
 namespace rpc {
-    class WakeUPEvent : public FdEvent {
-    public:
-        WakeUPEvent(int fd);
-        ~WakeUPEvent();
-        void wakeup();
-    };
-}
+class WakeUpFdEvent : public FdEvent {
+public:
+    WakeUpFdEvent(int fd);
+    ~WakeUpFdEvent();
+    void wakeup();
+};
+} // namespace rpc
 #endif

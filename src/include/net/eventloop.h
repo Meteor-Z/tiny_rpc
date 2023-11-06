@@ -71,7 +71,7 @@ private:
     pid_t m_thread_id { 0 };                    // 线程号
     int m_epoll_fd { 0 };                       // epoll句柄
     int m_wakeup_fd { 0 };                      // 唤醒标识符
-    WakeUPEvent* m_wakeup_fd_event { nullptr }; // 唤醒的事件
+    WakeUpFdEvent* m_wakeup_fd_event { nullptr }; // 唤醒的事件
     bool m_stop_flag { false };                 // eventloop是否暂停？
     std::set<int> m_listen_fds; // 监听的套接字，存入的是文件描述符
     std::queue<std::function<void()>> m_pending_tasks; // 待执行的任务队列。
