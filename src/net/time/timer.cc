@@ -1,3 +1,4 @@
+#include <bits/types/struct_timespec.h>
 #include <cerrno>
 #include <cinttypes>
 #include <cstddef>
@@ -19,11 +20,14 @@
 namespace rpc {
 Timer::~Timer() {}
 Timer::Timer() : FdEvent() {
-    // 定时器
+    // CLOCK_MONOTINIC：稳定时钟
+    // TFD_NONBLOCK | TFD_CLOEXEC : 非堵塞
+    // TFD_CLOEXEC：调用exec系统调用的时候保证不会在子进程中继续存在
     m_fd = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK | TFD_CLOEXEC);
     rpc::utils::DEBUG_LOG(fmt::format("timer fd = {}", m_fd));
 
-    // fdevent 在eventloop上进行监听 绑定一个可读事件 listen 是继承与FdEvent得到的
+    // fdevent 在eventloop上进行监听 绑定一个可读事件
+    // listen 继承于 FdEvent
     listen(FdEvent::TriggerEvent::IN_EVENT, std::bind(&Timer::on_timer, this));
 }
 
@@ -39,6 +43,7 @@ void Timer::on_timer() {
     int64_t now_time = rpc::utils::get_now_ms(); // 当前的事件
 
     std::vector<std::shared_ptr<TimerEvent>> temp;
+    // key：sec, value: task(function<void()>)
     std::vector<std::pair<int64_t, std::function<void()>>> tasks;
     std::unique_lock<std::mutex> lock { m_mtx };
     auto it = m_pending_events.begin();
@@ -51,12 +56,12 @@ void Timer::on_timer() {
                 tasks.push_back(std::make_pair((*it).second->get_arrive_time(),
                                                (*it).second->get_callback()));
             }
-
         } else {
             break;
         }
     }
 
+    // begin() 到 it(iterator)之间全部删除
     m_pending_events.erase(m_pending_events.begin(), it);
     lock.unlock();
 
@@ -67,12 +72,14 @@ void Timer::on_timer() {
             add_time_event(*it);
         }
     }
-
+    
+    // 重新调整 arrive_time()
     reset_arrive_time();
 
     for (auto i : tasks) {
-        if (i.second)
+        if (i.second) {
             i.second();
+        }
     }
 }
 
@@ -80,6 +87,8 @@ void Timer::reset_arrive_time() {
     std::unique_lock<std::mutex> lock { m_mtx };
     auto temp = m_pending_events;
     lock.unlock();
+
+    // 没有定时任务
     if (temp.empty()) {
         return;
     }
@@ -93,15 +102,28 @@ void Timer::reset_arrive_time() {
         inteval = 100;
     }
 
+    // struct timespec {
+    //     __time_t tv_sec; // 秒
+    //     long tv_nesc;    // 纳秒
+    // };
+
     timespec ts;
     std::memset(&ts, 0, sizeof(ts));
+
+    // 转换一下秒数
     ts.tv_sec = inteval / 1000;
     ts.tv_nsec = (inteval % 1000) * 1000000;
+
+    // struct itimerspec {
+    //     struct timespec it_interval;  // 定时器的间隔
+    //     struct timespec it_value;     // 定时器的初始值
+    // };
 
     itimerspec value;
     std::memset(&value, 0, sizeof(value));
     value.it_value = ts;
 
+    // 使用系统调用，设置timerfd
     int rt = timerfd_settime(m_fd, 0, &value, nullptr);
     if (rt != 0) {
         rpc::utils::ERROR_LOG(fmt::format("timerfd_settime error, errno = {} error = {}",
@@ -116,15 +138,18 @@ void Timer::add_time_event(std::shared_ptr<TimerEvent> event) {
     std::unique_lock<std::mutex> unique_lock { m_mtx };
     // 需不需重新设置超时事件
     bool is_reset_timerfd { false };
+
     if (m_pending_events.empty()) {
         is_reset_timerfd = true;
     } else {
         auto item = m_pending_events.begin();
-        // 插入的时间大于之前的时间
+        // 插入的时间大于之前的时间 如果要早，那么定时任务的事件就要修改
         if ((*item).second->get_arrive_time() > event->get_arrive_time()) {
             is_reset_timerfd = true;
         }
     }
+
+    // 插入到 队列之中
     m_pending_events.emplace(event->get_arrive_time(), event);
     unique_lock.unlock();
 
@@ -134,6 +159,7 @@ void Timer::add_time_event(std::shared_ptr<TimerEvent> event) {
 }
 
 void Timer::delete_time_event(std::shared_ptr<TimerEvent> event) {
+    // 二分查找秒数
     event->set_cancel(true);
     std::unique_lock<std::mutex> unique_lock { m_mtx };
     auto begin = m_pending_events.lower_bound(event->get_arrive_time());
@@ -147,6 +173,8 @@ void Timer::delete_time_event(std::shared_ptr<TimerEvent> event) {
     if (it != end) {
         m_pending_events.erase(it);
     }
+
+    unique_lock.unlock();
 
     rpc::utils::DEBUG_LOG(
         fmt::format("success delete time_event at arrive {}", event->get_arrive_time()));

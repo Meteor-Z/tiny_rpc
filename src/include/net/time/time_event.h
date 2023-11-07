@@ -16,9 +16,9 @@ namespace rpc {
 class TimerEvent {
 public:
     TimerEvent(int64_t interval, bool repeat, std::function<void()> task);
-    int64_t get_arrive_time();
-    bool is_cancel();
-    bool is_repeat();
+    int64_t get_arrive_time() const noexcept;
+    bool is_cancel() const noexcept;
+    bool is_repeat() const noexcept;
     void set_cancel(bool value);
     std::function<void()> get_callback();
     void reset_arrive_time();

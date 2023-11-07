@@ -17,13 +17,18 @@ class Timer : public FdEvent {
 public:
     Timer();
     ~Timer();
+
+    // 增加定时任务
     void add_time_event(std::shared_ptr<TimerEvent> event);
+
+    // 删除定时任务
     void delete_time_event(std::shared_ptr<TimerEvent> event);
-    
+
     // 发生IO事件之后，需要执行的方法
     void on_timer();
 
 private:
+    // 修改定时任务
     void reset_arrive_time();
 
 private:
