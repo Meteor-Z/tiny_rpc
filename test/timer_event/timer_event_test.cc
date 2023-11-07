@@ -65,7 +65,7 @@ int main() {
     eventloop_ptr->add_epoll_event(&event);
 
     int i = 0;
-    rpc::TimerEvent::s_ptr timer_event =
+    std::shared_ptr<rpc::TimerEvent> timer_event =
         std::make_shared<rpc::TimerEvent>(1000, true, [&i]() {
             rpc::utils::INFO_LOG(
                 fmt::format("triger, timer event, count = {}", i++));

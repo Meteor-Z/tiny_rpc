@@ -58,7 +58,7 @@ void test_io_thread() {
     });
 
     int i = 0;
-    rpc::TimerEvent::s_ptr timer_event_ptr =
+    std::shared_ptr<rpc::TimerEvent> timer_event_ptr =
         std::make_shared<rpc::TimerEvent>(1000, true, [&i]() {
             rpc::utils::INFO_LOG(
                 fmt::format("trigger timer event, count = {}", i++));
