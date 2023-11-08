@@ -10,7 +10,7 @@ socket()            bind()            listen()         accept()
 #define RPC_NET_TCP_TCP_ACCEPTOR_H
 
 #include <memory>
-#include <net/tcp/net_addr.h>
+#include <net/tcp/ipv4_net_addr.h>
 
 namespace rpc {
 class TcpAcceptor {
@@ -22,8 +22,8 @@ public:
 
 private:
     std::shared_ptr<IPv4NetAddr> m_local_addr; // 客户端的地址 bind的地址
-    int m_family { -1 };                   // 协议族
-    int m_listenfd { -1 };                 // 文件描述符
+    int m_family { -1 };                       // 协议族
+    int m_listenfd { -1 };                     // 监听的套接字
 };
 } // namespace rpc
 

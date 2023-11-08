@@ -6,7 +6,7 @@
 #include "net/fd_event/fd_event.h"
 #include "net/io_thread/io_thread.h"
 #include "net/io_thread/io_thread_group.h"
-#include "net/tcp/net_addr.h"
+#include "net/tcp/ipv4_net_addr.h"
 #include "net/tcp/tcp_acceptor.h"
 
 namespace rpc {

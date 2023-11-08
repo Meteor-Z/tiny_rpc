@@ -1,11 +1,11 @@
 #ifndef RPC_NET_TCP_TCP_CONNECTION_H
 #define RPC_NET_TCP_TCP_CONNECTION_H
 
-#include "net/fd_event.hpp"
-#include "net/io_thread/io_thread.hpp"
-#include "net/tcp/net_addr.hpp"
-#include "net/tcp/tcp_buffer.hpp"
 #include <cstddef>
+#include "net/fd_event/fd_event.h"
+#include "net/io_thread/io_thread.h"
+#include "net/tcp/ipv4_net_addr.h"
+#include "net/tcp/tcp_buffer.h"
 
 namespace rpc {
 class TcpConnection {

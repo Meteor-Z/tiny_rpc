@@ -17,7 +17,7 @@ add_library(tcp_libs STATIC
     ${CMAKE_SOURCE_DIR}/src/net/eventloop.cc
     ${CMAKE_SOURCE_DIR}/src/net/fd_event/fd_event.cc
     ${CMAKE_SOURCE_DIR}/src/net/wakeup_fd_event.cc
-    ${CMAKE_SOURCE_DIR}/src/net/tcp/net_addr.cc
+    ${CMAKE_SOURCE_DIR}/src/net/tcp/ipv4_net_addr.cc
 
 
 )

@@ -20,9 +20,9 @@ add_library(tcp_server_libs STATIC
     ${CMAKE_SOURCE_DIR}/src/net/wakeup_fd_event.cc
     ${CMAKE_SOURCE_DIR}/src/net/io_thread/io_thread.cc
     ${CMAKE_SOURCE_DIR}/src/net/io_thread/io_thread_group.cc
-    ${CMAKE_SOURCE_DIR}/src/net/tcp/net_addr.cc
+    ${CMAKE_SOURCE_DIR}/src/net/tcp/ipv4_net_addr.cc
     ${CMAKE_SOURCE_DIR}/src/net/tcp/tcp_server.cc
-    ${CMAKE_SOURCE_DIR}/src/net/tcp/net_addr.cc
+    ${CMAKE_SOURCE_DIR}/src/net/tcp/ipv4_net_addr.cc
     ${CMAKE_SOURCE_DIR}/src/net/tcp/tcp_acceptor.cc
 )
 # 依赖
