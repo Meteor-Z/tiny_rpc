@@ -10,7 +10,7 @@
 namespace rpc {
     TcpServer::~TcpServer() { }
 
-    TcpServer::TcpServer(std::shared_ptr<NetAddr> local_addr): m_local_addr(local_addr) {
+    TcpServer::TcpServer(std::shared_ptr<IPv4NetAddr> local_addr): m_local_addr(local_addr) {
 
         init();
     }

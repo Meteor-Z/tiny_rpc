@@ -7,7 +7,7 @@
 
 
 void test_tcp_server() {
-    std::shared_ptr<rpc::IPNetAddr> addr = std::make_shared<rpc::IPNetAddr>("127.0.0.1", 1245);
+    std::shared_ptr<rpc::IPv4NetAddr> addr = std::make_shared<rpc::IPv4NetAddr>("127.0.0.1", 1245);
     rpc::utils::DEBUG_LOG(fmt::format("addr = {}", addr->to_string()));
     std::cout << "1 -----" << std::endl;
     rpc::TcpServer tcp_server(addr);

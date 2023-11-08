@@ -12,7 +12,7 @@
 namespace rpc {
 class TcpServer {
 public:
-    TcpServer(std::shared_ptr<NetAddr> local_addr);
+    TcpServer(std::shared_ptr<IPv4NetAddr> local_addr);
     ~TcpServer();
     void start();
 
@@ -23,7 +23,7 @@ private:
 
 private:
     std::shared_ptr<TcpAcceptor> m_acceptor {};
-    std::shared_ptr<NetAddr> m_local_addr {};            // 本地监听的地址
+    std::shared_ptr<IPv4NetAddr> m_local_addr {};            // 本地监听的地址
     std::shared_ptr<EventLoop> m_main_event_loop {};     // mainReactor
     std::shared_ptr<IOThreadGroup> m_io_thread_group {}; // subReactor (子Reactor组)
     std::shared_ptr<FdEvent> m_listen_fd_event {};

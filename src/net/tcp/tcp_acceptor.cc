@@ -9,7 +9,7 @@
 #include <net/tcp/tcp_acceptor.h>
 
 namespace rpc {
-    TcpAcceptor::TcpAcceptor(std::shared_ptr<NetAddr> local_addr): m_local_addr(local_addr) {
+    TcpAcceptor::TcpAcceptor(std::shared_ptr<IPv4NetAddr> local_addr): m_local_addr(local_addr) {
         if (!local_addr->check_valid()) {
             // std::cout <<local_addr->to_string() << std::endl;
             rpc::utils::ERROR_LOG(fmt::format("invalid local addr {}", local_addr->to_string()));
@@ -60,7 +60,7 @@ namespace rpc {
                 std::exit(0);
             }
 
-            IPNetAddr peer_addr(client_addr);
+            IPv4NetAddr peer_addr(client_addr);
             rpc::utils::INFO_LOG(fmt::format("a client accept() success, addr = {}",peer_addr.to_string()));
             return client_fd;
         } else {
