@@ -57,6 +57,7 @@ public:
 
     std::vector<char>& get_buffer() noexcept;
 
+
 private:
     int m_read_index { 0 };  // 读取的位置
     int m_write_index { 0 }; // 写入的位置
