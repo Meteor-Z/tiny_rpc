@@ -187,7 +187,7 @@ void EventLoop::stop() {
     wake_up();
 }
 
-std::shared_ptr<EventLoop> EventLoop::get_current_eventloop() {
+std::shared_ptr<EventLoop> EventLoop::Get_Current_Eventloop() {
     if (!thread_current_eventloop) {
         thread_current_eventloop = std::make_shared<EventLoop>();
     }

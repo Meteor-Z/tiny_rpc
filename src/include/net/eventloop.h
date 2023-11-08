@@ -50,7 +50,7 @@ public:
     void add_timer_event(std::shared_ptr<TimerEvent> shard_ptr); // 添加定时任务
 public:
     // 得到全局对象EventLoop
-    static std::shared_ptr<EventLoop> get_current_eventloop();
+    static std::shared_ptr<EventLoop> Get_Current_Eventloop();
 
 private:
     // 处理wake_up事件
