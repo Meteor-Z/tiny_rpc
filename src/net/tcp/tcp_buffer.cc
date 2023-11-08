@@ -1,5 +1,5 @@
-#include "net/tcp/tcp_buffer.hpp"
-#include "common/log.hpp"
+#include "net/tcp/tcp_buffer.h"
+#include "common/log.h"
 
 #include <fmt/format.h>
 
