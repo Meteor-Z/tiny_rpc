@@ -1,4 +1,4 @@
-add_executable(tcp_server tcp_server_test.cc)
+add_executable(tcp_client tcp_client_test.cc)
 
 include_directories(${CMAKE_SOURCE_DIR}/src/include)
 
@@ -9,7 +9,7 @@ include_directories(${CMAKE_SOURCE_DIR}/third_party/tinyxml/include)
 find_library(TINYXML tinyxml ${CMAKE_SOURCE_DIR}/third_party/tinyxml/lib)
 
 
-add_library(tcp_server_libs STATIC
+add_library(tcp_client_libs STATIC
     ${CMAKE_SOURCE_DIR}/src/common/config.cc
     ${CMAKE_SOURCE_DIR}/src/common/log.cc
     ${CMAKE_SOURCE_DIR}/src/common/utils.cc
@@ -27,11 +27,10 @@ add_library(tcp_server_libs STATIC
     ${CMAKE_SOURCE_DIR}/src/net/tcp/tcp_acceptor.cc
     ${CMAKE_SOURCE_DIR}/src/net/tcp/tcp_connection.cc
     ${CMAKE_SOURCE_DIR}/src/net/tcp/tcp_buffer.cc
-
 )
 # 依赖
-target_link_libraries(tcp_server PRIVATE tcp_server_libs)
-target_link_libraries(tcp_server PRIVATE ${TINYXML})
-target_link_libraries(tcp_server PRIVATE fmt)
+target_link_libraries(tcp_client PRIVATE tcp_client_libs)
+target_link_libraries(tcp_client PRIVATE ${TINYXML})
+target_link_libraries(tcp_client PRIVATE fmt)
 
-add_test(NAME tcp_server COMMAND tcp_server) # 这个是添加一个子cmake目录。
+add_test(NAME tcp_client COMMAND tcp_client) # 这个是添加一个子cmake目录。

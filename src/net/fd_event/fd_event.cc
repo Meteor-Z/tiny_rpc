@@ -17,7 +17,7 @@ int FdEvent::get_fd() const noexcept { return m_fd; }
 
 epoll_event FdEvent::get_epoll_event() const noexcept { return m_listen_events; }
 
-//TODO:了解这个函数
+// TODO:了解这个函数
 void FdEvent::set_no_block() {
     int is_block = fcntl(m_fd, F_GETFL, 0);
     if (is_block & O_NONBLOCK) {
@@ -43,5 +43,13 @@ void FdEvent::listen(TriggerEvent event_type, std::function<void()> callback) {
         m_write_callback = callback;
     }
     m_listen_events.data.ptr = this;
+}
+
+void FdEvent::cancel(TriggerEvent type_event) {
+    if (type_event == TriggerEvent::IN_EVENT) {
+        m_listen_events.events &= (~EPOLLIN);
+    } else {
+        m_listen_events.events &= (~EPOLLOUT);
+    }
 }
 } // namespace rpc

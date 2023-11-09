@@ -16,6 +16,7 @@ TcpServer:
 #include "net/io_thread/io_thread_group.h"
 #include "net/tcp/ipv4_net_addr.h"
 #include "net/tcp/tcp_acceptor.h"
+#include "net/tcp/tcp_connection.h"
 
 namespace rpc {
 class TcpServer {
@@ -39,6 +40,7 @@ private:
     std::shared_ptr<IOThreadGroup> m_io_thread_group {}; // subReactor (子Reactor组)
     std::shared_ptr<FdEvent> m_listen_fd_event {};       // 监听的FdEvent
     int m_client_counts { 0 };                           // 连接的数量
+    std::set<std::shared_ptr<TcpConnection>> m_client;   // 客户端
 };
 } // namespace rpc
 

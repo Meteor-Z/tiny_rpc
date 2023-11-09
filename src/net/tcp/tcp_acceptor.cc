@@ -72,7 +72,7 @@ std::pair<int, std::shared_ptr<IPv4NetAddr>> TcpAcceptor::accept() {
     }
 
     // IPv4NetAddr peer_addr(client_addr);
-    std::shared_ptr<IPv4NetAddr> peer_addr = std::make_shared<IPv4NetAddr>(client_fd);
+    std::shared_ptr<IPv4NetAddr> peer_addr = std::make_shared<IPv4NetAddr>(client_addr);
     rpc::utils::INFO_LOG(
         fmt::format("a client accept() success, addr = {}", peer_addr->to_string()));
     return std::make_pair(client_fd, peer_addr);

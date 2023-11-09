@@ -10,7 +10,9 @@
 #include "net/tcp/tcp_acceptor.h"
 
 namespace rpc {
-TcpServer::~TcpServer() {}
+TcpServer::~TcpServer() {
+    rpc::utils::DEBUG_LOG("~TcpServer()");
+}
 
 TcpServer::TcpServer(std::shared_ptr<IPv4NetAddr> local_addr) : m_local_addr(local_addr) {
     // TODO():这里要有修改
@@ -45,9 +47,16 @@ void TcpServer::on_accept() {
     //  构造
     std::shared_ptr<TcpConnection> connection =
         std::make_shared<TcpConnection>(io_thread, client_fd, 128, peer_addr);
+
+    // 设置已经连接
+    connection->set_state(TcpConnection::TcpState::Connected);
     
+    
+    // 不会析构
+    m_client.insert(connection);
     rpc::utils::INFO_LOG(
         fmt::format("tcp_server success get client, fd = {}", client_fd));
+
 }
 
 void TcpServer::init() {

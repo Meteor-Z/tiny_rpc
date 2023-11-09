@@ -1,8 +1,8 @@
 #include <cstring>
-#include <fmt/core.h>
 #include <netinet/in.h>
 #include <string>
 #include <sys/socket.h>
+#include <fmt/core.h>
 #include "net/tcp/ipv4_net_addr.h"
 #include "common/log.h"
 #include "net/tcp/tcp_buffer.h"

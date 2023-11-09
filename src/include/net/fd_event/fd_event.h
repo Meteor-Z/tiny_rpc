@@ -29,6 +29,9 @@ public:
     // 监听
     void listen(TriggerEvent event_type, std::function<void()> callback);
 
+    // 取消监听
+    void cancel(TriggerEvent type_event);
+
     // 返回事件标识符
     int get_fd() const noexcept;
     
