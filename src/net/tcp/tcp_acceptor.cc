@@ -1,3 +1,5 @@
+#include <cstdio>
+#include <memory>
 #include <sys/socket.h>
 #include <fcntl.h>
 #include <system_error>
@@ -54,7 +56,7 @@ TcpAcceptor::TcpAcceptor(std::shared_ptr<IPv4NetAddr> local_addr)
     }
 }
 
-int TcpAcceptor::accept() {
+std::pair<int, std::shared_ptr<IPv4NetAddr>> TcpAcceptor::accept() {
     sockaddr_in client_addr;
     std::memset(&client_addr, 0, sizeof(client_addr));
 
@@ -69,10 +71,11 @@ int TcpAcceptor::accept() {
         std::exit(0);
     }
 
-    IPv4NetAddr peer_addr(client_addr);
+    // IPv4NetAddr peer_addr(client_addr);
+    std::shared_ptr<IPv4NetAddr> peer_addr = std::make_shared<IPv4NetAddr>(client_fd);
     rpc::utils::INFO_LOG(
-        fmt::format("a client accept() success, addr = {}", peer_addr.to_string()));
-    return client_fd;
+        fmt::format("a client accept() success, addr = {}", peer_addr->to_string()));
+    return std::make_pair(client_fd, peer_addr);
 }
 
 int TcpAcceptor::get_listend_fd() { return m_listenfd; }

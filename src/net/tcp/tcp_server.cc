@@ -1,4 +1,7 @@
+#include <bits/iterator_concepts.h>
 #include <functional>
+#include "net/tcp/ipv4_net_addr.h"
+#include "net/tcp/tcp_connection.h"
 #include "net/tcp/tcp_server.h"
 #include "common/log.h"
 #include "net/eventloop.h"
@@ -25,12 +28,26 @@ void TcpServer::start() {
 
 // TODO: 将 clientfd加入到io线程中;
 void TcpServer::on_accept() {
-    int client_fd = m_acceptor->accept();
-    ++m_client_counts;
-    rpc::utils::INFO_LOG(fmt::format("tcp_server success get client, fd = {}", client_fd));
+    // int client_fd = m_acceptor->accept();
 
-    // TODO:
-    // m_io_thread_group->get_io_thread()->get_eventloop()->add_epoll_event();
+    // struct client {
+    //     first: fd;          // 套接字
+    //     second: IPv4NetAddr // 地址
+    // };
+
+    std::pair<int, std::shared_ptr<IPv4NetAddr>> client = m_acceptor->accept();
+    int client_fd = client.first;
+    std::shared_ptr<IPv4NetAddr> peer_addr = client.second;
+    ++m_client_counts;
+
+    std::shared_ptr<IOThread> io_thread = m_io_thread_group->get_io_thread();
+
+    //  构造
+    std::shared_ptr<TcpConnection> connection =
+        std::make_shared<TcpConnection>(io_thread, client_fd, 128, peer_addr);
+    
+    rpc::utils::INFO_LOG(
+        fmt::format("tcp_server success get client, fd = {}", client_fd));
 }
 
 void TcpServer::init() {

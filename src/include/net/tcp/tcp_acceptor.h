@@ -17,7 +17,9 @@ class TcpAcceptor {
 public:
     TcpAcceptor(std::shared_ptr<IPv4NetAddr> local_addr);
     ~TcpAcceptor();
-    int accept();
+    
+    // retunr : pair<套接字，地址>
+    std::pair<int, std::shared_ptr<IPv4NetAddr>> accept();
     int get_listend_fd();
 
 private:

@@ -37,6 +37,7 @@ public:
     // peer_addr: 地址
     TcpConnection(std::shared_ptr<IOThread> io_thread, int fd, int buffer_size,
                   std::shared_ptr<IPv4NetAddr> peer_addr);
+
     ~TcpConnection();
 
     // 可读时间发生之后就会执行这个函数
@@ -45,7 +46,18 @@ public:
     // excute进行
     void excute();
 
-    void write();
+    // 回调函数
+    void on_write();
+
+    void set_state(const TcpConnection::TcpState& state);
+
+    TcpConnection::TcpState get_state();
+
+    // 清除连接
+    void clear();
+
+    // 主动关闭
+    void shutdown();
 
 private:
     std::shared_ptr<IPv4NetAddr> m_local_addr { nullptr }; // 本地地址
@@ -55,7 +67,7 @@ private:
     std::shared_ptr<IOThread> m_io_thread { nullptr };     // 当前指向的IO线程
     std::shared_ptr<FdEvent> m_fd_event { nullptr };       // 监听的文件描述符
     TcpState m_state { TcpState::NotConnected };           // 连接状态
-    int m_fd { -1 };                                         // 指向的套接字
+    int m_fd { -1 };                                       // 指向的套接字
 };
 } // namespace rpc
 #endif

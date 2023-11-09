@@ -32,6 +32,9 @@ public:
     // 返回事件标识符
     int get_fd() const noexcept;
     
+    // 设置非阻塞
+    void set_no_block();
+    
     // 返回 epoll 事件
     epoll_event get_epoll_event() const noexcept;
 

@@ -1,6 +1,9 @@
-#include "net/fd_event/fd_event.h"
+#include <chrono>
 #include <cstring>
 #include <sys/epoll.h>
+#include <fcntl.h>
+#include "net/fd_event/fd_event.h"
+
 namespace rpc {
 FdEvent::FdEvent(int fd) : m_fd(fd) {
     std::memset(&m_listen_events, 0, sizeof(m_listen_events));
@@ -13,6 +16,15 @@ FdEvent::~FdEvent() { memset(&m_listen_events, 0, sizeof(m_listen_events)); }
 int FdEvent::get_fd() const noexcept { return m_fd; }
 
 epoll_event FdEvent::get_epoll_event() const noexcept { return m_listen_events; }
+
+//TODO:了解这个函数
+void FdEvent::set_no_block() {
+    int is_block = fcntl(m_fd, F_GETFL, 0);
+    if (is_block & O_NONBLOCK) {
+        return;
+    }
+    fcntl(m_fd, F_SETFL, is_block | O_NONBLOCK);
+}
 
 // 如果是读事件，那么就执行读回掉函数，否则，就是写回调函数
 std::function<void()> FdEvent::handler(TriggerEvent event_type) {
