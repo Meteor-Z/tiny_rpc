@@ -1,9 +1,6 @@
 /*
 EventLoop类，
 一直循环下去，当检测到事件的时候就会立刻返回，往里面加入事件，
-
-#
-
 */
 
 #ifndef RPC_NET_EVENTLOOP_H

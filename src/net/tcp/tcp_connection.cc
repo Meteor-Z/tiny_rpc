@@ -1,5 +1,6 @@
 #include <asm-generic/errno-base.h>
 #include <cerrno>
+#include <cmath>
 #include <fmt/core.h>
 #include <math.h>
 #include <sys/socket.h>
@@ -7,6 +8,7 @@
 #include <unistd.h>
 #include <vector>
 #include <fmt/format.h>
+#include "net/eventloop.h"
 #include "net/tcp/ipv4_net_addr.h"
 #include "net/tcp/tcp_connection.h"
 #include "common/log.h"
@@ -16,9 +18,9 @@
 #include "net/time/time_event.h"
 
 namespace rpc {
-TcpConnection::TcpConnection(std::shared_ptr<IOThread> io_thread, int fd, int buffer_size,
-                             std::shared_ptr<IPv4NetAddr> peer_addr)
-    : m_io_thread(io_thread), m_peer_addr(peer_addr), m_state(TcpState::NotConnected),
+TcpConnection::TcpConnection(std::shared_ptr<EventLoop> event_loop, int fd,
+                             int buffer_size, std::shared_ptr<IPv4NetAddr> peer_addr)
+    : m_event_loop(event_loop), m_peer_addr(peer_addr), m_state(TcpState::NotConnected),
       m_fd(fd) {
 
     // 初始化buffer的大小
@@ -34,14 +36,15 @@ TcpConnection::TcpConnection(std::shared_ptr<IOThread> io_thread, int fd, int bu
                        std::bind(&TcpConnection::read, this));
 
     // TODO
-    io_thread->get_eventloop()->add_epoll_event(m_fd_event.get());
+    // m_event_loop->get_eventloop()->add_epoll_event(m_fd_event.get());
+    m_event_loop->add_epoll_event(m_fd_event.get());
 }
 
 TcpConnection::~TcpConnection() {}
 
 void TcpConnection::set_state(const TcpConnection::TcpState& state) { m_state = state; }
 
-TcpConnection::TcpState TcpConnection::get_state() { return m_state; }
+TcpConnection::TcpState TcpConnection::get_state() const noexcept { return m_state; }
 
 void TcpConnection::read() {
     // 如果不是连接中
@@ -55,6 +58,7 @@ void TcpConnection::read() {
     // 是否读完？
     bool is_read_all { false };
     bool is_close { false };
+
     while (!is_read_all) {
         //
         if (m_in_buffer->can_write_bytes_num() == 0) {
@@ -121,8 +125,11 @@ void TcpConnection::excute() {
     m_out_buffer->write_to_buffer(message.c_str(), message.size());
     m_fd_event->listen(FdEvent::TriggerEvent::OUT_EVENT,
                        std::bind(&TcpConnection::on_write, this));
+
     // 添加事件
-    m_io_thread->get_eventloop()->add_epoll_event(m_fd_event.get());
+    // m_io_thread->get_eventloop()->add_epoll_event(m_fd_event.get());
+
+    m_event_loop->add_epoll_event(m_fd_event.get());
     rpc::utils::INFO_LOG(
         fmt::format("success get request from client {}", m_peer_addr->to_string()));
 }
@@ -142,12 +149,22 @@ void TcpConnection::clear() {
     if (m_state == TcpConnection::TcpState::Closed) {
         return;
     }
+
+    // 取消监听读和写事件
+    m_fd_event->cancel(FdEvent::TriggerEvent::IN_EVENT);
+    m_fd_event->cancel(FdEvent::TriggerEvent::OUT_EVENT);
+
     // 去除套接字
-    m_io_thread->get_eventloop()->delete_epoll_event(m_fd_event.get());
+    // m_io_thread->get_eventloop()->delete_epoll_event(m_fd_event.get());
+
+    // 去除套接字
+    m_event_loop->delete_epoll_event(m_fd_event.get());
+
     // 这时候才会正式关闭
     m_state = TcpConnection::TcpState::Closed;
 }
 
+void TcpConnection::set_connection_type(TcpConnectionType type) noexcept { m_connection_type = type; }
 void TcpConnection::on_write() {
     // 将当前 out_buffer 发送到到 client
 
@@ -191,7 +208,8 @@ void TcpConnection::on_write() {
 
     if (is_write_all) {
         m_fd_event->cancel(FdEvent::TriggerEvent::OUT_EVENT);
-        m_io_thread->get_eventloop()->add_epoll_event(m_fd_event.get());
+        // m_io_thread->get_eventloop()->add_epoll_event(m_fd_event.get());
+        m_event_loop->add_epoll_event(m_fd_event.get());
     }
 }
 

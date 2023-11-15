@@ -2,8 +2,8 @@
 对于IPv4进行封装
 此处不考虑其他ip地址
 */
-#ifndef RPC_NET_TCP_NET_ADDR_H
-#define RPC_NET_TCP_NET_ADDR_H
+#ifndef RPC_NET_TCP_IPV4_NET_ADDR_H
+#define RPC_NET_TCP_IPV4_NET_ADDR_H
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -36,7 +36,7 @@ public:
     IPv4NetAddr(std::string_view addr);
     IPv4NetAddr(sockaddr_in addr);
 
-    sockaddr* get_sock_addr();
+    sockaddr* get_sock_addr() noexcept;
 
     socklen_t get_sock_len() const noexcept;
 
@@ -44,7 +44,7 @@ public:
     int get_family() const noexcept;
 
     // to format
-    std::string to_string();
+    std::string to_string() const noexcept;
 
     bool check_valid();
 

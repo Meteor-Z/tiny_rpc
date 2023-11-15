@@ -3,7 +3,6 @@ TcpServr中的监听套接字
 
 socket()            bind()            listen()         accept()
 创建一个监听套接字     绑定到一个端口上     变成监听套接字     一直进行监听
-
 */
 
 #ifndef RPC_NET_TCP_TCP_ACCEPTOR_H
@@ -16,10 +15,12 @@ namespace rpc {
 class TcpAcceptor {
 public:
     TcpAcceptor(std::shared_ptr<IPv4NetAddr> local_addr);
+
     ~TcpAcceptor();
-    
-    // retunr : pair<套接字，地址>
+
+    // return : pair<套接字，地址>
     std::pair<int, std::shared_ptr<IPv4NetAddr>> accept();
+
     int get_listend_fd();
 
 private:

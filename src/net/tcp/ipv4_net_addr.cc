@@ -50,7 +50,7 @@ bool IPv4NetAddr::check_valid() {
         rpc::utils::DEBUG_LOG(fmt::format("ip is empty(), error"));
         return false;
     }
-    
+
     if (m_port < 0 || m_port > 65535) {
         rpc::utils::DEBUG_LOG(fmt::format("m_port is error"));
         return false;
@@ -65,13 +65,15 @@ bool IPv4NetAddr::check_valid() {
     return true;
 }
 
-sockaddr* IPv4NetAddr::get_sock_addr() { return reinterpret_cast<sockaddr*>(&m_addr); }
+sockaddr* IPv4NetAddr::get_sock_addr() noexcept {
+    return reinterpret_cast<sockaddr*>(&m_addr);
+}
 
 socklen_t IPv4NetAddr::get_sock_len() const noexcept { return sizeof(m_addr); }
 
 int IPv4NetAddr::get_family() const noexcept { return AF_INET; }
 
-std::string IPv4NetAddr::to_string() {
+std::string IPv4NetAddr::to_string() const noexcept {
     return std::string { fmt::format("{}:{}", m_ip, m_port) };
 }
 } // namespace rpc

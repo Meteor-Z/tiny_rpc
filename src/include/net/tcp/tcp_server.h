@@ -3,7 +3,7 @@ TcpServer:
 通过epoll监听, listenfd的可读事件，当可读事件发生之后，就会调用accept函数获取clientfd
 随机选出来一个subReactor,将clientfd读写事件注册到subReactor的epoll上，
 
->mainReactor只负责建立连接事件，不负责业务处理，也不关心已经连接套接字的IO事件
+> mainReactor只负责建立连接事件，不负责业务处理，也不关心已经连接套接字的IO事件
 */
 
 #ifndef RPC_NET_TCP_TCP_SERVER_H

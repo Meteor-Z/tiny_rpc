@@ -14,10 +14,14 @@ namespace rpc {
 class FdEventGroup {
 public:
     FdEventGroup(int size);
+
     ~FdEventGroup();
+
+    // 得到事件，如果有，就返回，如果没有，就创建再返回
     std::shared_ptr<FdEvent> get_fd_event(int fd);
 
 public:
+    // 得到全局的 Fd_Event_Group
     static std::shared_ptr<FdEventGroup> Get_Fd_Event_Group();
 
 private:

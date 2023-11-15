@@ -7,6 +7,7 @@
 #include "common/log.h"
 #include "net/tcp/ipv4_net_addr.h"
 #include "net/tcp/tcp_server.h"
+#include "net/tcp/tcp_client.h"
 
 void test_tcp_client() {
     // 1. 调用 connect 连接 server
@@ -30,22 +31,32 @@ void test_tcp_client() {
     std::string message = "hello world!";
 
     rt = write(fd, message.c_str(), message.size());
-    
+
     rpc::utils::DEBUG_LOG(fmt::format("succes write {} bytes, {}", rt, message.c_str()));
 
     char buf[100];
-    
+
     rt = read(fd, buf, 100);
-    
+
     rpc::utils::DEBUG_LOG(fmt::format("read succes {} bytes, {}", rt, std::string(buf)));
-    
-    
-    
+}
+
+void test_tcp_client_connect() {
+    std::shared_ptr<rpc::IPv4NetAddr> addr =
+        std::make_shared<rpc::IPv4NetAddr>("127.0.0.1", 12345);
+
+    rpc::TcpClient client(addr);
+
+    // 测试日志
+    client.connect([addr]() {
+        rpc::utils::DEBUG_LOG(fmt::format("Test TCP_Client, connect to {} success", addr->to_string()));
+    });
 }
 
 int main() {
     rpc::LogConfig::SET_GLOBAL_CONFIG("/home/lzc/tiny_rpc/conf/rpc.xml");
     rpc::Logger::INIT_GLOBAL_LOGGER();
 
-    test_tcp_client();
+    // test_tcp_client();
+    test_tcp_client_connect();
 }
