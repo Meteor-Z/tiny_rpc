@@ -27,6 +27,7 @@ add_library(tcp_client_libs STATIC
     ${CMAKE_SOURCE_DIR}/src/net/tcp/tcp_acceptor.cc
     ${CMAKE_SOURCE_DIR}/src/net/tcp/tcp_connection.cc
     ${CMAKE_SOURCE_DIR}/src/net/tcp/tcp_buffer.cc
+    ${CMAKE_SOURCE_DIR}/src/net/tcp/tcp_client.cc
 )
 # 依赖
 target_link_libraries(tcp_client PRIVATE tcp_client_libs)

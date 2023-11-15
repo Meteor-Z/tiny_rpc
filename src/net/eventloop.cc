@@ -113,6 +113,8 @@ void EventLoop::init_wakeup_fd_event() {
 先将任务队列中的人物处理掉，然后再进行处理io时间，将其加入到队列中？
 */
 void EventLoop::loop() {
+    // 正在 loop
+    m_is_looping = true;
     while (!m_stop_flag) {
         // ------------- lock() 锁住这里就行了，下面还有地方会用到锁
         std::unique_lock<std::mutex> lock { m_mtx };
@@ -181,6 +183,7 @@ void EventLoop::init_timer() {
 void EventLoop::add_timer_event(std::shared_ptr<TimerEvent> shard_ptr) {
     m_timer->add_time_event(shard_ptr);
 }
+bool EventLoop::is_looping() const noexcept { return m_is_looping; }
 
 void EventLoop::stop() {
     m_stop_flag = true;

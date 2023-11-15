@@ -1,5 +1,5 @@
-#include <asm-generic/socket.h>
 #include <cerrno>
+#include <cmath>
 #include <cstring>
 #include <sys/epoll.h>
 #include <unistd.h>
@@ -29,6 +29,7 @@ TcpClient::TcpClient(std::shared_ptr<IPv4NetAddr> peer_addr) : m_peer_addr(peer_
 }
 
 TcpClient::~TcpClient() {
+    rpc::utils::DEBUG_LOG("TcpClient:~TcpClient()");
     if (m_fd > 0) {
         close(m_fd);
     }
@@ -52,27 +53,40 @@ void TcpClient::connect(std::function<void()> done) {
         if (done) {
             done();
         }
-    } else if (result == -1 && errno == EINPROGRESS) {
-        // epoll 监听可写事件,判断错误码
-        m_fd_event->listen(FdEvent::TriggerEvent::OUT_EVENT, [this, done]() {
-            int error = 0;
-            socklen_t error_len = sizeof(error);
+    } else if (result == -1) {
+        if (errno == EINPROGRESS) {
+            // epoll 监听可写事件,判断错误码
+            m_fd_event->listen(FdEvent::TriggerEvent::OUT_EVENT, [this, done]() {
+                int error = 0;
+                socklen_t error_len = sizeof(error);
 
-            // TODO:什么东西
-            getsockopt(m_fd, SOL_SOCKET, SO_ERROR, &error, &error_len);
+                // TODO:什么东西
+                getsockopt(m_fd, SOL_SOCKET, SO_ERROR, &error, &error_len);
 
-            if (error == 0) {
-                rpc::utils::DEBUG_LOG(
-                    fmt::format("connect {} success", m_peer_addr->to_string()));
-                if (done) {
-                    done();
+                if (error == 0) {
+                    rpc::utils::DEBUG_LOG(
+                        fmt::format("connect {} success", m_peer_addr->to_string()));
+                    if (done) {
+                        done();
+                    }
+                } else {
+                    rpc::utils::ERROR_LOG(fmt::format(
+                        "TcpClient connection() error, errnno = {}, error = {}", errno,
+                        strerror(errno)));
                 }
-            } else {
-                rpc::utils::ERROR_LOG(
-                    fmt::format("TcpClient connection() error, errnno = {}, error = {}",
-                                errno, strerror(errno)));
+
+                // 去掉可写事件的监听
+                m_fd_event->cancel(FdEvent::TriggerEvent::OUT_EVENT);
+                m_event_loop->add_epoll_event(m_fd_event.get());
+            });
+            m_event_loop->add_epoll_event(m_fd_event.get());
+
+            // 没有loop的时候才会进行loop
+            if (!m_event_loop->is_looping()) {
+                m_event_loop->loop();
             }
-        });
+        }
+
     } else {
         rpc::utils::ERROR_LOG(
             fmt::format("TcpClient connection() error, errnno = {}, error = {}", errno,

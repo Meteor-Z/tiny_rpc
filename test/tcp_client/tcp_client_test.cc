@@ -43,7 +43,7 @@ void test_tcp_client() {
 
 void test_tcp_client_connect() {
     std::shared_ptr<rpc::IPv4NetAddr> addr =
-        std::make_shared<rpc::IPv4NetAddr>("127.0.0.1", 12345);
+        std::make_shared<rpc::IPv4NetAddr>("127.0.0.1", 1245);
 
     rpc::TcpClient client(addr);
 

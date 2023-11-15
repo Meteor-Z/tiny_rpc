@@ -46,7 +46,7 @@ void TcpServer::on_accept() {
 
     //  构造
     std::shared_ptr<TcpConnection> connection =
-        std::make_shared<TcpConnection>(io_thread, client_fd, 128, peer_addr);
+        std::make_shared<TcpConnection>(io_thread->get_eventloop(), client_fd, 128, peer_addr);
 
     // 设置已经连接
     connection->set_state(TcpConnection::TcpState::Connected);

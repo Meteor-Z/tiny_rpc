@@ -44,7 +44,11 @@ public:
 
     void add_task(std::function<void()> task, bool is_wake_up = false);
 
-    void add_timer_event(std::shared_ptr<TimerEvent> shard_ptr); // 添加定时任务
+    // 添加定时任务
+    void add_timer_event(std::shared_ptr<TimerEvent> shard_ptr);
+
+    bool is_looping() const noexcept;
+
 public:
     // 得到全局对象EventLoop
     static std::shared_ptr<EventLoop> Get_Current_Eventloop();
@@ -74,6 +78,7 @@ private:
     std::queue<std::function<void()>> m_pending_tasks; // 待执行的任务队列。
     std::mutex m_mtx;                                  // 这个是锁
     Timer* m_timer { nullptr };                        // 之后要改成智能指针
+    bool m_is_looping { false };                       // 是否正在loop中
 };
 } // namespace rpc
 
