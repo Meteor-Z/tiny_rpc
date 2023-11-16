@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22.1)
 
 project(tiny_rpc)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 
 # 设置生成 compile_commands
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -12,7 +12,7 @@ set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "${CMAKE_COMMAND} -E time")
 
 
 include_directories(${CMAKE_SOURCE_DIR}/src/include)
-
+include_directories(${CMAKE_SOURCE_DIR}/third_party/fmt/include)
 add_subdirectory(third_party/fmt)
 
 # 以下是测试文件

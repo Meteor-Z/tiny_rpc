@@ -3,7 +3,7 @@
 
 #include <sched.h>
 #include <memory>
-#include <semaphore>
+#include <semaphore.h>
 #include "net/eventloop.h"
 
 namespace rpc {

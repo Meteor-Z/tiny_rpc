@@ -7,9 +7,10 @@ include_directories(${CMAKE_SOURCE_DIR}/src/include)
 
 # 这个是tinyxml的头文件
 include_directories(${CMAKE_SOURCE_DIR}/third_party/tinyxml/include)
-
 # 这个是tinyxml的lib库
 find_library(TINYXML tinyxml ${CMAKE_SOURCE_DIR}/third_party/tinyxml/lib)
+
+target_include_directories(event_loop PRIVATE ${CMAKE_SOURCE_DIR}/third_party/fmt/include)
 
 add_library(event_loop_libs STATIC
     ${CMAKE_SOURCE_DIR}/src/common/config.cc

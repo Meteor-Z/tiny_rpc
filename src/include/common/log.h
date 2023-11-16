@@ -17,7 +17,37 @@ LogEvent: 事件，当前事件
 #include <sstream>
 #include <string>
 #include <string_view>
-#include <fmt/format.h>
+#include "fmt/color.h"
+
+#define DEBUG_LOG(message, ...)                                                          \
+    if (rpc::Logger::GET_GLOBAL_LOGGER()->get_log_level() <= rpc::LogLevel::Debug) {     \
+        std::unique_ptr<rpc::LogEvent> ptr =                                             \
+            std::make_unique<rpc::LogEvent>(rpc::LogLevel::Debug);                       \
+        std::string new_message =                                                        \
+            ptr->get_log(__FILE__, __LINE__) + " " + std::string { message };            \
+        rpc::Logger::GET_GLOBAL_LOGGER()->push_log(new_message);                         \
+        rpc::Logger::GET_GLOBAL_LOGGER()->log();                                         \
+    }
+
+#define INFO_LOG(message, ...)                                                           \
+    if (rpc::Logger::GET_GLOBAL_LOGGER()->get_log_level() <= rpc::LogLevel::Info) {      \
+        std::unique_ptr<rpc::LogEvent> ptr =                                             \
+            std::make_unique<rpc::LogEvent>(rpc::LogLevel::Info);                        \
+        std::string new_message =                                                        \
+            ptr->get_log(__FILE__, __LINE__) + " " + std::string { message };            \
+        rpc::Logger::GET_GLOBAL_LOGGER()->push_log(new_message);                         \
+        rpc::Logger::GET_GLOBAL_LOGGER()->log();                                         \
+    }
+
+#define ERROR_LOG(message, ...)                                                          \
+    if (rpc::Logger::GET_GLOBAL_LOGGER()->get_log_level() <= rpc::LogLevel::Error) {     \
+        std::unique_ptr<rpc::LogEvent> ptr =                                             \
+            std::make_unique<rpc::LogEvent>(rpc::LogLevel::Error);                       \
+        std::string new_message =                                                        \
+            ptr->get_log(__FILE__, __LINE__) + " " + std::string { message };            \
+        rpc::Logger::GET_GLOBAL_LOGGER()->push_log(new_message);                         \
+        rpc::Logger::GET_GLOBAL_LOGGER()->log();                                         \
+    }
 
 namespace rpc {
 // enum class 能够限制范围
@@ -73,15 +103,15 @@ private:
 /*
 debug工具，std::location是缺省值，不需要填写
 */
-namespace utils {
-void DEBUG_LOG(std::string_view message,
-               const std::source_location& location = std::source_location::current());
-void INFO_LOG(std::string_view message,
-              const std::source_location& location = std::source_location::current());
+// namespace utils {
+// void DEBUG_LOG(std::string_view message,
+//                const std::source_location& location = std::source_location::current());
+// void INFO_LOG(std::string_view message,
+//               const std::source_location& location = std::source_location::current());
 
-void ERROR_LOG(std::string_view message,
-               const std::source_location& location = std::source_location::current());
-} // namespace utils
+// void ERROR_LOG(std::string_view message,
+//                const std::source_location& location = std::source_location::current());
+// } // namespace utils
 
 std::string loglevel_to_string(LogLevel loglevel);
 LogLevel string_to_loglevel(const std::string& loglevel);

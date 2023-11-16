@@ -32,7 +32,7 @@ IOThread::IOThread() {
     // 等待当前线程
     sem_wait(&m_init_semphore);
 
-    rpc::utils::DEBUG_LOG(fmt::format("IOThread {} create success", m_thread_id));
+    DEBUG_LOG(fmt::format("IOThread {} create success", m_thread_id));
 
     assert(rt == 0);
 }
@@ -53,13 +53,13 @@ void* IOThread::Main(void* args) {
 
     // 唤醒等到的线程 这里的信号量指的是要初始化好这个线程
     sem_post(&thread_ptr->m_init_semphore);
-    rpc::utils::DEBUG_LOG(
+    DEBUG_LOG(
         fmt::format("IOThread {} wait start semaphore", thread_ptr->m_thread_id));
 
     // 进行堵塞，等到信号才能进行loop循环
     sem_wait(&thread_ptr->m_start_semphore);
     
-    rpc::utils::DEBUG_LOG(fmt::format("IOThread {} start loop", thread_ptr->m_thread_id));
+    DEBUG_LOG(fmt::format("IOThread {} start loop", thread_ptr->m_thread_id));
 
     thread_ptr->m_event_loop->loop();
 

@@ -49,7 +49,7 @@ TcpConnection::TcpState TcpConnection::get_state() const noexcept { return m_sta
 void TcpConnection::read() {
     // 如果不是连接中
     if (m_state != TcpState::Connected) {
-        rpc::utils::INFO_LOG(
+        INFO_LOG(
             fmt::format("client has already disconnected, addr = {}, clientfd {}",
                         m_peer_addr->to_string(), m_fd_event->get_fd()));
         return;
@@ -69,7 +69,7 @@ void TcpConnection::read() {
         int write_index = m_in_buffer->wtite_index();
 
         int rt = ::read(m_fd, &(m_in_buffer->get_buffer()[write_index]), read_count);
-        rpc::utils::INFO_LOG(fmt::format("success read {} bytes fron {}, client fd = {}",
+        INFO_LOG(fmt::format("success read {} bytes fron {}, client fd = {}",
                                          rt, m_peer_addr->to_string(), m_fd));
 
         // 读成功了！进行调整
@@ -95,14 +95,14 @@ void TcpConnection::read() {
 
     // 处理关闭连接
     if (is_close) {
-        rpc::utils::DEBUG_LOG(fmt::format("peer closed, peer addr = {}, client_fd = {}",
+        DEBUG_LOG(fmt::format("peer closed, peer addr = {}, client_fd = {}",
                                           m_peer_addr->to_string(), m_fd));
         clear();
         return;
     }
 
     if (!is_read_all) {
-        rpc::utils::INFO_LOG("not read all data");
+        INFO_LOG("not read all data");
     }
     // 读完就开始进行rpc解析
     excute();
@@ -130,7 +130,7 @@ void TcpConnection::excute() {
     // m_io_thread->get_eventloop()->add_epoll_event(m_fd_event.get());
 
     m_event_loop->add_epoll_event(m_fd_event.get());
-    rpc::utils::INFO_LOG(
+    INFO_LOG(
         fmt::format("success get request from client {}", m_peer_addr->to_string()));
 }
 
@@ -170,7 +170,7 @@ void TcpConnection::on_write() {
 
     // 如果已经关闭了
     if (m_state != TcpState::Connected) {
-        rpc::utils::ERROR_LOG(fmt::format(
+        ERROR_LOG(fmt::format(
             "on_write() error, already disconnected, addr = {}, client fd = {}",
             m_peer_addr->to_string(), m_fd));
         return;
@@ -180,7 +180,7 @@ void TcpConnection::on_write() {
     // 一直发送，直到发送完
     while (true) {
         if (m_out_buffer->can_read_bytes_num() == 0) {
-            rpc::utils::DEBUG_LOG(fmt::format("no data need to send to client {}",
+            DEBUG_LOG(fmt::format("no data need to send to client {}",
                                               m_peer_addr->to_string()));
             is_write_all = true;
             break;
@@ -193,14 +193,14 @@ void TcpConnection::on_write() {
 
         // 发送完了
         if (result >= size) {
-            rpc::utils::DEBUG_LOG(
+            DEBUG_LOG(
                 fmt::format("no data need to client {}", m_peer_addr->to_string()));
             is_write_all = true;
             break;
         }
         // 缓冲区已经满了
         if (result == -1 && errno == EAGAIN) {
-            rpc::utils::ERROR_LOG(
+            ERROR_LOG(
                 fmt::format("write data error, errno = EAGIN and result = -1"));
             break;
         }

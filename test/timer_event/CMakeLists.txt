@@ -9,6 +9,8 @@ include_directories(${CMAKE_SOURCE_DIR}/third_party/tinyxml/include)
 find_library(TINYXML tinyxml ${CMAKE_SOURCE_DIR}/third_party/tinyxml/lib)
 
 
+target_include_directories(timer_event PRIVATE ${CMAKE_SOURCE_DIR}/third_party/fmt/include)
+
 add_library(timer_event_libs STATIC
     ${CMAKE_SOURCE_DIR}/src/common/config.cc
     ${CMAKE_SOURCE_DIR}/src/common/log.cc

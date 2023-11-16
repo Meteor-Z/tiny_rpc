@@ -11,14 +11,14 @@
 
 namespace rpc {
 TcpServer::~TcpServer() {
-    rpc::utils::DEBUG_LOG("~TcpServer()");
+    DEBUG_LOG("~TcpServer()");
 }
 
 TcpServer::TcpServer(std::shared_ptr<IPv4NetAddr> local_addr) : m_local_addr(local_addr) {
     // TODO():这里要有修改
     init();
 
-    rpc::utils::INFO_LOG(
+    INFO_LOG(
         fmt::format("tcp server success on {}", m_local_addr->to_string()));
 }
 
@@ -54,7 +54,7 @@ void TcpServer::on_accept() {
     
     // 不会析构
     m_client.insert(connection);
-    rpc::utils::INFO_LOG(
+    INFO_LOG(
         fmt::format("tcp_server success get client, fd = {}", client_fd));
 
 }

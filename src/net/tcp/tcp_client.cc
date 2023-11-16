@@ -29,7 +29,7 @@ TcpClient::TcpClient(std::shared_ptr<IPv4NetAddr> peer_addr) : m_peer_addr(peer_
 }
 
 TcpClient::~TcpClient() {
-    rpc::utils::DEBUG_LOG("TcpClient:~TcpClient()");
+    DEBUG_LOG("TcpClient:~TcpClient()");
     if (m_fd > 0) {
         close(m_fd);
     }
@@ -48,7 +48,7 @@ void TcpClient::connect(std::function<void()> done) {
         ::connect(m_fd, m_peer_addr->get_sock_addr(), m_peer_addr->get_sock_len());
 
     if (result == 0) {
-        rpc::utils::INFO_LOG("connect success");
+        INFO_LOG("connect success");
         // 执行回调函数
         if (done) {
             done();
@@ -64,13 +64,13 @@ void TcpClient::connect(std::function<void()> done) {
                 getsockopt(m_fd, SOL_SOCKET, SO_ERROR, &error, &error_len);
 
                 if (error == 0) {
-                    rpc::utils::DEBUG_LOG(
+                    DEBUG_LOG(
                         fmt::format("connect {} success", m_peer_addr->to_string()));
                     if (done) {
                         done();
                     }
                 } else {
-                    rpc::utils::ERROR_LOG(fmt::format(
+                    ERROR_LOG(fmt::format(
                         "TcpClient connection() error, errnno = {}, error = {}", errno,
                         strerror(errno)));
                 }
@@ -88,7 +88,7 @@ void TcpClient::connect(std::function<void()> done) {
         }
 
     } else {
-        rpc::utils::ERROR_LOG(
+        ERROR_LOG(
             fmt::format("TcpClient connection() error, errnno = {}, error = {}", errno,
                         strerror(errno)));
     }

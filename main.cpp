@@ -25,7 +25,7 @@ int main()
     int listenfd = socket(AF_INET, SOCK_STREAM, 0);
     if (listenfd == -1) 
     {
-        rpc::utils::ERROR_LOG("listenfd = -1");
+        ERROR_LOG("listenfd = -1");
         exit(0);
     }
 
@@ -33,7 +33,7 @@ int main()
     memset(&addr, 0, sizeof(addr));
 
     int ip = 12345;
-    rpc::utils::DEBUG_LOG(fmt::format("... ip = {}", ip));
+    DEBUG_LOG(fmt::format("... ip = {}", ip));
     
     addr.sin_port = htons(ip);
     addr.sin_family = AF_INET;
@@ -42,7 +42,7 @@ int main()
     int bind_is_ok = bind(listenfd, reinterpret_cast<sockaddr*>(&addr), sizeof(addr));
     if (bind_is_ok != 0) 
     {
-        rpc::utils::ERROR_LOG("bind() error");
+        ERROR_LOG("bind() error");
         exit(1);
     }
 
@@ -50,7 +50,7 @@ int main()
     
     if (listen_is_ok != 0) 
     {
-        rpc::utils::ERROR_LOG("listend() error");
+        ERROR_LOG("listend() error");
         exit(1);
     }
 
@@ -61,7 +61,7 @@ int main()
         socklen_t addr_len = sizeof(client_addr);
         memset(&client_addr, 0, sizeof(client_addr));
         int clientfd = accept(listenfd, reinterpret_cast<sockaddr*>(&client_addr), &addr_len);
-        rpc::utils::DEBUG_LOG(fmt::format("success get client fd[{}], peer addr: [{}:{}]", clientfd, inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port)));
+        DEBUG_LOG(fmt::format("success get client fd[{}], peer addr: [{}:{}]", clientfd, inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port)));
     });
 
     eventloop_ptr->add_epoll_event(&event);
@@ -71,7 +71,7 @@ int main()
     rpc::TimerEvent::s_ptr timer_event = std::make_shared<rpc::TimerEvent>(
         1000, true, [&i]()
         {
-            rpc::utils::INFO_LOG(fmt::format("triger, timer event, count = {}", i++));
+            INFO_LOG(fmt::format("triger, timer event, count = {}", i++));
         }
     );
     eventloop_ptr->add_timer_event(timer_event);

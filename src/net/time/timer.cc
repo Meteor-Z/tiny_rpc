@@ -11,7 +11,7 @@
 #include <sys/select.h>
 #include <sys/timerfd.h>
 #include <mutex>
-#include <fmt/core.h>
+#include "fmt/core.h"
 #include "net/time/timer.h"
 #include "common/log.h"
 #include "common/utils.h"
@@ -24,7 +24,7 @@ Timer::Timer() : FdEvent() {
     // TFD_NONBLOCK | TFD_CLOEXEC : 非堵塞
     // TFD_CLOEXEC：调用exec系统调用的时候保证不会在子进程中继续存在
     m_fd = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK | TFD_CLOEXEC);
-    rpc::utils::DEBUG_LOG(fmt::format("timer fd = {}", m_fd));
+    DEBUG_LOG(fmt::format("timer fd = {}", m_fd));
 
     // fdevent 在eventloop上进行监听 绑定一个可读事件
     // listen 继承于 FdEvent
@@ -72,7 +72,7 @@ void Timer::on_timer() {
             add_time_event(*it);
         }
     }
-    
+
     // 重新调整 arrive_time()
     reset_arrive_time();
 
@@ -126,11 +126,11 @@ void Timer::reset_arrive_time() {
     // 使用系统调用，设置timerfd
     int rt = timerfd_settime(m_fd, 0, &value, nullptr);
     if (rt != 0) {
-        rpc::utils::ERROR_LOG(fmt::format("timerfd_settime error, errno = {} error = {}",
-                                          errno, strerror(errno)));
+        ERROR_LOG(fmt::format("timerfd_settime error, errno = {} error = {}", errno,
+                              strerror(errno)));
     }
 
-    rpc::utils::DEBUG_LOG(fmt::format("timer reset to {}", now + inteval));
+    DEBUG_LOG(fmt::format("timer reset to {}", now + inteval));
 }
 
 void Timer::add_time_event(std::shared_ptr<TimerEvent> event) {
@@ -176,7 +176,7 @@ void Timer::delete_time_event(std::shared_ptr<TimerEvent> event) {
 
     unique_lock.unlock();
 
-    rpc::utils::DEBUG_LOG(
+    DEBUG_LOG(
         fmt::format("success delete time_event at arrive {}", event->get_arrive_time()));
 }
 } // namespace rpc

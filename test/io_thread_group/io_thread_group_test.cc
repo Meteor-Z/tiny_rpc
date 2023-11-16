@@ -20,7 +20,7 @@
 void test_io_thread() {
     int listenfd = socket(AF_INET, SOCK_STREAM, 0);
     if (listenfd == -1) {
-        rpc::utils::ERROR_LOG(fmt::format("listend fd = -1"));
+        ERROR_LOG(fmt::format("listend fd = -1"));
         std::exit(0);
     }
 
@@ -33,13 +33,13 @@ void test_io_thread() {
 
     int rt = bind(listenfd, reinterpret_cast<sockaddr *>(&addr), sizeof(addr));
     if (rt != 0) {
-        rpc::utils::ERROR_LOG(fmt::format("bind error"));
+        ERROR_LOG(fmt::format("bind error"));
         std::exit(0);
     }
 
     rt = listen(listenfd, 100);
     if (rt != 0) {
-        rpc::utils::ERROR_LOG("listen error");
+        ERROR_LOG("listen error");
         std::exit(0);
     }
 
@@ -52,7 +52,7 @@ void test_io_thread() {
         int client_fd = accept(
             listenfd, reinterpret_cast<sockaddr *>(&peer_addr), &addr_len);
         // 连接成功
-        rpc::utils::DEBUG_LOG(fmt::format(
+        DEBUG_LOG(fmt::format(
             "success get client fd[{}], peer addr: [{}:{}]", client_fd,
             inet_ntoa(peer_addr.sin_addr), ntohs(peer_addr.sin_port)));
     });
@@ -60,7 +60,7 @@ void test_io_thread() {
     int i = 0;
     std::shared_ptr<rpc::TimerEvent> timer_event_ptr =
         std::make_shared<rpc::TimerEvent>(1000, true, [&i]() {
-            rpc::utils::INFO_LOG(
+            INFO_LOG(
                 fmt::format("trigger timer event, count = {}", i++));
         });
 

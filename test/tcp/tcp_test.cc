@@ -7,5 +7,5 @@ int main() {
     rpc::Logger::INIT_GLOBAL_LOGGER();
     
     rpc::IPv4NetAddr addr("127.0.0.1", 12345);
-    rpc::utils::DEBUG_LOG(addr.to_string());
+    DEBUG_LOG(addr.to_string());
 }

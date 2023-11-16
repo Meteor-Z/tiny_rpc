@@ -32,13 +32,13 @@ void test_tcp_client() {
 
     rt = write(fd, message.c_str(), message.size());
 
-    rpc::utils::DEBUG_LOG(fmt::format("succes write {} bytes, {}", rt, message.c_str()));
+    DEBUG_LOG(fmt::format("succes write {} bytes, {}", rt, message.c_str()));
 
     char buf[100];
 
     rt = read(fd, buf, 100);
 
-    rpc::utils::DEBUG_LOG(fmt::format("read succes {} bytes, {}", rt, std::string(buf)));
+    DEBUG_LOG(fmt::format("read succes {} bytes, {}", rt, std::string(buf)));
 }
 
 void test_tcp_client_connect() {
@@ -49,7 +49,7 @@ void test_tcp_client_connect() {
 
     // 测试日志
     client.connect([addr]() {
-        rpc::utils::DEBUG_LOG(fmt::format("Test TCP_Client, connect to {} success", addr->to_string()));
+        DEBUG_LOG(fmt::format("Test TCP_Client, connect to {} success", addr->to_string()));
     });
 }
 

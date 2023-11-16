@@ -78,7 +78,7 @@ void TcpBuffer::read_from_buffer(std::vector<char>& re, int size) {
 void TcpBuffer::adjust_read_index(int size) {
     size_t j = m_read_index + size;
     if (j >= m_buffer.size()) {
-        rpc::utils::ERROR_LOG(fmt::format(
+        ERROR_LOG(fmt::format(
             "ajust_read_index() error, invalid size {}, old_read_index {}, buffer size{}",
             size, m_read_index, m_buffer.size()));
         return;
@@ -91,7 +91,7 @@ void TcpBuffer::adjust_read_index(int size) {
 void TcpBuffer::adjust_write_index(int size) {
     int j = m_write_index + size;
     if (j >= m_buffer.size()) {
-        rpc::utils::ERROR_LOG(fmt::format("ajust_read_index() error, invalid size {}, "
+        ERROR_LOG(fmt::format("ajust_read_index() error, invalid size {}, "
                                           "old_write_index {}, buffer size{}",
                                           size, m_write_index, m_buffer.size()));
         return;
