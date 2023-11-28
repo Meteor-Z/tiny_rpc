@@ -35,12 +35,13 @@ TcpConnection::TcpConnection(std::shared_ptr<EventLoop> event_loop, int fd,
     m_fd_event->listen(FdEvent::TriggerEvent::IN_EVENT,
                        std::bind(&TcpConnection::read, this));
 
-    // TODO
     // m_event_loop->get_eventloop()->add_epoll_event(m_fd_event.get());
     m_event_loop->add_epoll_event(m_fd_event.get());
 }
 
-TcpConnection::~TcpConnection() {}
+TcpConnection::~TcpConnection() {
+    DEBUG_LOG("~TcpConnection");
+}
 
 void TcpConnection::set_state(const TcpConnection::TcpState& state) { m_state = state; }
 

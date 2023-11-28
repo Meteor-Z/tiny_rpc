@@ -20,7 +20,13 @@ TcpClient::TcpClient(std::shared_ptr<IPv4NetAddr> peer_addr) : m_peer_addr(peer_
     //
     // }
 
+    // fd_event的对象获取
     m_fd_event = FdEventGroup::Get_Fd_Event_Group()->get_fd_event(m_fd);
+    
+    // 设置非阻塞的
+    m_fd_event->set_no_block();
+
+    // 连接
     m_connection = std::make_shared<TcpConnection>(m_event_loop, m_fd, 128, peer_addr);
 
     // 设置成客户端的
@@ -49,6 +55,7 @@ void TcpClient::connect(std::function<void()> done) {
 
     if (result == 0) {
         INFO_LOG("connect success");
+
         // 执行回调函数
         if (done) {
             done();
@@ -60,9 +67,10 @@ void TcpClient::connect(std::function<void()> done) {
                 int error = 0;
                 socklen_t error_len = sizeof(error);
 
-                // TODO:什么东西
+                /// TODO:什么东西
                 getsockopt(m_fd, SOL_SOCKET, SO_ERROR, &error, &error_len);
 
+                // 这里也算连接成功
                 if (error == 0) {
                     DEBUG_LOG(
                         fmt::format("connect {} success", m_peer_addr->to_string()));
@@ -70,6 +78,7 @@ void TcpClient::connect(std::function<void()> done) {
                         done();
                     }
                 } else {
+                    // 这里是其他错误，直接报错即可
                     ERROR_LOG(fmt::format(
                         "TcpClient connection() error, errnno = {}, error = {}", errno,
                         strerror(errno)));
@@ -79,6 +88,8 @@ void TcpClient::connect(std::function<void()> done) {
                 m_fd_event->cancel(FdEvent::TriggerEvent::OUT_EVENT);
                 m_event_loop->add_epoll_event(m_fd_event.get());
             });
+            
+            // 要加入到 epoll_event上面
             m_event_loop->add_epoll_event(m_fd_event.get());
 
             // 没有loop的时候才会进行loop
@@ -88,9 +99,12 @@ void TcpClient::connect(std::function<void()> done) {
         }
 
     } else {
-        ERROR_LOG(
-            fmt::format("TcpClient connection() error, errnno = {}, error = {}", errno,
-                        strerror(errno)));
+        ERROR_LOG(fmt::format("TcpClient connection() error, errnno = {}, error = {}",
+                              errno, strerror(errno)));
+    }
+
+    if (!m_event_loop->is_looping()) {
+        m_event_loop->loop();
     }
 }
 } // namespace rpc

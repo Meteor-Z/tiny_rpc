@@ -17,12 +17,12 @@ int FdEvent::get_fd() const noexcept { return m_fd; }
 
 epoll_event FdEvent::get_epoll_event() const noexcept { return m_listen_events; }
 
-// TODO:了解这个函数
 void FdEvent::set_no_block() {
     int is_block = fcntl(m_fd, F_GETFL, 0);
     if (is_block & O_NONBLOCK) {
         return;
     }
+    // 对这个文件描述符进行设置，设置成非堵塞。
     fcntl(m_fd, F_SETFL, is_block | O_NONBLOCK);
 }
 

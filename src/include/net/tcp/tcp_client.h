@@ -6,8 +6,14 @@ connect() -> write() -> read()
 connect(): 连接对端机器
 write(): 将rpc相应发送给客户端
 read(): 读取客户端发来的请求，组成rpc请求
+
+此连接是非堵塞的
+返回0: 表示连接成功
+返回-1: 但是errno = EINPROGRESS, 表示正在连接，可以添加到epoll中监听可写事件，等待就绪之后，调用getsockopt获取fd上的错误，
+错误为0表示连接成功
+其他error就是直接报错了。 并且两者都要去掉可写事件监听。
 */
-#ifndef RPC_NET_TCP_TCP_CLIENT_H
+#ifndef RPC_NET_TCP_TCP_CLIENT_Hgit
 #define RPC_NET_TCP_TCP_CLIENT_H
 
 #include <functional>
@@ -22,7 +28,7 @@ namespace rpc {
 class TcpClient {
 public:
     TcpClient(std::shared_ptr<IPv4NetAddr> peer_addr);
-   
+
     ~TcpClient();
 
     // 异步进行连接
@@ -31,11 +37,13 @@ public:
 
     // write message (使用协议进行封装)
     // 如果成功，会调用 done函数，函数入参就是message
-    void write_message(std::shared_ptr<AbstractProtocol> message, std::function<void(std::shared_ptr<AbstractProtocol>)> done);
+    void write_message(std::shared_ptr<AbstractProtocol> message,
+                       std::function<void(std::shared_ptr<AbstractProtocol>)> done);
 
     // read message (使用协议进行封装)
     // 如果成功，会调用 done函数，函数入参就是message
-    void read_message(std::shared_ptr<AbstractProtocol> message, std::function<void(std::shared_ptr<AbstractProtocol>)> done);
+    void read_message(std::shared_ptr<AbstractProtocol> message,
+                      std::function<void(std::shared_ptr<AbstractProtocol>)> done);
 
 private:
     std::shared_ptr<IPv4NetAddr> m_peer_addr { nullptr };    // 对端地址

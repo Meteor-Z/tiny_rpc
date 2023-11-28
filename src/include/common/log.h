@@ -19,6 +19,7 @@ LogEvent: 事件，当前事件
 #include <string_view>
 #include "fmt/color.h"
 
+// 为了不适用std::source_loaction，改成了宏定义。使用了 __FILE__ 和 __LINE__ .
 #define DEBUG_LOG(message, ...)                                                          \
     if (rpc::Logger::GET_GLOBAL_LOGGER()->get_log_level() <= rpc::LogLevel::Debug) {     \
         std::unique_ptr<rpc::LogEvent> ptr =                                             \

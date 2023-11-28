@@ -1,6 +1,6 @@
 /*
 协议
-rpc传输的时候会依靠这个协议
+rpc传输的协议
 
 */
 #ifndef RPC_NET_TCP_ABSTRACT_PROTOCOL_H
