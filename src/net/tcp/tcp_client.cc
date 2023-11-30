@@ -43,7 +43,13 @@ TcpClient::~TcpClient() {
 }
 void TcpClient::write_message(
     std::shared_ptr<AbstractProtocol> message,
-    std::function<void(std::shared_ptr<AbstractProtocol>)> done) {}
+    std::function<void(std::shared_ptr<AbstractProtocol>)> done) {
+     // client 将message 对象写入到Connection的buffer里面，done也要写入
+    m_connection->push_send_message(message, done);
+
+    // 启动connection的可写事件
+    m_connection->listen_read();
+}
 
 void TcpClient::read_message(
     std::shared_ptr<AbstractProtocol> message,

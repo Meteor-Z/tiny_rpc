@@ -15,9 +15,9 @@ write(): 将RPC相应发送到客户端
 
 #include <cstddef>
 #include <functional>
-#include <queue>
 #include <memory>
 #include <utility>
+#include <vector>
 #include "net/eventloop.h"
 #include "net/fd_event/fd_event.h"
 #include "net/io_thread/io_thread.h"
@@ -80,6 +80,8 @@ public:
     // 启动监听可读事件
     void listen_read();
 
+    void push_send_message(std::shared_ptr<AbstractProtocol> message, std::function<void(std::shared_ptr<AbstractProtocol>)> done);
+
 private:
     std::shared_ptr<IPv4NetAddr> m_local_addr { nullptr }; // 本地地址
     std::shared_ptr<IPv4NetAddr> m_peer_addr { nullptr };  // 对方服务器的地址
@@ -102,8 +104,7 @@ private:
     // AbstractProtocol::req_id 唯一的请求号
     // std::function: 回调函数
     // 使用队列是保证可以有先后顺序
-    std::queue<std::pair<std::string, std::function<void(AbstractProtocol)>>>
-        m_write_dones;
+    std::vector<std::pair<std::shared_ptr<AbstractProtocol>, std::function<void(std::shared_ptr<AbstractProtocol>)>>> m_write_dones;
 
     std::shared_ptr<AbstractCoder> m_coder { nullptr }; // 编解码器
 };

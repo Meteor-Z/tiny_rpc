@@ -3,11 +3,15 @@
 #include <sys/socket.h>
 #include <type_traits>
 #include <unistd.h>
+#include <utility>
 #include <vector>
 #include <queue>
 #include <fmt/core.h>
 #include "net/eventloop.h"
+#include "net/tcp/abstract_protocol.h"
 #include "net/tcp/ipv4_net_addr.h"
+#include "net/tcp/string_coder.h"
+#include "net/tcp/string_protocol.h"
 #include "net/tcp/tcp_connection.h"
 #include "common/log.h"
 #include "net/fd_event/fd_event.h"
@@ -30,11 +34,14 @@ TcpConnection::TcpConnection(std::shared_ptr<EventLoop> event_loop, int fd,
     // 设置称非堵塞
     m_fd_event->set_no_block();
 
+    /// TODO:(这里好像可以优化一下)
     m_fd_event->listen(FdEvent::TriggerEvent::IN_EVENT,
                        std::bind(&TcpConnection::on_read, this));
 
     // m_event_loop->get_eventloop()->add_epoll_event(m_fd_event.get());
     m_event_loop->add_epoll_event(m_fd_event.get());
+
+    m_coder = std::make_shared<StringCoder>();
 }
 
 TcpConnection::~TcpConnection() { DEBUG_LOG("~TcpConnection"); }
@@ -164,11 +171,15 @@ void TcpConnection::listen_write() {
     m_event_loop->add_epoll_event(m_fd_event.get());
 }
 
-/// TODO: 需要写 on read 函数
 void TcpConnection::listen_read() {
     m_fd_event->listen(FdEvent::TriggerEvent::IN_EVENT,
                        std::bind(&TcpConnection::on_read, this));
     m_event_loop->add_epoll_event(m_fd_event.get());
+}
+
+void TcpConnection::push_send_message(std::shared_ptr<AbstractProtocol> message,
+                                 std::function<void(std::shared_ptr<AbstractProtocol>)> done) {
+                                    m_write_dones.push_back(std::make_pair(message, done));
 }
 
 void TcpConnection::set_connection_type(TcpConnectionType type) noexcept {
@@ -184,12 +195,19 @@ void TcpConnection::on_write() {
             m_peer_addr->to_string(), m_fd));
         return;
     }
-    
+
     // 如果是客户端
     if (m_connection_type == TcpConnectionType::TcpConnectionByClient) {
         // 客户端的任务
         // 1. 将 message encode 编码 到字节流里面
         // 2. 将字节流里面的代码输到buffer里面，然后
+        std::vector<std::shared_ptr<AbstractProtocol>> messages;
+
+        for (int i = 0; i < m_write_dones.size(); i++) {
+            messages.push_back(m_write_dones[i].first);
+        }
+        // 编码之后将所有的信息放到发送缓冲区里面
+        m_coder->encode(messages, m_out_buffer);
     }
 
     bool is_write_all = false;
@@ -224,6 +242,12 @@ void TcpConnection::on_write() {
         m_fd_event->cancel(FdEvent::TriggerEvent::OUT_EVENT);
         // m_io_thread->get_eventloop()->add_epoll_event(m_fd_event.get());
         m_event_loop->add_epoll_event(m_fd_event.get());
+    }
+
+    if (m_connection_type == TcpConnectionType::TcpConnectionByClient) {
+        for (size_t i = 0; i < m_write_dones.size(); i++) {
+            m_write_dones[i].second(m_write_dones[i].first);
+        }
     }
 }
 

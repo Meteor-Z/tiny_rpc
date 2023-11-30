@@ -24,6 +24,9 @@ public:
     // 解码
     virtual void decode(std::vector<std::shared_ptr<AbstractProtocol>>& out_messages,
                         std::shared_ptr<TcpBuffer> buffer) = 0;
+    virtual ~AbstractCoder() {
+        
+    }
 };
 } // namespace rpc
 
