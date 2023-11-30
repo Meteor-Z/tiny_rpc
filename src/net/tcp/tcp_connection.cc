@@ -1,13 +1,11 @@
-#include <asm-generic/errno-base.h>
 #include <cerrno>
 #include <cmath>
-#include <fmt/core.h>
-#include <math.h>
 #include <sys/socket.h>
 #include <type_traits>
 #include <unistd.h>
 #include <vector>
-#include <fmt/format.h>
+#include <queue>
+#include <fmt/core.h>
 #include "net/eventloop.h"
 #include "net/tcp/ipv4_net_addr.h"
 #include "net/tcp/tcp_connection.h"
@@ -33,26 +31,23 @@ TcpConnection::TcpConnection(std::shared_ptr<EventLoop> event_loop, int fd,
     m_fd_event->set_no_block();
 
     m_fd_event->listen(FdEvent::TriggerEvent::IN_EVENT,
-                       std::bind(&TcpConnection::read, this));
+                       std::bind(&TcpConnection::on_read, this));
 
     // m_event_loop->get_eventloop()->add_epoll_event(m_fd_event.get());
     m_event_loop->add_epoll_event(m_fd_event.get());
 }
 
-TcpConnection::~TcpConnection() {
-    DEBUG_LOG("~TcpConnection");
-}
+TcpConnection::~TcpConnection() { DEBUG_LOG("~TcpConnection"); }
 
 void TcpConnection::set_state(const TcpConnection::TcpState& state) { m_state = state; }
 
 TcpConnection::TcpState TcpConnection::get_state() const noexcept { return m_state; }
 
-void TcpConnection::read() {
+void TcpConnection::on_read() {
     // 如果不是连接中
     if (m_state != TcpState::Connected) {
-        INFO_LOG(
-            fmt::format("client has already disconnected, addr = {}, clientfd {}",
-                        m_peer_addr->to_string(), m_fd_event->get_fd()));
+        INFO_LOG(fmt::format("client has already disconnected, addr = {}, clientfd {}",
+                             m_peer_addr->to_string(), m_fd_event->get_fd()));
         return;
     }
 
@@ -70,8 +65,8 @@ void TcpConnection::read() {
         int write_index = m_in_buffer->wtite_index();
 
         int rt = ::read(m_fd, &(m_in_buffer->get_buffer()[write_index]), read_count);
-        INFO_LOG(fmt::format("success read {} bytes fron {}, client fd = {}",
-                                         rt, m_peer_addr->to_string(), m_fd));
+        INFO_LOG(fmt::format("success read {} bytes fron {}, client fd = {}", rt,
+                             m_peer_addr->to_string(), m_fd));
 
         // 读成功了！进行调整
         if (rt > 0) {
@@ -97,7 +92,7 @@ void TcpConnection::read() {
     // 处理关闭连接
     if (is_close) {
         DEBUG_LOG(fmt::format("peer closed, peer addr = {}, client_fd = {}",
-                                          m_peer_addr->to_string(), m_fd));
+                              m_peer_addr->to_string(), m_fd));
         clear();
         return;
     }
@@ -124,15 +119,13 @@ void TcpConnection::excute() {
 
     // 写入到 buffer 里面
     m_out_buffer->write_to_buffer(message.c_str(), message.size());
-    m_fd_event->listen(FdEvent::TriggerEvent::OUT_EVENT,
-                       std::bind(&TcpConnection::on_write, this));
 
-    // 添加事件
-    // m_io_thread->get_eventloop()->add_epoll_event(m_fd_event.get());
+    listen_write();
 
-    m_event_loop->add_epoll_event(m_fd_event.get());
-    INFO_LOG(
-        fmt::format("success get request from client {}", m_peer_addr->to_string()));
+    // m_fd_event->listen(FdEvent::TriggerEvent::OUT_EVENT,
+    //                    std::bind(&TcpConnection::on_write, this));
+    // m_event_loop->add_epoll_event(m_fd_event.get());
+    INFO_LOG(fmt::format("success get request from client {}", m_peer_addr->to_string()));
 }
 
 void TcpConnection::shutdown() {
@@ -165,7 +158,22 @@ void TcpConnection::clear() {
     m_state = TcpConnection::TcpState::Closed;
 }
 
-void TcpConnection::set_connection_type(TcpConnectionType type) noexcept { m_connection_type = type; }
+void TcpConnection::listen_write() {
+    m_fd_event->listen(FdEvent::TriggerEvent::OUT_EVENT,
+                       std::bind(&TcpConnection::on_write, this));
+    m_event_loop->add_epoll_event(m_fd_event.get());
+}
+
+/// TODO: 需要写 on read 函数
+void TcpConnection::listen_read() {
+    m_fd_event->listen(FdEvent::TriggerEvent::IN_EVENT,
+                       std::bind(&TcpConnection::on_read, this));
+    m_event_loop->add_epoll_event(m_fd_event.get());
+}
+
+void TcpConnection::set_connection_type(TcpConnectionType type) noexcept {
+    m_connection_type = type;
+}
 void TcpConnection::on_write() {
     // 将当前 out_buffer 发送到到 client
 
@@ -176,13 +184,20 @@ void TcpConnection::on_write() {
             m_peer_addr->to_string(), m_fd));
         return;
     }
+    
+    // 如果是客户端
+    if (m_connection_type == TcpConnectionType::TcpConnectionByClient) {
+        // 客户端的任务
+        // 1. 将 message encode 编码 到字节流里面
+        // 2. 将字节流里面的代码输到buffer里面，然后
+    }
 
     bool is_write_all = false;
     // 一直发送，直到发送完
     while (true) {
         if (m_out_buffer->can_read_bytes_num() == 0) {
             DEBUG_LOG(fmt::format("no data need to send to client {}",
-                                              m_peer_addr->to_string()));
+                                  m_peer_addr->to_string()));
             is_write_all = true;
             break;
         }
@@ -194,15 +209,13 @@ void TcpConnection::on_write() {
 
         // 发送完了
         if (result >= size) {
-            DEBUG_LOG(
-                fmt::format("no data need to client {}", m_peer_addr->to_string()));
+            DEBUG_LOG(fmt::format("no data need to client {}", m_peer_addr->to_string()));
             is_write_all = true;
             break;
         }
         // 缓冲区已经满了
         if (result == -1 && errno == EAGAIN) {
-            ERROR_LOG(
-                fmt::format("write data error, errno = EAGIN and result = -1"));
+            ERROR_LOG(fmt::format("write data error, errno = EAGIN and result = -1"));
             break;
         }
     }

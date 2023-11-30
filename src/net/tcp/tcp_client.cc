@@ -1,8 +1,9 @@
+#include <sys/epoll.h>
+#include <unistd.h>
 #include <cerrno>
 #include <cmath>
 #include <cstring>
-#include <sys/epoll.h>
-#include <unistd.h>
+#include <map>
 #include <sys/socket.h>
 #include "net/fd_event/fd_event.h"
 #include "net/fd_event/fd_event_group.h"
@@ -22,7 +23,7 @@ TcpClient::TcpClient(std::shared_ptr<IPv4NetAddr> peer_addr) : m_peer_addr(peer_
 
     // fd_event的对象获取
     m_fd_event = FdEventGroup::Get_Fd_Event_Group()->get_fd_event(m_fd);
-    
+
     // 设置非阻塞的
     m_fd_event->set_no_block();
 
@@ -88,7 +89,7 @@ void TcpClient::connect(std::function<void()> done) {
                 m_fd_event->cancel(FdEvent::TriggerEvent::OUT_EVENT);
                 m_event_loop->add_epoll_event(m_fd_event.get());
             });
-            
+
             // 要加入到 epoll_event上面
             m_event_loop->add_epoll_event(m_fd_event.get());
 

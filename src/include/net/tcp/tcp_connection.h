@@ -14,9 +14,15 @@ write(): 将RPC相应发送到客户端
 #define RPC_NET_TCP_TCP_CONNECTION_H
 
 #include <cstddef>
+#include <functional>
+#include <queue>
+#include <memory>
+#include <utility>
 #include "net/eventloop.h"
 #include "net/fd_event/fd_event.h"
 #include "net/io_thread/io_thread.h"
+#include "net/tcp/abstract_coder.h"
+#include "net/tcp/abstract_protocol.h"
 #include "net/tcp/ipv4_net_addr.h"
 #include "net/tcp/tcp_buffer.h"
 
@@ -48,7 +54,7 @@ public:
     ~TcpConnection();
 
     // 可读时间发生之后就会执行这个函数
-    void read();
+    void on_read();
 
     // excute进行
     void excute();
@@ -68,6 +74,12 @@ public:
 
     void set_connection_type(TcpConnectionType type) noexcept;
 
+    // 启动监听可写事件
+    void listen_write();
+
+    // 启动监听可读事件
+    void listen_read();
+
 private:
     std::shared_ptr<IPv4NetAddr> m_local_addr { nullptr }; // 本地地址
     std::shared_ptr<IPv4NetAddr> m_peer_addr { nullptr };  // 对方服务器的地址
@@ -86,6 +98,14 @@ private:
     TcpConnectionType m_connection_type {
         TcpConnectionType::TcpConnectionByServer
     }; // 默认server类型
+
+    // AbstractProtocol::req_id 唯一的请求号
+    // std::function: 回调函数
+    // 使用队列是保证可以有先后顺序
+    std::queue<std::pair<std::string, std::function<void(AbstractProtocol)>>>
+        m_write_dones;
+
+    std::shared_ptr<AbstractCoder> m_coder { nullptr }; // 编解码器
 };
 } // namespace rpc
 #endif
