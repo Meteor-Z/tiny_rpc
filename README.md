@@ -2,7 +2,9 @@
 
 ## 编译相关
 
-C++版本： C++17 
+编译器： `clang` or `gcc`
+C++版本： C++17
+
 
 ### 必装的库
 
@@ -15,5 +17,5 @@ git clone https://github.com/Meteor-Z/tiny_rpc.git
 cd tiny_rpc 
 mkdir build && cd build
 cmake .. 
-make -j8
+make -j20
 ```
