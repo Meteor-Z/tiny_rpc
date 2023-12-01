@@ -51,6 +51,7 @@ void test_tcp_client_connect() {
         std::make_shared<rpc::IPv4NetAddr>("127.0.0.1", 1245);
 
     rpc::TcpClient client(addr);
+    
 
     // 测试日志
     client.connect([addr, &client]() {
@@ -59,7 +60,7 @@ void test_tcp_client_connect() {
         std::shared_ptr<rpc::StringProtocol> message =
             std::make_shared<rpc::StringProtocol>();
         message->m_info = "hello tiny_rpc";
-        message->set_req_id("123");
+        message->set_req_id("123456");
         client.write_message(message, [](std::shared_ptr<rpc::AbstractProtocol> done) {
             DEBUG_LOG("send message success");
         });

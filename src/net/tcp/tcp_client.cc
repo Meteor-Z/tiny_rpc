@@ -27,8 +27,10 @@ TcpClient::TcpClient(std::shared_ptr<IPv4NetAddr> peer_addr) : m_peer_addr(peer_
     // 设置非阻塞的
     m_fd_event->set_no_block();
 
-    // 连接
-    m_connection = std::make_shared<TcpConnection>(m_event_loop, m_fd, 128, peer_addr);
+    // 连接,并且设置成客户端的
+    m_connection = std::make_shared<TcpConnection>(
+        m_event_loop, m_fd, 128, peer_addr,
+        TcpConnection::TcpConnectionType::TcpConnectionByClient);
 
     // 设置成客户端的
     m_connection->set_connection_type(
@@ -41,14 +43,15 @@ TcpClient::~TcpClient() {
         close(m_fd);
     }
 }
+
 void TcpClient::write_message(
     std::shared_ptr<AbstractProtocol> message,
     std::function<void(std::shared_ptr<AbstractProtocol>)> done) {
-     // client 将message 对象写入到Connection的buffer里面，done也要写入
+    // client 将message 对象写入到Connection的buffer里面，done也要写入
     m_connection->push_send_message(message, done);
 
     // 启动connection的可写事件
-    m_connection->listen_read();
+    m_connection->listen_write();
 }
 
 void TcpClient::read_message(
@@ -76,14 +79,14 @@ void TcpClient::connect(std::function<void()> done) {
 
                 /// TODO:什么东西
                 getsockopt(m_fd, SOL_SOCKET, SO_ERROR, &error, &error_len);
-
+                bool is_connected_flag = false;
                 // 这里也算连接成功
                 if (error == 0) {
                     DEBUG_LOG(
                         fmt::format("connect {} success", m_peer_addr->to_string()));
-                    if (done) {
-                        done();
-                    }
+                    // 设置连接状态
+                    is_connected_flag = true;
+                    m_connection->set_state(TcpConnection::TcpState::Connected);
                 } else {
                     // 这里是其他错误，直接报错即可
                     ERROR_LOG(fmt::format(
@@ -94,6 +97,10 @@ void TcpClient::connect(std::function<void()> done) {
                 // 去掉可写事件的监听
                 m_fd_event->cancel(FdEvent::TriggerEvent::OUT_EVENT);
                 m_event_loop->add_epoll_event(m_fd_event.get());
+
+                if (is_connected_flag && done) {
+                    done();
+                }
             });
 
             // 要加入到 epoll_event上面

@@ -13,15 +13,9 @@ rpc传输协议
 namespace rpc {
 class AbstractProtocol {
 public:
-    virtual std::string get_req_id() const noexcept {
-        return m_req_id;
-    };
-    void set_req_id(const std::string& req_id) noexcept {
-        m_req_id = req_id;
-    };
-    virtual ~AbstractProtocol() {
-        DEBUG_LOG("~AbstractProtocol");
-    }
+    std::string get_req_id() const noexcept { return m_req_id; };
+    void set_req_id(const std::string& req_id) noexcept { m_req_id = req_id; };
+    virtual ~AbstractProtocol() { DEBUG_LOG("~AbstractProtocol"); }
 
 protected:
     std::string m_req_id; //标识的请求号

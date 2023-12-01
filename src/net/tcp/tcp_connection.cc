@@ -20,10 +20,12 @@
 #include "net/time/time_event.h"
 
 namespace rpc {
-TcpConnection::TcpConnection(std::shared_ptr<EventLoop> event_loop, int fd,
-                             int buffer_size, std::shared_ptr<IPv4NetAddr> peer_addr)
+TcpConnection::TcpConnection(
+    std::shared_ptr<EventLoop> event_loop, int fd, int buffer_size,
+    std::shared_ptr<IPv4NetAddr> peer_addr,
+    TcpConnectionType type /* = TcpConnectionType::TcpConnectionByServer */) 
     : m_event_loop(event_loop), m_peer_addr(peer_addr), m_state(TcpState::NotConnected),
-      m_fd(fd) {
+      m_fd(fd), m_connection_type(type) {
 
     // 初始化buffer的大小
     m_in_buffer = std::make_shared<TcpBuffer>(buffer_size);
@@ -34,14 +36,19 @@ TcpConnection::TcpConnection(std::shared_ptr<EventLoop> event_loop, int fd,
     // 设置称非堵塞
     m_fd_event->set_no_block();
 
-    /// TODO:(这里好像可以优化一下)
-    m_fd_event->listen(FdEvent::TriggerEvent::IN_EVENT,
-                       std::bind(&TcpConnection::on_read, this));
+    // /// TODO:(这里好像可以优化一下)
+    // m_fd_event->listen(FdEvent::TriggerEvent::IN_EVENT,
+    //                    std::bind(&TcpConnection::on_read, this));
 
-    // m_event_loop->get_eventloop()->add_epoll_event(m_fd_event.get());
-    m_event_loop->add_epoll_event(m_fd_event.get());
+    // // m_event_loop->get_eventloop()->add_epoll_event(m_fd_event.get());
+    // m_event_loop->add_epoll_event(m_fd_event.get());
 
     m_coder = std::make_shared<StringCoder>();
+
+    // 必须是server端才能进行监听
+    if (m_connection_type == TcpConnectionType::TcpConnectionByServer) {
+        listen_read();
+    }
 }
 
 TcpConnection::~TcpConnection() { DEBUG_LOG("~TcpConnection"); }
@@ -72,6 +79,7 @@ void TcpConnection::on_read() {
         int write_index = m_in_buffer->wtite_index();
 
         int rt = ::read(m_fd, &(m_in_buffer->get_buffer()[write_index]), read_count);
+    
         INFO_LOG(fmt::format("success read {} bytes fron {}, client fd = {}", rt,
                              m_peer_addr->to_string(), m_fd));
 
@@ -111,6 +119,8 @@ void TcpConnection::on_read() {
     excute();
 }
 
+
+// ok
 // 将RPC请求执行业务逻辑，获取RPC相应，再将RPC响应发送回去
 void TcpConnection::excute() {
     // 先将数据读取出来
@@ -119,11 +129,12 @@ void TcpConnection::excute() {
     temp.resize(size);
     m_in_buffer->read_from_buffer(temp, size);
 
-    std::string message {};
+    std::string message;
     for (int i = 0; i < temp.size(); i++) {
         message += temp[i];
     }
-
+    
+    INFO_LOG(fmt::format("success get request from client {}, info [{}]", m_peer_addr->to_string(), message));
     // 写入到 buffer 里面
     m_out_buffer->write_to_buffer(message.c_str(), message.size());
 
@@ -132,7 +143,6 @@ void TcpConnection::excute() {
     // m_fd_event->listen(FdEvent::TriggerEvent::OUT_EVENT,
     //                    std::bind(&TcpConnection::on_write, this));
     // m_event_loop->add_epoll_event(m_fd_event.get());
-    INFO_LOG(fmt::format("success get request from client {}", m_peer_addr->to_string()));
 }
 
 void TcpConnection::shutdown() {
@@ -171,20 +181,24 @@ void TcpConnection::listen_write() {
     m_event_loop->add_epoll_event(m_fd_event.get());
 }
 
+// ok
 void TcpConnection::listen_read() {
     m_fd_event->listen(FdEvent::TriggerEvent::IN_EVENT,
                        std::bind(&TcpConnection::on_read, this));
     m_event_loop->add_epoll_event(m_fd_event.get());
 }
 
-void TcpConnection::push_send_message(std::shared_ptr<AbstractProtocol> message,
-                                 std::function<void(std::shared_ptr<AbstractProtocol>)> done) {
-                                    m_write_dones.push_back(std::make_pair(message, done));
+// ok
+void TcpConnection::push_send_message(
+    std::shared_ptr<AbstractProtocol> message,
+    std::function<void(std::shared_ptr<AbstractProtocol>)> done) {
+    m_write_dones.push_back(std::make_pair(message, done));
 }
 
 void TcpConnection::set_connection_type(TcpConnectionType type) noexcept {
     m_connection_type = type;
 }
+// ok
 void TcpConnection::on_write() {
     // 将当前 out_buffer 发送到到 client
 
@@ -206,6 +220,7 @@ void TcpConnection::on_write() {
         for (int i = 0; i < m_write_dones.size(); i++) {
             messages.push_back(m_write_dones[i].first);
         }
+        std::cout << "yesyesyes" << std::endl;
         // 编码之后将所有的信息放到发送缓冲区里面
         m_coder->encode(messages, m_out_buffer);
     }
@@ -248,6 +263,7 @@ void TcpConnection::on_write() {
         for (size_t i = 0; i < m_write_dones.size(); i++) {
             m_write_dones[i].second(m_write_dones[i].first);
         }
+        m_write_dones.clear();
     }
 }
 

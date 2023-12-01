@@ -26,6 +26,7 @@ write(): 将RPC相应发送到客户端
 #include "net/tcp/ipv4_net_addr.h"
 #include "net/tcp/tcp_buffer.h"
 
+// ok
 namespace rpc {
 class TcpConnection {
 public:
@@ -49,7 +50,8 @@ public:
     // buffer_size: 初始化buffer的大小
     // peer_addr: 地址
     TcpConnection(std::shared_ptr<EventLoop> event_loop, int fd, int buffer_size,
-                  std::shared_ptr<IPv4NetAddr> peer_addr);
+                  std::shared_ptr<IPv4NetAddr> peer_addr,
+                  TcpConnectionType type = TcpConnectionType::TcpConnectionByServer);
 
     ~TcpConnection();
 
@@ -80,7 +82,8 @@ public:
     // 启动监听可读事件
     void listen_read();
 
-    void push_send_message(std::shared_ptr<AbstractProtocol> message, std::function<void(std::shared_ptr<AbstractProtocol>)> done);
+    void push_send_message(std::shared_ptr<AbstractProtocol> message,
+                           std::function<void(std::shared_ptr<AbstractProtocol>)> done);
 
 private:
     std::shared_ptr<IPv4NetAddr> m_local_addr { nullptr }; // 本地地址
@@ -104,7 +107,9 @@ private:
     // AbstractProtocol::req_id 唯一的请求号
     // std::function: 回调函数
     // 使用队列是保证可以有先后顺序
-    std::vector<std::pair<std::shared_ptr<AbstractProtocol>, std::function<void(std::shared_ptr<AbstractProtocol>)>>> m_write_dones;
+    std::vector<std::pair<std::shared_ptr<AbstractProtocol>,
+                          std::function<void(std::shared_ptr<AbstractProtocol>)>>>
+        m_write_dones;
 
     std::shared_ptr<AbstractCoder> m_coder { nullptr }; // 编解码器
 };
