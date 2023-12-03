@@ -5,10 +5,10 @@
 #ifndef RPC_COMMON_UTILS_H
 #define RPC_COMMON_UTILS_H
 
-#include <string_view>
 #include <sys/types.h>
-#include <string>
 #include <unistd.h>
+#include <string>
+#include <string_view>
 #include "common/log.h"
 
 namespace rpc {

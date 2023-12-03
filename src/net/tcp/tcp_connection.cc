@@ -188,7 +188,6 @@ void TcpConnection::listen_read() {
     m_event_loop->add_epoll_event(m_fd_event.get());
 }
 
-// ok
 void TcpConnection::push_send_message(
     std::shared_ptr<AbstractProtocol> message,
     std::function<void(std::shared_ptr<AbstractProtocol>)> done) {
@@ -198,7 +197,7 @@ void TcpConnection::push_send_message(
 void TcpConnection::set_connection_type(TcpConnectionType type) noexcept {
     m_connection_type = type;
 }
-// ok
+
 void TcpConnection::on_write() {
     // 将当前 out_buffer 发送到到 client
 

@@ -1,13 +1,12 @@
-#include "common/log.h"
-#include "common/log_config.h"
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
-#include <fmt/core.h>
-#include <fmt/format.h>
 #include <iostream>
 #include <memory>
-#include <tinyxml/tinyxml.h>
+#include "common/log.h"
+#include "fmt/core.h"
+#include "common/log_config.h"
+#include "tinyxml/tinyxml.h"
 
 namespace rpc {
 static std::shared_ptr<LogConfig> g_log_config{nullptr};
