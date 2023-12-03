@@ -1,5 +1,7 @@
 #include <cerrno>
 #include <cmath>
+#include <cstddef>
+#include <regex>
 #include <sys/socket.h>
 #include <type_traits>
 #include <unistd.h>
@@ -122,27 +124,46 @@ void TcpConnection::on_read() {
 // ok
 // 将RPC请求执行业务逻辑，获取RPC相应，再将RPC响应发送回去
 void TcpConnection::excute() {
-    // 先将数据读取出来
-    std::vector<char> temp;
-    int size = m_in_buffer->can_read_bytes_num();
-    temp.resize(size);
-    m_in_buffer->read_from_buffer(temp, size);
+    // 这个是服务端的做法
+    if (m_connection_type == TcpConnectionType::TcpConnectionByServer) {
+        // 先将数据读取出来
+        std::vector<char> temp;
+        int size = m_in_buffer->can_read_bytes_num();
+        temp.resize(size);
+        m_in_buffer->read_from_buffer(temp, size);
 
-    std::string message;
-    for (size_t i = 0; i < temp.size(); i++) {
-        message += temp[i];
+        std::string message;
+        for (size_t i = 0; i < temp.size(); i++) {
+            message += temp[i];
+        }
+
+        INFO_LOG(fmt::format("success get request from client {}, info [{}]",
+                             m_peer_addr->to_string(), message));
+        // 写入到 buffer 里面
+        m_out_buffer->write_to_buffer(message.c_str(), message.size());
+
+        listen_write();
+
+        // m_fd_event->listen(FdEvent::TriggerEvent::OUT_EVENT,
+        //                    std::bind(&TcpConnection::on_write, this));
+        // m_event_loop->add_epoll_event(m_fd_event.get());
+
+    } else {
+        // 这个是客户端的做法
+        // 解码，然后从buffer里面decoder相关message对象，判断是否有req_id相等，如果相等，那么就执行回调
+        std::vector<std::shared_ptr<AbstractProtocol>> result;
+
+        // 解码，然后结果是放在了 result 上面了
+        m_coder->decode(result, m_in_buffer);
+
+        for (size_t i = 0; i < result.size(); i++) {
+            std::string request_id = result[i]->get_req_id();
+            auto it = m_read_dones.find(request_id);
+            if (it != m_read_dones.end()) {
+                it->second(result[i]->shared_from_this());
+            }
+        }
     }
-
-    INFO_LOG(fmt::format("success get request from client {}, info [{}]",
-                         m_peer_addr->to_string(), message));
-    // 写入到 buffer 里面
-    m_out_buffer->write_to_buffer(message.c_str(), message.size());
-
-    listen_write();
-
-    // m_fd_event->listen(FdEvent::TriggerEvent::OUT_EVENT,
-    //                    std::bind(&TcpConnection::on_write, this));
-    // m_event_loop->add_epoll_event(m_fd_event.get());
 }
 
 void TcpConnection::shutdown() {
@@ -192,6 +213,14 @@ void TcpConnection::push_send_message(
     std::shared_ptr<AbstractProtocol> message,
     std::function<void(std::shared_ptr<AbstractProtocol>)> done) {
     m_write_dones.push_back(std::make_pair(message, done));
+}
+
+void TcpConnection::push_read_message(
+    const std::string& req_id,
+    std::function<void(std::shared_ptr<AbstractProtocol>)> done) {
+    //    m_read_dones[req_id] = done;
+    // ？
+    m_read_dones.insert(std::make_pair(req_id, done));
 }
 
 void TcpConnection::set_connection_type(TcpConnectionType type) noexcept {

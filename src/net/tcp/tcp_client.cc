@@ -55,8 +55,14 @@ void TcpClient::write_message(
 }
 
 void TcpClient::read_message(
-    std::shared_ptr<AbstractProtocol> message,
-    std::function<void(std::shared_ptr<AbstractProtocol>)> done) {}
+    const std::string& req_id,
+    std::function<void(std::shared_ptr<AbstractProtocol>)> done) {
+    m_connection->push_read_message(req_id, done);
+    // 1. 监听可读事件
+    m_connection->listen_read();
+    
+    // 2. 从buffer里面 decode得到message事件
+}
 
 void TcpClient::connect(std::function<void()> done) {
     // 系统的 connect 函数
