@@ -23,8 +23,8 @@ namespace rpc {
 TcpConnection::TcpConnection(
     std::shared_ptr<EventLoop> event_loop, int fd, int buffer_size,
     std::shared_ptr<IPv4NetAddr> peer_addr,
-    TcpConnectionType type /* = TcpConnectionType::TcpConnectionByServer */) 
-    : m_event_loop(event_loop), m_peer_addr(peer_addr), m_state(TcpState::NotConnected),
+    TcpConnectionType type /* = TcpConnectionType::TcpConnectionByServer */)
+    : m_peer_addr(peer_addr), m_event_loop(event_loop), m_state(TcpState::NotConnected),
       m_fd(fd), m_connection_type(type) {
 
     // 初始化buffer的大小
@@ -79,7 +79,7 @@ void TcpConnection::on_read() {
         int write_index = m_in_buffer->wtite_index();
 
         int rt = ::read(m_fd, &(m_in_buffer->get_buffer()[write_index]), read_count);
-    
+
         INFO_LOG(fmt::format("success read {} bytes fron {}, client fd = {}", rt,
                              m_peer_addr->to_string(), m_fd));
 
@@ -119,7 +119,6 @@ void TcpConnection::on_read() {
     excute();
 }
 
-
 // ok
 // 将RPC请求执行业务逻辑，获取RPC相应，再将RPC响应发送回去
 void TcpConnection::excute() {
@@ -130,11 +129,12 @@ void TcpConnection::excute() {
     m_in_buffer->read_from_buffer(temp, size);
 
     std::string message;
-    for (int i = 0; i < temp.size(); i++) {
+    for (size_t i = 0; i < temp.size(); i++) {
         message += temp[i];
     }
-    
-    INFO_LOG(fmt::format("success get request from client {}, info [{}]", m_peer_addr->to_string(), message));
+
+    INFO_LOG(fmt::format("success get request from client {}, info [{}]",
+                         m_peer_addr->to_string(), message));
     // 写入到 buffer 里面
     m_out_buffer->write_to_buffer(message.c_str(), message.size());
 
@@ -216,7 +216,7 @@ void TcpConnection::on_write() {
         // 2. 将字节流里面的代码输到buffer里面，然后
         std::vector<std::shared_ptr<AbstractProtocol>> messages;
 
-        for (int i = 0; i < m_write_dones.size(); i++) {
+        for (size_t i = 0; i < m_write_dones.size(); i++) {
             messages.push_back(m_write_dones[i].first);
         }
         std::cout << "yesyesyes" << std::endl;

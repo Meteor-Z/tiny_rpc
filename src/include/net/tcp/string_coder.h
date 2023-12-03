@@ -16,7 +16,7 @@ public:
     // ok
     void encode(std::vector<std::shared_ptr<AbstractProtocol>>& messages,
                 std::shared_ptr<TcpBuffer> out_buffer) override {
-        for (int i = 0; i < messages.size(); i++) {
+        for (size_t i = 0; i < messages.size(); i++) {
             std::shared_ptr<StringProtocol> msg =
                 std::dynamic_pointer_cast<StringProtocol>(messages[i]);
             std::cout << "hahaha" << ' ' << msg->m_info.c_str() << ' '
@@ -35,7 +35,7 @@ public:
         /// TODO: 待优化
         std::string info;
         // 构建成一个字符串
-        for (int i = 0; i < receive.size(); i++) {
+        for (size_t i = 0; i < receive.size(); i++) {
             info += receive[i];
         }
 

@@ -12,7 +12,13 @@ set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "${CMAKE_COMMAND} -E time")
 
 # 设置成debug模式
 set(CMAKE_BUILD_TYPE "Debug")
+# 设置模式
+add_compile_options(-Wall -Wextra -Wshadow)
+
+# 加入本项目的头文件
 include_directories(${CMAKE_SOURCE_DIR}/src/include)
+
+# fmt的头文件
 include_directories(${CMAKE_SOURCE_DIR}/third_party/fmt/include)
 add_subdirectory(third_party/fmt)
 
