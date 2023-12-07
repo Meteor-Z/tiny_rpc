@@ -16,7 +16,7 @@ LogEvent: 事件，当前事件
 #include <sstream>
 #include <string>
 #include <string_view>
-#include "fmt/color.h"
+#include "fmt/core.h"
 
 // 为了不适用std::source_loaction，改成了宏定义。使用了 __FILE__ 和 __LINE__ .
 #define DEBUG_LOG(message)                                                               \
@@ -64,10 +64,13 @@ enum class LogLevel {
 class Logger {
 public:
     Logger(LogLevel log_level);
+
     // 将message加入到buffer中
     void push_log(const std::string& message);
+
     // 这里将内容输出出来
     void log();
+
     LogLevel get_log_level() const;
 
 public:

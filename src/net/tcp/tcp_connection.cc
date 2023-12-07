@@ -10,10 +10,10 @@
 #include <queue>
 #include <fmt/core.h>
 #include "net/eventloop.h"
-#include "net/tcp/abstract_protocol.h"
+#include "net/coder/abstract_protocol.h"
 #include "net/tcp/ipv4_net_addr.h"
-#include "net/tcp/string_coder.h"
-#include "net/tcp/string_protocol.h"
+#include "net/coder/string_coder.h"
+#include "net/coder/string_protocol.h"
 #include "net/tcp/tcp_connection.h"
 #include "common/log.h"
 #include "net/fd_event/fd_event.h"

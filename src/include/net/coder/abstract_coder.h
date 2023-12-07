@@ -13,7 +13,7 @@
 #include <vector>
 #include <memory>
 #include "net/tcp/tcp_buffer.h"
-#include "net/tcp/abstract_protocol.h"
+#include "net/coder/abstract_protocol.h"
 
 namespace rpc {
 class AbstractCoder {
@@ -24,9 +24,7 @@ public:
     // 解码
     virtual void decode(std::vector<std::shared_ptr<AbstractProtocol>>& out_messages,
                         std::shared_ptr<TcpBuffer> buffer) = 0;
-    virtual ~AbstractCoder() {
-        
-    }
+    virtual ~AbstractCoder() {}
 };
 } // namespace rpc
 

@@ -2,7 +2,7 @@
 #define RPC_NET_TCP_STRING_PROTOCOL_H
 
 #include <string>
-#include "net/tcp/abstract_protocol.h"
+#include "net/coder/abstract_protocol.h"
 
 namespace rpc {
 class StringProtocol : public AbstractProtocol {
