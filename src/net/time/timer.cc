@@ -66,10 +66,10 @@ void Timer::on_timer() {
     lock.unlock();
 
     // 重复的 event 重复添加进去
-    for (auto it = temp.begin(); it != temp.end(); it++) {
-        if ((*it)->is_repeat()) {
-            (*it)->reset_arrive_time();
-            add_time_event(*it);
+    for (auto iter = temp.begin(); iter != temp.end(); iter++) {
+        if ((*iter)->is_repeat()) {
+            (*iter)->reset_arrive_time();
+            add_time_event(*iter);
         }
     }
 

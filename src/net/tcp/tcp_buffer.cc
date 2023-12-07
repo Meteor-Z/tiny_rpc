@@ -89,7 +89,7 @@ void TcpBuffer::adjust_read_index(int size) {
 
 //
 void TcpBuffer::adjust_write_index(int size) {
-    int j = m_write_index + size;
+    size_t j = m_write_index + size;
     if (j >= m_buffer.size()) {
         ERROR_LOG(fmt::format("ajust_read_index() error, invalid size {}, "
                                           "old_write_index {}, buffer size{}",

@@ -42,7 +42,7 @@ IPv4NetAddr::IPv4NetAddr(std::string_view addr) {
 IPv4NetAddr::IPv4NetAddr(sockaddr_in addr) : m_addr(addr) {
     m_ip = std::string(inet_ntoa(m_addr.sin_addr));
     m_port = ntohs(m_addr.sin_port);
-    DEBUG_LOG("IPNetAddr init success.");
+    DEBUG_LOG("IPNetAddr init success...");
 }
 
 bool IPv4NetAddr::check_valid() {
@@ -51,10 +51,10 @@ bool IPv4NetAddr::check_valid() {
         return false;
     }
 
-    if (m_port < 0 || m_port > 65535) {
-        DEBUG_LOG(fmt::format("m_port is error"));
-        return false;
-    }
+    // if (m_port < 0 || m_port > 65535) {
+    //     DEBUG_LOG(fmt::format("m_port is error"));
+    //     return false;
+    // }
 
     // 转换失败
     if (inet_addr(m_ip.c_str()) == INADDR_NONE) {

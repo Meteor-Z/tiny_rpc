@@ -20,7 +20,7 @@ FdEventGroup::FdEventGroup(int size) : m_size(size) {
 std::shared_ptr<FdEvent> FdEventGroup::get_fd_event(int fd) {
     std::lock_guard<std::mutex> lock_guard { m_mutex };
 
-    if (fd < m_fd_event_groups.size()) {
+    if (static_cast<size_t>(fd) < m_fd_event_groups.size()) {
         return m_fd_event_groups[fd];
     }
 

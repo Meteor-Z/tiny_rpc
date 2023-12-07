@@ -1,5 +1,4 @@
 #include <cerrno>
-#include <cstddef>
 #include <cstring>
 #include <functional>
 #include <sys/socket.h>
@@ -258,7 +257,7 @@ void EventLoop::delete_from_epoll(FdEvent* event) {
     }
 
     int op = EPOLL_CTL_DEL;
-    epoll_event tmp = event->get_epoll_event();
+    // epoll_event tmp = event->get_epoll_event();
 
     // 删除掉
     int rt = epoll_ctl(m_epoll_fd, op, event->get_fd(), nullptr);
