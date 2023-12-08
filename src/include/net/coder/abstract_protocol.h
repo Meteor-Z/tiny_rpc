@@ -12,14 +12,14 @@ rpc传输协议
 #include "common/log.h"
 
 namespace rpc {
-class AbstractProtocol : public std::enable_shared_from_this<AbstractProtocol> {
+struct AbstractProtocol : public std::enable_shared_from_this<AbstractProtocol> {
 public:
-    std::string get_req_id() const noexcept { return m_req_id; };
-    void set_req_id(const std::string& req_id) noexcept { m_req_id = req_id; };
+    // std::string get_req_id() const noexcept { return m_msg_id; };
+    // void set_req_id(const std::string& req_id) noexcept { m_msg_id = req_id; };
     virtual ~AbstractProtocol() { DEBUG_LOG("~AbstractProtocol"); }
 
-protected:
-    std::string m_req_id; // 标识的请求号
+public:
+    std::string m_msg_id; // 标识的请求号
 };
 
 } // namespace rpc

@@ -25,7 +25,7 @@ int TcpBuffer::can_write_bytes_num() const noexcept {
 int TcpBuffer::read_index() const noexcept { return m_read_index; }
 
 //
-int TcpBuffer::wtite_index() const noexcept { return m_write_index; }
+int TcpBuffer::write_index() const noexcept { return m_write_index; }
 
 //
 void TcpBuffer::write_to_buffer(const char* buffer, int size) {
@@ -74,7 +74,6 @@ void TcpBuffer::read_from_buffer(std::vector<char>& re, int size) {
     adjust_buffer();
 }
 
-//
 void TcpBuffer::adjust_read_index(int size) {
     size_t j = m_read_index + size;
     if (j >= m_buffer.size()) {

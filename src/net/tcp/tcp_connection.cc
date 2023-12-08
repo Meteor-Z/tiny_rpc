@@ -78,7 +78,7 @@ void TcpConnection::on_read() {
             m_in_buffer->resize_buffer(2 * m_in_buffer->get_buffer().size());
         }
         int read_count = m_in_buffer->can_write_bytes_num();
-        int write_index = m_in_buffer->wtite_index();
+        int write_index = m_in_buffer->write_index();
 
         int rt = ::read(m_fd, &(m_in_buffer->get_buffer()[write_index]), read_count);
 
@@ -157,7 +157,8 @@ void TcpConnection::excute() {
         m_coder->decode(result, m_in_buffer);
 
         for (size_t i = 0; i < result.size(); i++) {
-            std::string request_id = result[i]->get_req_id();
+            // std::string request_id = result[i]->get_req_id();
+            std::string request_id = result[i]->m_msg_id;
             auto it = m_read_dones.find(request_id);
             if (it != m_read_dones.end()) {
                 it->second(result[i]->shared_from_this());

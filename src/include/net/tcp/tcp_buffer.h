@@ -31,7 +31,7 @@ public:
 
     int read_index() const noexcept;
 
-    int wtite_index() const noexcept;
+    int write_index() const noexcept;
 
     // 写入到 buffer 里面
     // buffer: 字节数
@@ -44,12 +44,13 @@ public:
     void read_from_buffer(std::vector<char>& re, int size);
 
     // 调整，将buffer变成最初始的状态
+    // 也就是从头开始读取，移动一下。  
     void adjust_buffer();
     
     // 扩容
     void resize_buffer(int new_size);
 
-    // 往右边调整， read_index 从新坐标开始
+    // 将read的index向右边移动 size 距离
     void adjust_read_index(int size);
     
     // 往右边调整，将 write_indx 从新坐标开始

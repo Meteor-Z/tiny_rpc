@@ -39,7 +39,7 @@ int64_t get_now_ms() {
 }
 
 int32_t get_int32_from_netbyte(const char* buf) {
-    int32_t ans;
+    int32_t ans { 0 };
     std::memcpy(&ans, buf, sizeof(ans));
 
     // notohl: network to host byte (use uint32_t)

@@ -59,9 +59,9 @@ void test_tcp_client_connect() {
         std::shared_ptr<rpc::StringProtocol> message =
             std::make_shared<rpc::StringProtocol>();
 
-
         message->m_info = "hello tiny_rpc";
-        message->set_req_id("123456");
+        // message->set_req_id("123456");
+        message->m_msg_id = "123456";
         client.write_message(message, [](std::shared_ptr<rpc::AbstractProtocol> done) {
             DEBUG_LOG("send message success");
         });
@@ -71,7 +71,7 @@ void test_tcp_client_connect() {
                 std::dynamic_pointer_cast<rpc::StringProtocol>(done);
             // 等会要进行修改
             DEBUG_LOG(fmt::format("req_id = {}, response success, info = {}",
-                                  message->get_req_id(), message->m_info));
+                                  message->m_msg_id, message->m_info));
         });
 
         client.write_message(message, [](std::shared_ptr<rpc::AbstractProtocol> done) {
