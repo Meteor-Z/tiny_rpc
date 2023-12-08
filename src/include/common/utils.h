@@ -21,6 +21,9 @@ pid_t get_thread_id();
 
 // 得到当前时间[点]
 int64_t get_now_ms();
+
+// 从网络字节序里面传入一个int32的数字
+int32_t get_int32_from_netbyte(const char* buf);
 } // namespace utils
 } // namespace rpc
 #endif

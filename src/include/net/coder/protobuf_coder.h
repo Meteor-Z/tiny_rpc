@@ -11,7 +11,14 @@ protobuf 编解码器
 
 namespace rpc {
 class ProtobufCoder : public AbstractCoder {
-
+public:
+    // 解码, 将对象转化成字节流，写入到buff里面
+    void encode(std::vector<std::shared_ptr<AbstractProtocol>>& messages,
+                        std::shared_ptr<TcpBuffer> out_buffer) override;
+    // 解码， 将buffer里面的字节流转化成message对象
+    void decode(std::vector<std::shared_ptr<AbstractProtocol>>& out_messages,
+                        std::shared_ptr<TcpBuffer> buffer) override;
+    ~ProtobufCoder();
 };
 } // namespace rpc
 #endif

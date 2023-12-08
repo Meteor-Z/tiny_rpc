@@ -1,6 +1,9 @@
+#include <cstdint>
+#include <cstring>
+#include <netinet/in.h>
 #include <sys/time.h>
 #include <sys/syscall.h>
-#include <thread>
+#include <string.h>
 #include <unistd.h>
 #include "common/utils.h"
 
@@ -33,6 +36,14 @@ int64_t get_now_ms() {
     gettimeofday(&value, nullptr);
     // 秒 * 1000 + 微秒 / 1000 = 毫秒
     return value.tv_sec * 1000 + value.tv_usec / 1000;
+}
+
+int32_t get_int32_from_netbyte(const char* buf) {
+    int32_t ans;
+    std::memcpy(&ans, buf, sizeof(ans));
+
+    // notohl: network to host byte (use uint32_t)
+    return ntohl(ans);
 }
 } // namespace utils
 } // namespace rpc

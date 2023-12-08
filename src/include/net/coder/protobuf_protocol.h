@@ -29,8 +29,8 @@ protobuf字节序
 namespace rpc {
 struct ProtobufProtocol : public AbstractProtocol {
 public:
-    static char s_start; // 开始符
-    static char s_end;   // 结束符
+    const static char s_start = 0x02; // 开始符
+    const static char s_end = 0x03;   // 结束符
 public:
     int32_t m_pk_len { 0 };       // 整包的长度
     /*std::string m_req_id {};*/  // 请求id (继承于父类)
