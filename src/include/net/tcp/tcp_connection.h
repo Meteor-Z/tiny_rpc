@@ -25,6 +25,7 @@ write(): 将RPC相应发送到客户端
 #include "net/tcp/tcp_buffer.h"
 #include "net/coder/abstract_coder.h"
 #include "net/coder/abstract_protocol.h"
+#include "net/coder/protobuf_protocol.h"
 
 // ok
 namespace rpc {

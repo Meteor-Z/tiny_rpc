@@ -14,7 +14,7 @@ void test_tcp_server() {
 }
 
 int main() {
-    rpc::LogConfig::SET_GLOBAL_CONFIG("/home/lzc/tiny_rpc/conf/rpc.xml");
+    rpc::LogConfig::SET_GLOBAL_CONFIG("/home/lzc/code/tiny_rpc/conf/rpc.xml");
     rpc::Logger::INIT_GLOBAL_LOGGER();
     test_tcp_server();
 }

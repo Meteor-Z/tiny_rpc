@@ -6,6 +6,8 @@
 #include <memory>
 #include "common/log_config.h"
 #include "common/log.h"
+#include "net/coder/protobuf_coder.h"
+#include "net/coder/protobuf_protocol.h"
 #include "net/tcp/ipv4_net_addr.h"
 #include "net/tcp/tcp_server.h"
 #include "net/tcp/tcp_client.h"
@@ -56,22 +58,23 @@ void test_tcp_client_connect() {
     client.connect([addr, &client]() {
         DEBUG_LOG(
             fmt::format("Test TCP_Client, connect to {} success", addr->to_string()));
-        std::shared_ptr<rpc::StringProtocol> message =
-            std::make_shared<rpc::StringProtocol>();
 
-        message->m_info = "hello tiny_rpc";
-        // message->set_req_id("123456");
-        message->m_msg_id = "123456";
+        std::shared_ptr<rpc::ProtobufProtocol> message =
+            std::make_shared<rpc::ProtobufProtocol>();
+
+        message->m_msg_id = "114514";
+        message->m_pb_data = "test pb_data";
+        
         client.write_message(message, [](std::shared_ptr<rpc::AbstractProtocol> done) {
             DEBUG_LOG("send message success");
         });
 
-        client.read_message("123456", [](std::shared_ptr<rpc::AbstractProtocol> done) {
-            std::shared_ptr<rpc::StringProtocol> message =
-                std::dynamic_pointer_cast<rpc::StringProtocol>(done);
+        client.read_message("114514", [](std::shared_ptr<rpc::AbstractProtocol> done) {
+            std::shared_ptr<rpc::ProtobufProtocol> message =
+                std::dynamic_pointer_cast<rpc::ProtobufProtocol>(done);
             // 等会要进行修改
             DEBUG_LOG(fmt::format("req_id = {}, response success, info = {}",
-                                  message->m_msg_id, message->m_info));
+                                  message->m_msg_id, message->m_pb_data));
         });
 
         client.write_message(message, [](std::shared_ptr<rpc::AbstractProtocol> done) {
@@ -81,7 +84,7 @@ void test_tcp_client_connect() {
 }
 
 int main() {
-    rpc::LogConfig::SET_GLOBAL_CONFIG("/home/lzc/tiny_rpc/conf/rpc.xml");
+    rpc::LogConfig::SET_GLOBAL_CONFIG("/home/lzc/code/tiny_rpc/conf/rpc.xml");
     rpc::Logger::INIT_GLOBAL_LOGGER();
 
     // test_tcp_client();

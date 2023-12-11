@@ -28,6 +28,8 @@ add_library(tcp_server_libs STATIC
     ${CMAKE_SOURCE_DIR}/src/net/tcp/tcp_acceptor.cc
     ${CMAKE_SOURCE_DIR}/src/net/tcp/tcp_connection.cc
     ${CMAKE_SOURCE_DIR}/src/net/tcp/tcp_buffer.cc
+    ${CMAKE_SOURCE_DIR}/src/net/coder/protobuf_coder.cc
+
 
 )
 # 依赖

@@ -8,17 +8,19 @@
 #include <vector>
 #include <queue>
 #include "fmt/core.h"
-#include "net/eventloop.h"
-#include "net/coder/abstract_protocol.h"
-#include "net/tcp/ipv4_net_addr.h"
-#include "net/coder/string_coder.h"
-#include "net/coder/string_protocol.h"
-#include "net/tcp/tcp_connection.h"
 #include "common/log.h"
+#include "net/eventloop.h"
+#include "net/tcp/ipv4_net_addr.h"
+#include "net/tcp/tcp_connection.h"
+#include "net/tcp/tcp_buffer.h"
 #include "net/fd_event/fd_event.h"
 #include "net/fd_event/fd_event_group.h"
-#include "net/tcp/tcp_buffer.h"
 #include "net/time/time_event.h"
+#include "net/coder/string_coder.h"
+#include "net/coder/string_protocol.h"
+#include "net/coder/protobuf_protocol.h"
+#include "net/coder/abstract_protocol.h"
+#include "net/coder/protobuf_coder.h"
 
 namespace rpc {
 TcpConnection::TcpConnection(
@@ -44,7 +46,7 @@ TcpConnection::TcpConnection(
     // // m_event_loop->get_eventloop()->add_epoll_event(m_fd_event.get());
     // m_event_loop->add_epoll_event(m_fd_event.get());
 
-    m_coder = std::make_shared<StringCoder>();
+    m_coder = std::make_shared<ProtobufCoder>();
 
     // 必须是server端才能进行监听
     if (m_connection_type == TcpConnectionType::TcpConnectionByServer) {
@@ -125,23 +127,41 @@ void TcpConnection::on_read() {
 void TcpConnection::excute() {
     // 这个是服务端的做法
     if (m_connection_type == TcpConnectionType::TcpConnectionByServer) {
-        // 先将数据读取出来
-        std::vector<char> temp;
-        int size = m_in_buffer->can_read_bytes_num();
-        temp.resize(size);
-        m_in_buffer->read_from_buffer(temp, size);
+        // // 先将数据读取出来
+        // std::vector<char> temp;
+        // int size = m_in_buffer->can_read_bytes_num();
+        // temp.resize(size);
+        // m_in_buffer->read_from_buffer(temp, size);
 
-        std::string message;
-        for (size_t i = 0; i < temp.size(); i++) {
-            message += temp[i];
+        // std::string message;
+        // for (size_t i = 0; i < temp.size(); i++) {
+        //     message += temp[i];
+        // }
+        std::vector<std::shared_ptr<AbstractProtocol>> result;
+        std::vector<std::shared_ptr<AbstractProtocol>> replay_result;
+
+        m_coder->decode(result, m_in_buffer);
+
+        for (size_t i = 0; i < result.size(); i++) {
+            DEBUG_LOG(fmt::format("success get request from client {}, info [{}]",
+                                  result[i]->m_msg_id, m_peer_addr->to_string()));
+
+            std::shared_ptr<ProtobufProtocol> message =
+                std::make_shared<ProtobufProtocol>();
+            message->m_pb_data = "hello txt....";
+            message->m_msg_id = result[i]->m_msg_id;
+            replay_result.emplace_back(message);
         }
 
-        INFO_LOG(fmt::format("success get request from client {}, info [{}]",
-                             m_peer_addr->to_string(), message));
-        // 写入到 buffer 里面
-        m_out_buffer->write_to_buffer(message.c_str(), message.size());
+        m_coder->encode(replay_result,m_out_buffer);
 
         listen_write();
+        // INFO_LOG(fmt::format("success get request from client {}, info [{}]",
+        //                      m_peer_addr->to_string(), message));
+        // // 写入到 buffer 里面
+        // m_out_buffer->write_to_buffer(message.c_str(), message.size());
+
+        // listen_write();
 
         // m_fd_event->listen(FdEvent::TriggerEvent::OUT_EVENT,
         //                    std::bind(&TcpConnection::on_write, this));

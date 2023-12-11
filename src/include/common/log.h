@@ -87,10 +87,12 @@ private:
 class LogEvent {
 public:
     LogEvent(LogLevel level) : m_log_level(level) {}
+
     LogLevel get_log_level() const noexcept;
+    
     std::string get_file_name() const noexcept;
     // 对于log,进行格式化
-    // 最终结果大概是这样的形式:[INFO][2023年9月3日16时21分37秒][文件名:/home/lzc/test_c++/main.cpp
+    // 最终结果大概是这样的形式:[INFO][2023年9月3日16时21分37秒][文件名:/home/lzc/test_c++/main.cc
     std::string get_log(const std::string& file, int line);
 
 private:
