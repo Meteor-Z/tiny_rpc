@@ -22,6 +22,10 @@ include_directories(${CMAKE_SOURCE_DIR}/src/include)
 include_directories(${CMAKE_SOURCE_DIR}/third_party/fmt/include)
 add_subdirectory(third_party/fmt)
 
+# protubuf的头文件
+include_directories(${CMAKE_SOURCE_DIR}/third_party/protubuf/src/)
+add_subdirectory(third_party/protobuf)
+
 # 以下是测试文件
 add_subdirectory(test/timer_event)
 add_subdirectory(test/event_loop)

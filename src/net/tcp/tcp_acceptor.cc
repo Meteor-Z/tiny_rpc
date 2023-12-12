@@ -31,7 +31,7 @@ TcpAcceptor::TcpAcceptor(std::shared_ptr<IPv4NetAddr> local_addr)
 
     int valid = 0;
 
-    // TODO(?): 这个是什么
+    // 设定运训多个套接字绑定相同的地址和端口
     int rt = setsockopt(m_listenfd, SOL_SOCKET, SO_REUSEPORT, &valid, sizeof(valid));
 
     // 非必需
