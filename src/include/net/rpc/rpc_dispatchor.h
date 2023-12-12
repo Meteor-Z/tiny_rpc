@@ -9,7 +9,7 @@ rpc分发器。将接收到的包分开出去
 #include <string>
 #include <map>
 #include "net/coder/abstract_protocol.h"
-#include "google/service.h"
+#include "google/protobuf/service.h"
 
 namespace rpc {
 class RpcDispatcher {
@@ -19,7 +19,7 @@ public:
                     std::shared_ptr<AbstractProtocol> response);
 
 private:
-    std::map<std::string, std::shared_ptr<>>
+    std::map<std::string,  std::shared_ptr<google::protobuf::Service>> 
 };
 } // namespace rpc
 
