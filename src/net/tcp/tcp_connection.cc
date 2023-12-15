@@ -1,6 +1,8 @@
 #include <cerrno>
 #include <cmath>
 #include <cstddef>
+#include <google/protobuf/descriptor.h>
+#include <memory>
 #include <sys/socket.h>
 #include <type_traits>
 #include <unistd.h>
@@ -51,6 +53,8 @@ TcpConnection::TcpConnection(
     // 必须是server端才能进行监听
     if (m_connection_type == TcpConnectionType::TcpConnectionByServer) {
         listen_read();
+        // 只有作为 Server 的时候才会使用
+        m_dispatcher = std::make_shared<RpcDispatcher>();
     }
 }
 
@@ -148,12 +152,14 @@ void TcpConnection::excute() {
 
             std::shared_ptr<ProtobufProtocol> message =
                 std::make_shared<ProtobufProtocol>();
-            message->m_pb_data = "hello txt....";
-            message->m_msg_id = result[i]->m_msg_id;
+            // message->m_pb_data = "hello txt....";
+            // message->m_msg_id = result[i]->m_msg_id;
+            // 这里面进行反序列化
+            m_dispatcher->dispatcher(result[i], message);
             replay_result.emplace_back(message);
         }
 
-        m_coder->encode(replay_result,m_out_buffer);
+        m_coder->encode(replay_result, m_out_buffer);
 
         listen_write();
         // INFO_LOG(fmt::format("success get request from client {}, info [{}]",

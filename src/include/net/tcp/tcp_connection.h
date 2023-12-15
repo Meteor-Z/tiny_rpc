@@ -18,14 +18,17 @@ write(): 将RPC相应发送到客户端
 #include <memory>
 #include <utility>
 #include <vector>
+#include "google/protobuf/descriptor.h"
 #include "net/eventloop.h"
 #include "net/fd_event/fd_event.h"
 #include "net/io_thread/io_thread.h"
+#include "net/rpc/rpc_dispatchor.h"
 #include "net/tcp/ipv4_net_addr.h"
 #include "net/tcp/tcp_buffer.h"
 #include "net/coder/abstract_coder.h"
 #include "net/coder/abstract_protocol.h"
 #include "net/coder/protobuf_protocol.h"
+
 
 // ok
 namespace rpc {
@@ -118,6 +121,8 @@ private:
     // 使用map,方便找这个std::string的req_id
     std::map<std::string, std::function<void(std::shared_ptr<AbstractProtocol>)>>
         m_read_dones;
+
+    std::shared_ptr<RpcDispatcher> m_dispatcher;
 };
 } // namespace rpc
 #endif
