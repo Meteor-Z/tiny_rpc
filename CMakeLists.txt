@@ -6,8 +6,6 @@ set(CMAKE_CXX_STANDARD 17)
 # 设置生成 compile_commands
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # 我也不知道，是protobuf里面的库需要的，别动
-set(ABSL_PROPAGATE_CXX_STD ON)
-
 # 显示编译时间
 set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_COMMAND} -E time")
 set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "${CMAKE_COMMAND} -E time")

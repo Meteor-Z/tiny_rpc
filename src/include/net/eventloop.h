@@ -34,10 +34,10 @@ public:
     void stop();
 
     // 添加epoll_event事件
-    void add_epoll_event(FdEvent* event);
+    void add_epoll_event(std::shared_ptr<FdEvent> event);
 
     // 删除epoll_event事件
-    void delete_epoll_event(FdEvent* event);
+    void delete_epoll_event(std::shared_ptr<FdEvent> event);
 
     // 是否是当前函数线程
     bool is_in_current_loop_thread();
@@ -58,10 +58,10 @@ private:
     void deal_wake_up();
 
     // 添加事件
-    void add_to_epoll(FdEvent* event);
+    void add_to_epoll(std::shared_ptr<FdEvent> event);
 
     // 删除当前事件
-    void delete_from_epoll(FdEvent* event);
+    void delete_from_epoll(std::shared_ptr<FdEvent> event);
 
     //  初始化wakeup_fd
     void init_wakeup_fd_event();
