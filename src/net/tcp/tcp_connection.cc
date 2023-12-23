@@ -216,7 +216,7 @@ void TcpConnection::clear() {
     // m_io_thread->get_eventloop()->delete_epoll_event(m_fd_event.get());
 
     // 去除套接字
-    m_event_loop->delete_epoll_event(m_fd_event.get());
+    m_event_loop->delete_epoll_event(m_fd_event);
 
     // 这时候才会正式关闭
     m_state = TcpConnection::TcpState::Closed;
@@ -225,14 +225,14 @@ void TcpConnection::clear() {
 void TcpConnection::listen_write() {
     m_fd_event->listen(FdEvent::TriggerEvent::OUT_EVENT,
                        std::bind(&TcpConnection::on_write, this));
-    m_event_loop->add_epoll_event(m_fd_event.get());
+    m_event_loop->add_epoll_event(m_fd_event);
 }
 
 // ok
 void TcpConnection::listen_read() {
     m_fd_event->listen(FdEvent::TriggerEvent::IN_EVENT,
                        std::bind(&TcpConnection::on_read, this));
-    m_event_loop->add_epoll_event(m_fd_event.get());
+    m_event_loop->add_epoll_event(m_fd_event);
 }
 
 void TcpConnection::push_send_message(
@@ -309,7 +309,7 @@ void TcpConnection::on_write() {
     if (is_write_all) {
         m_fd_event->cancel(FdEvent::TriggerEvent::OUT_EVENT);
         // m_io_thread->get_eventloop()->add_epoll_event(m_fd_event.get());
-        m_event_loop->add_epoll_event(m_fd_event.get());
+        m_event_loop->add_epoll_event(m_fd_event);
     }
 
     if (m_connection_type == TcpConnectionType::TcpConnectionByClient) {
