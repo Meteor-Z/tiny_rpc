@@ -18,3 +18,12 @@ mkdir build && cd build
 cmake .. 
 make -j20
 ```
+## 文档生成
+
+代码可以通过doxygen生成文档
+
+```shell
+mkdir document
+doxygen Doxyfile
+```
+在`document`里面打开`index.html`即可。
