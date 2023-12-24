@@ -1,12 +1,13 @@
-/*
- 日志库，将其信息打印在屏幕上，后续会将其存入硬盘上。
- 最终结果大概是这样的形式:
- [INFO][2023年9月3日16时21分37秒][文件名:/home/lzc/test_c++/main.cpp行号10]
-
-LogConfig： 进行初始化，设置log_level,
-Logger：全局类，日志器，输出日志
-LogEvent: 事件，当前事件
-*/
+/**
+ * @file log.h
+ * @author meteor_z (liuzechen.coder@qq.com)
+ * @brief 日志库，提供DEBUG_LOG, ERROR_LOG, INFO_LOG 三种格式的信息
+ * @version 0.1
+ * @date 2023-12-24
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
 #ifndef RPC_COMMON_LOG_H
 #define RPC_COMMON_LOG_H
 
@@ -18,7 +19,10 @@ LogEvent: 事件，当前事件
 #include <string_view>
 #include "fmt/core.h"
 
-// 为了不适用std::source_loaction，改成了宏定义。使用了 __FILE__ 和 __LINE__ .
+/**
+ * @brief 根据xml格式进行调整的信息格式
+ * 
+ */
 #define DEBUG_LOG(message)                                                               \
     if (rpc::Logger::GET_GLOBAL_LOGGER()->get_log_level() <= rpc::LogLevel::Debug) {     \
         std::unique_ptr<rpc::LogEvent> ptr =                                             \
@@ -29,6 +33,10 @@ LogEvent: 事件，当前事件
         rpc::Logger::GET_GLOBAL_LOGGER()->log();                                         \
     }
 
+/**
+ * @brief 根据xml文件进行调整的信息格式
+ * 
+ */
 #define INFO_LOG(message)                                                                \
     if (rpc::Logger::GET_GLOBAL_LOGGER()->get_log_level() <= rpc::LogLevel::Info) {      \
         std::unique_ptr<rpc::LogEvent> ptr =                                             \
@@ -39,6 +47,10 @@ LogEvent: 事件，当前事件
         rpc::Logger::GET_GLOBAL_LOGGER()->log();                                         \
     }
 
+/**
+ * @brief 错误信息，根据xml调整，是最高等级的信息调试
+ * 
+ */
 #define ERROR_LOG(message)                                                               \
     if (rpc::Logger::GET_GLOBAL_LOGGER()->get_log_level() <= rpc::LogLevel::Error) {     \
         std::unique_ptr<rpc::LogEvent> ptr =                                             \
