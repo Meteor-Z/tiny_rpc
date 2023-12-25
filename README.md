@@ -18,12 +18,21 @@ mkdir build && cd build
 cmake .. 
 make -j20
 ```
+
 ## 文档生成
 
 代码可以通过doxygen生成文档
+
+### 安装
+
+```shell
+sudo apt install doxygen
+sudo apt install graphviz
+```
 
 ```shell
 mkdir document
 doxygen Doxyfile
 ```
-在`document`里面打开`index.html`即可。
+
+在`document`里面打开`index.html`即可(需要自己建立`document`)
