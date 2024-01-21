@@ -1,3 +1,14 @@
+/**
+ * @file error_code.h
+ * @author lzc (liuzechen.coder@qq.com)
+ * @brief 里面全部都是错误信息的
+ * @version 0.1
+ * @date 2024-01-21
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
+ 
 #ifndef RPC_COMMON_ERROR_CODE_H
 #define RPC_COMMON_ERROR_CODE_H
 

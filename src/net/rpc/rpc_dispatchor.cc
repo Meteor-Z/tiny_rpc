@@ -1,17 +1,20 @@
 #include <cstddef>
 #include <memory>
+#include "common/log.h"
 #include "fmt/core.h"
 #include "google/protobuf/service.h"
 #include "google/protobuf/descriptor.h"
 #include "google/protobuf/message.h"
-#include "common/log.h"
 #include "net/rpc/rpc_dispatchor.h"
+#include "net/rpc/rpc_controller.h"
 #include "net/coder/protobuf_protocol.h"
 #include "common/error_code.h"
+#include "net/tcp/tcp_connection.h"
 
 namespace rpc {
 void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
-                               std::shared_ptr<AbstractProtocol> response) {
+                               std::shared_ptr<AbstractProtocol> response,
+                               TcpConnection* conection) {
     // 智能指针转换
     std::shared_ptr<ProtobufProtocol> req_protobuf_protocol =
         std::dynamic_pointer_cast<ProtobufProtocol>(request);
@@ -32,6 +35,7 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
     // 进行转换
     if (parse_service_full_name(method_full_name, service_name, method_name)) {
         // 设置
+        ERROR_LOG("parse service name error");
         set_protubuf_error(rsp_protobuf_protocol, ERROR_PARSE_SERVICE_NAME,
                            "parse service name error");
         return;
@@ -39,27 +43,38 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
 
     auto iter = m_service_map.find(service_name);
 
-    // 找不到
+    // service不存在
     if (iter == m_service_map.end()) {
-        /// TODO: 找不到相关信息
+        ERROR_LOG("service not found");
+        set_protubuf_error(rsp_protobuf_protocol, ERROR_SERVICE_NOT_FOUND,
+                           "service not found");
     }
 
     std::shared_ptr<google::protobuf::Service> service { (*iter).second };
 
+    // 这里有可能发生内存泄漏
     const google::protobuf::MethodDescriptor* method =
         service->GetDescriptor()->FindMethodByName(method_name);
 
     if (!method) {
-        /// TODO: 之后处理
+        ERROR_LOG("error_method not found");
+        set_protubuf_error(rsp_protobuf_protocol, ERROR_METHOD_NOT_FOUND,
+                           "method not found");
     }
 
     // 方法名
     google::protobuf::Message* req_message = service->GetRequestPrototype(method).New();
 
     // 反序列化， pb_data 反序列化成 req_message;
-    // 这是失败处理
+    // 反序列化错误
     if (!req_message->ParseFromString(req_protobuf_protocol->m_pb_data)) {
-        /// TODO: 失败处理
+        set_protubuf_error(rsp_protobuf_protocol, ERROR_FAILED_DESERIALIZE,
+                           "serialize error");
+        if (!req_message) {
+            delete req_message;
+            req_message = nullptr;
+        }
+        return;
     }
 
     INFO_LOG(fmt::format("request id [{}], get rpc request [{}]",
@@ -72,14 +87,44 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
     //   RpcController* controller, const Message* request,
     //   Message* response, Closure* done)
     // 通过这个来调用远程方法的
-    service->CallMethod(method, nullptr, req_message, rsp_message, nullptr);
+    /// TODO: 进行补充
+
+    RpcController rpc_controller;
+    rpc_controller.set_local_addr(conection->get_local_addr());
+    rpc_controller.set_peer_addr(conection->get_peer_addr());
+    rpc_controller.set_req_id(req_protobuf_protocol->m_msg_id);
+
+    service->CallMethod(method, &rpc_controller, req_message, rsp_message, nullptr);
 
     // 加上其值，
 
-    rsp_protobuf_protocol->m_err_code = 0;
     // 使用序列化
-    rsp_protobuf_protocol->m_pb_data =
-        rsp_message->SerializeToString(&(rsp_protobuf_protocol->m_pb_data));
+    if (rsp_message->SerializeToString(&(rsp_protobuf_protocol->m_pb_data))) {
+        set_protubuf_error(rsp_protobuf_protocol, ERROR_SERVICE_NOT_FOUND,
+                           "serilize error");
+
+        if (!req_message) {
+            delete req_message;
+            req_message = nullptr;
+        }
+        if (!rsp_message) {
+            delete rsp_message;
+            rsp_message = nullptr;
+        }
+        return;
+    }
+
+    // 最后的错误代码，表示正确
+    rsp_protobuf_protocol->m_err_code = 0;
+    // dispatch success
+    INFO_LOG(fmt::format("{} | dispatch success, request = {}, response = {}",
+                         request->m_msg_id, req_message->ShortDebugString(),
+                         req_message->ShortDebugString()));
+    delete req_message;
+    req_message = nullptr;
+
+    delete rsp_message;
+    rsp_message = nullptr;
 }
 
 void RpcDispatcher::register_service(std::shared_ptr<google::protobuf::Service> service) {

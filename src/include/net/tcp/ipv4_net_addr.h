@@ -1,7 +1,13 @@
-/*
-对于IPv4进行封装
-此处不考虑其他ip地址
-*/
+/**
+ * @file ipv4_net_addr.h
+ * @author lzc (liuzechen.coder@qq.com)
+ * @brief IPv4地址进行转换，并不考虑其他地址, 其实差不多是对C-style的网络地址进行封装
+ * @version 0.1
+ * @date 2024-01-21
+ *
+ * @copyright Copyright (c) 2024
+ *
+ */
 #ifndef RPC_NET_TCP_IPV4_NET_ADDR_H
 #define RPC_NET_TCP_IPV4_NET_ADDR_H
 
@@ -41,7 +47,11 @@ public:
 
     socklen_t get_sock_len() const noexcept;
 
-    // 得到协议镞
+    /**
+     * @brief 得到协议族
+     *
+     * @return int AF_INET 默认直接返回IPv4的协议族
+     */
     int get_family() const noexcept;
 
     // to format
@@ -50,9 +60,9 @@ public:
     bool check_valid();
 
 private:
-    std::string m_ip {};   // ip地址
-    uint16_t m_port { 0 }; // 端口号
-    sockaddr_in m_addr {}; // c style 的 sockaddr_in 就是对整个进行封装
+    std::string m_ip {};   ///< ip地址
+    uint16_t m_port { 0 }; ///< 端口号
+    sockaddr_in m_addr {}; ///< c style 的 sockaddr_in 就是对整个进行封装
 };
 } // namespace rpc
 

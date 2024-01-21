@@ -46,7 +46,7 @@ void TcpServer::on_accept() {
 
     //  构造
     std::shared_ptr<TcpConnection> connection =
-        std::make_shared<TcpConnection>(io_thread->get_eventloop(), client_fd, 128, peer_addr);
+        std::make_shared<TcpConnection>(io_thread->get_eventloop(), client_fd, 128, m_local_addr, peer_addr);
 
     // 设置已经连接
     connection->set_state(TcpConnection::TcpState::Connected);
@@ -73,7 +73,7 @@ void TcpServer::init() {
                               std::bind(&TcpServer::on_accept, this));
 
     // 加入到主Reactor里面
-    m_main_event_loop->add_epoll_event(m_listen_fd_event.get());
+    m_main_event_loop->add_epoll_event(m_listen_fd_event);
 }
 
 } // namespace rpc

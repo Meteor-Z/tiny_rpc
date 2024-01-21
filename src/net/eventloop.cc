@@ -1,5 +1,5 @@
 #include <cerrno>
-#include <cstring> 
+#include <cstring>
 #include <functional>
 #include <sys/socket.h>
 #include <sys/epoll.h>
@@ -49,8 +49,7 @@ EventLoop::EventLoop() {
 
     // 如果申请不了
     if (m_epoll_fd == -1) {
-        ERROR_LOG(
-            fmt::format("failed to epoll_create(),error info {}", errno));
+        ERROR_LOG(fmt::format("failed to epoll_create(),error info {}", errno));
         exit(0);
     }
 
@@ -75,15 +74,6 @@ EventLoop::~EventLoop() {
     // 先这样处理，因为这样也是线程不安全的
     close(m_epoll_fd);
 
-    if (m_wakeup_fd_event) {
-        delete m_wakeup_fd_event;
-        m_wakeup_fd_event = nullptr;
-    }
-
-    if (m_timer) {
-        delete m_timer;
-        m_timer = nullptr;
-    }
 }
 
 void EventLoop::init_wakeup_fd_event() {
@@ -96,13 +86,13 @@ void EventLoop::init_wakeup_fd_event() {
     }
 
     INFO_LOG(fmt::format("wakeup fd = {}", m_wakeup_fd));
-    m_wakeup_fd_event = new WakeUpFdEvent(m_wakeup_fd); // 事件唤醒
+    // m_wakeup_fd_event = new WakeUpFdEvent(m_wakeup_fd); // 事件唤醒
+    m_wakeup_fd_event = std::make_shared<WakeUpFdEvent>(m_wakeup_fd);
     m_wakeup_fd_event->listen(FdEvent::TriggerEvent::IN_EVENT, [this]() {
         char buf[8];
         while (read(m_wakeup_fd, buf, 8) != -1 && errno != EAGAIN) {
         }
-        DEBUG_LOG(
-            fmt::format("read full bytes from wakeup fd {}", m_wakeup_fd));
+        DEBUG_LOG(fmt::format("read full bytes from wakeup fd {}", m_wakeup_fd));
     });
 
     add_epoll_event(m_wakeup_fd_event);
@@ -155,13 +145,13 @@ void EventLoop::loop() {
 
                 if (trigger_event.events & EPOLLIN) {
                     DEBUG_LOG(fmt::format("fd {} trigger EPOLLIN event",
-                                                      fd_event_ptr->get_fd()));
+                                          fd_event_ptr->get_fd()));
                     add_task(fd_event_ptr->handler(FdEvent::TriggerEvent::IN_EVENT));
                 }
 
                 if (trigger_event.events & EPOLLOUT) {
                     DEBUG_LOG(fmt::format("fd {} trigger EPOLLOUT event",
-                                                      fd_event_ptr->get_fd()));
+                                          fd_event_ptr->get_fd()));
                     add_task(fd_event_ptr->handler(FdEvent::TriggerEvent::OUT_EVENT));
                 }
             }
@@ -175,7 +165,7 @@ void EventLoop::wake_up() {
 }
 
 void EventLoop::init_timer() {
-    m_timer = new Timer();
+    m_timer = std::make_shared<Timer>();
     add_epoll_event(m_timer); // 将这个事件存存放到这个事件中
 }
 
@@ -197,7 +187,7 @@ std::shared_ptr<EventLoop> EventLoop::Get_Current_Eventloop() {
     return thread_current_eventloop;
 }
 
-void EventLoop::add_epoll_event(FdEvent* event) {
+void EventLoop::add_epoll_event(std::shared_ptr<FdEvent> event) {
     if (is_in_current_loop_thread()) {
         add_to_epoll(event);
     } else {
@@ -206,7 +196,7 @@ void EventLoop::add_epoll_event(FdEvent* event) {
     }
 }
 
-void EventLoop::delete_epoll_event(FdEvent* event) {
+void EventLoop::delete_epoll_event(std::shared_ptr<FdEvent> event) {
     if (is_in_current_loop_thread()) {
         delete_from_epoll(event);
     } else {
@@ -227,7 +217,7 @@ void EventLoop::add_task(std::function<void()> task, bool is_wake_up /* = false 
 // EPOLL_CTL_ADD: 添加一个新的文件描述符
 // EPOLL_CTL_MOD: 修改一个已经在epoll描述符中的内容
 // epoll_ctl: 对epoll实例中的数据进行修改。
-void EventLoop::add_to_epoll(FdEvent* event) {
+void EventLoop::add_to_epoll(std::shared_ptr<FdEvent> event) {
     auto it = m_listen_fds.find(event->get_fd());
     int op = EPOLL_CTL_ADD;
 
@@ -241,8 +231,8 @@ void EventLoop::add_to_epoll(FdEvent* event) {
 
     int rt = epoll_ctl(m_epoll_fd, op, event->get_fd(), &tmp); // 注册 添加事件
     if (rt == -1) {
-        ERROR_LOG(fmt::format(
-            "failed epoll_ctl when add fd, errno={}, error={}", errno, strerror(errno)));
+        ERROR_LOG(fmt::format("failed epoll_ctl when add fd, errno={}, error={}", errno,
+                              strerror(errno)));
     }
 
     m_listen_fds.insert(event->get_fd());
@@ -250,7 +240,7 @@ void EventLoop::add_to_epoll(FdEvent* event) {
 }
 
 // EPOLL_CTL_DEL: 删除当前文件描述符
-void EventLoop::delete_from_epoll(FdEvent* event) {
+void EventLoop::delete_from_epoll(std::shared_ptr<FdEvent> event) {
     auto it = m_listen_fds.find(event->get_fd());
     if (it == m_listen_fds.end()) {
         return;
@@ -262,8 +252,8 @@ void EventLoop::delete_from_epoll(FdEvent* event) {
     // 删除掉
     int rt = epoll_ctl(m_epoll_fd, op, event->get_fd(), nullptr);
     if (rt == -1) {
-        ERROR_LOG(fmt::format(
-            "failed epoll_ctl when add fd, errno={}, error={}", errno, strerror(errno)));
+        ERROR_LOG(fmt::format("failed epoll_ctl when add fd, errno={}, error={}", errno,
+                              strerror(errno)));
     }
 
     // 在监听中也将这个进行删除

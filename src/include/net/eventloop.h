@@ -72,12 +72,12 @@ private:
     pid_t m_thread_id { 0 };                      // 线程号
     int m_epoll_fd { 0 };                         // epoll句柄
     int m_wakeup_fd { 0 };                        // 唤醒标识符
-    WakeUpFdEvent* m_wakeup_fd_event { nullptr }; // 唤醒的事件
+    std::shared_ptr<WakeUpFdEvent> m_wakeup_fd_event { nullptr }; // 唤醒的事件
     bool m_stop_flag { false };                   // eventloop是否暂停？
     std::set<int> m_listen_fds; // 监听的套接字，存入的是文件描述符
     std::queue<std::function<void()>> m_pending_tasks; // 待执行的任务队列。
     std::mutex m_mtx;                                  // 这个是锁
-    Timer* m_timer { nullptr };                        // 之后要改成智能指针
+    std::shared_ptr<Timer> m_timer { nullptr };                        // 之后要改成智能指针
     bool m_is_looping { false };                       // 是否正在loop中
 };
 } // namespace rpc

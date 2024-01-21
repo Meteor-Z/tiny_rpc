@@ -7,7 +7,9 @@ C++版本： C++17
 
 ### 必装的库
 
-1. 更新子模块:`git submodule update --init --recursive`
+- 更新子模块:`git submodule update --init --recursive`
+- 安装protubuf
+  - 以Ubuntu为例:`sudo apt install libprotobuf-dev`
 
 ### 命令
 

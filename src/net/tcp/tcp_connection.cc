@@ -26,11 +26,11 @@
 
 namespace rpc {
 TcpConnection::TcpConnection(
-    std::shared_ptr<EventLoop> event_loop, int fd, int buffer_size,
-    std::shared_ptr<IPv4NetAddr> peer_addr,
+    std::shared_ptr<EventLoop> event_loop, int fd, int buffer_size, 
+    std::shared_ptr<IPv4NetAddr> local_addr, std::shared_ptr<IPv4NetAddr> peer_addr,
     TcpConnectionType type /* = TcpConnectionType::TcpConnectionByServer */)
-    : m_peer_addr(peer_addr), m_event_loop(event_loop), m_state(TcpState::NotConnected),
-      m_fd(fd), m_connection_type(type) {
+    : m_local_addr(local_addr), m_peer_addr(peer_addr), m_event_loop(event_loop),
+      m_state(TcpState::NotConnected), m_fd(fd), m_connection_type(type) {
 
     // 初始化buffer的大小
     m_in_buffer = std::make_shared<TcpBuffer>(buffer_size);
@@ -155,7 +155,7 @@ void TcpConnection::excute() {
             // message->m_pb_data = "hello txt....";
             // message->m_msg_id = result[i]->m_msg_id;
             // 以前是随便写的，现在换成 dispatcher的
-            m_dispatcher->dispatcher(result[i], message);
+            m_dispatcher->dispatcher(result[i], message, this);
             replay_result.emplace_back(message);
         }
 
@@ -216,7 +216,7 @@ void TcpConnection::clear() {
     // m_io_thread->get_eventloop()->delete_epoll_event(m_fd_event.get());
 
     // 去除套接字
-    m_event_loop->delete_epoll_event(m_fd_event.get());
+    m_event_loop->delete_epoll_event(m_fd_event);
 
     // 这时候才会正式关闭
     m_state = TcpConnection::TcpState::Closed;
@@ -225,14 +225,14 @@ void TcpConnection::clear() {
 void TcpConnection::listen_write() {
     m_fd_event->listen(FdEvent::TriggerEvent::OUT_EVENT,
                        std::bind(&TcpConnection::on_write, this));
-    m_event_loop->add_epoll_event(m_fd_event.get());
+    m_event_loop->add_epoll_event(m_fd_event);
 }
 
 // ok
 void TcpConnection::listen_read() {
     m_fd_event->listen(FdEvent::TriggerEvent::IN_EVENT,
                        std::bind(&TcpConnection::on_read, this));
-    m_event_loop->add_epoll_event(m_fd_event.get());
+    m_event_loop->add_epoll_event(m_fd_event);
 }
 
 void TcpConnection::push_send_message(
@@ -309,7 +309,7 @@ void TcpConnection::on_write() {
     if (is_write_all) {
         m_fd_event->cancel(FdEvent::TriggerEvent::OUT_EVENT);
         // m_io_thread->get_eventloop()->add_epoll_event(m_fd_event.get());
-        m_event_loop->add_epoll_event(m_fd_event.get());
+        m_event_loop->add_epoll_event(m_fd_event);
     }
 
     if (m_connection_type == TcpConnectionType::TcpConnectionByClient) {
@@ -320,4 +320,7 @@ void TcpConnection::on_write() {
     }
 }
 
+std::shared_ptr<IPv4NetAddr> TcpConnection::get_local_addr() { return m_local_addr; }
+
+std::shared_ptr<IPv4NetAddr> TcpConnection::get_peer_addr() { return m_peer_addr; }
 } // namespace rpc

@@ -29,14 +29,13 @@ write(): 将RPC相应发送到客户端
 #include "net/coder/abstract_protocol.h"
 #include "net/coder/protobuf_protocol.h"
 
-
 // ok
 namespace rpc {
 class TcpConnection {
 public:
     /**
      * @brief 连接状态
-     * 
+     *
      */
     enum class TcpState {
         NotConnected = 1, //< 无连接
@@ -47,7 +46,7 @@ public:
 
     /**
      * @brief 区分TcpConnection的类型
-     * 
+     *
      */
     enum class TcpConnectionType {
         TcpConnectionByServer = 1, //< 服务端使用,客户端连接
@@ -60,7 +59,7 @@ public:
     // buffer_size: 初始化buffer的大小
     // peer_addr: 地址
     TcpConnection(std::shared_ptr<EventLoop> event_loop, int fd, int buffer_size,
-                  std::shared_ptr<IPv4NetAddr> peer_addr,
+                  std::shared_ptr<IPv4NetAddr> local_addr, std::shared_ptr<IPv4NetAddr> peer_addr,
                   TcpConnectionType type = TcpConnectionType::TcpConnectionByServer);
 
     ~TcpConnection();
@@ -95,7 +94,22 @@ public:
     void push_send_message(std::shared_ptr<AbstractProtocol> message,
                            std::function<void(std::shared_ptr<AbstractProtocol>)> done);
 
-    void push_read_message(const std::string& req_id, std::function<void(std::shared_ptr<AbstractProtocol>)> done);
+    void push_read_message(const std::string& req_id,
+                           std::function<void(std::shared_ptr<AbstractProtocol>)> done);
+
+    /**
+     * @brief 得到本地地址
+     * 
+     * @return std::shared_ptr<IPv4NetAddr> 对端地址
+     */
+    std::shared_ptr<IPv4NetAddr> get_local_addr();
+
+    /**
+     * @brief 得到对端地址
+     * 
+     * @return std::shared_ptr<IPv4NetAddr> 对端地址
+     */
+    std::shared_ptr<IPv4NetAddr> get_peer_addr();
 
 private:
     std::shared_ptr<IPv4NetAddr> m_local_addr { nullptr }; // 本地地址

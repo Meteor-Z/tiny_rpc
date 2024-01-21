@@ -29,7 +29,7 @@ TcpClient::TcpClient(std::shared_ptr<IPv4NetAddr> peer_addr) : m_peer_addr(peer_
 
     // 连接,并且设置成客户端的
     m_connection = std::make_shared<TcpConnection>(
-        m_event_loop, m_fd, 128, peer_addr,
+        m_event_loop, m_fd, 128, nullptr, peer_addr,
         TcpConnection::TcpConnectionType::TcpConnectionByClient);
 
     // 设置成客户端的
@@ -102,7 +102,7 @@ void TcpClient::connect(std::function<void()> done) {
 
                 // 去掉可写事件的监听
                 m_fd_event->cancel(FdEvent::TriggerEvent::OUT_EVENT);
-                m_event_loop->add_epoll_event(m_fd_event.get());
+                m_event_loop->add_epoll_event(m_fd_event);
 
                 if (is_connected_flag && done) {
                     done();
@@ -110,7 +110,7 @@ void TcpClient::connect(std::function<void()> done) {
             });
 
             // 要加入到 epoll_event上面
-            m_event_loop->add_epoll_event(m_fd_event.get());
+            m_event_loop->add_epoll_event(m_fd_event);
 
             // 没有loop的时候才会进行loop
             if (!m_event_loop->is_looping()) {

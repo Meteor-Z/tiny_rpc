@@ -18,8 +18,7 @@ int main() {
 
     rpc::Logger::INIT_GLOBAL_LOGGER();
 
-    std::unique_ptr<rpc::EventLoop> eventloop_ptr =
-        std::make_unique<rpc::EventLoop>();
+    std::unique_ptr<rpc::EventLoop> eventloop_ptr = std::make_unique<rpc::EventLoop>();
     int listenfd = socket(AF_INET, SOCK_STREAM, 0);
     if (listenfd == -1) {
         ERROR_LOG("listenfd = -1");
@@ -36,8 +35,7 @@ int main() {
     addr.sin_family = AF_INET;
     inet_aton("127.0.0.1", &addr.sin_addr);
 
-    int bind_is_ok =
-        bind(listenfd, reinterpret_cast<sockaddr*>(&addr), sizeof(addr));
+    int bind_is_ok = bind(listenfd, reinterpret_cast<sockaddr*>(&addr), sizeof(addr));
     if (bind_is_ok != 0) {
         ERROR_LOG("bind() error");
         exit(1);
@@ -50,25 +48,25 @@ int main() {
         exit(1);
     }
     // 创建一个描述符文件
-    rpc::FdEvent event(listenfd);
-    event.listen(rpc::FdEvent::TriggerEvent::IN_EVENT, [listenfd]() {
+    // rpc::FdEvent event(listenfd);
+    std::shared_ptr<rpc::FdEvent> event = std::make_shared<rpc::FdEvent>(listenfd);
+    event->listen(rpc::FdEvent::TriggerEvent::IN_EVENT, [listenfd]() {
         sockaddr_in client_addr;
         socklen_t addr_len = sizeof(client_addr);
         memset(&client_addr, 0, sizeof(client_addr));
-        int clientfd = accept(
-            listenfd, reinterpret_cast<sockaddr*>(&client_addr), &addr_len);
-        DEBUG_LOG(fmt::format(
-            "success get client fd[{}], peer addr: [{}:{}]", clientfd,
-            inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port)));
+        int clientfd =
+            accept(listenfd, reinterpret_cast<sockaddr*>(&client_addr), &addr_len);
+        DEBUG_LOG(fmt::format("success get client fd[{}], peer addr: [{}:{}]", clientfd,
+                              inet_ntoa(client_addr.sin_addr),
+                              ntohs(client_addr.sin_port)));
     });
 
-    eventloop_ptr->add_epoll_event(&event);
+    eventloop_ptr->add_epoll_event(event);
 
     int i = 0;
     std::shared_ptr<rpc::TimerEvent> timer_event =
         std::make_shared<rpc::TimerEvent>(1000, true, [&i]() {
-            INFO_LOG(
-                fmt::format("triger, timer event, count = {}", i++));
+            INFO_LOG(fmt::format("triger, timer event, count = {}", i++));
         });
     eventloop_ptr->add_timer_event(timer_event);
     eventloop_ptr->loop();

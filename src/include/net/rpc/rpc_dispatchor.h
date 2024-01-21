@@ -20,42 +20,47 @@ service OrderService {
 #include <memory>
 #include <string>
 #include <map>
-#include "net/coder/abstract_protocol.h"
 #include "google/protobuf/service.h"
+#include "net/coder/abstract_protocol.h"
 #include "net/coder/protobuf_protocol.h"
+// #include "net/tcp/tcp_connection.h"
+// #include "net/tcp/tcp_connection.h"
 
 namespace rpc {
+// 前置声明
+class TcpConnection;
 class RpcDispatcher {
 public:
     /**
      * @brief 进行分发
-     * 
-     * @param request 
-     * @param response 
+     *
+     * @param request
+     * @param response
      */
     void dispatcher(std::shared_ptr<AbstractProtocol> request,
-                    std::shared_ptr<AbstractProtocol> response);
+                    std::shared_ptr<AbstractProtocol> response, TcpConnection* conection);
 
     /**
      * @brief 对服务进行注册
-     * 
-     * @param service 
+     *
+     * @param service
      */
     void register_service(std::shared_ptr<google::protobuf::Service> service);
 
     /**
      * @brief 设置错误信息
-     * 
-     * @param msg 
+     *
+     * @param msg
      * @param err_code 错误信息玛
      * @param err_info 错误消息
      */
-    void set_protubuf_error(std::shared_ptr<ProtobufProtocol> msg, int32_t err_code, const std::string err_info);
+    void set_protubuf_error(std::shared_ptr<ProtobufProtocol> msg, int32_t err_code,
+                            const std::string err_info);
 
 private:
     /**
      * @brief 解析方法名称，将full_name的名称解析成 service_name 和 method_name
-     * 
+     *
      * @param full_name 全部的名称
      * @param service_name 解析出来的service_name
      * @param method_name 解析出来的full_name
