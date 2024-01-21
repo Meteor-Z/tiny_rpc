@@ -1,5 +1,4 @@
 #include <cstddef>
-#include <google/protobuf/arena.h>
 #include <memory>
 #include "fmt/core.h"
 #include "google/protobuf/service.h"
@@ -8,6 +7,7 @@
 #include "common/log.h"
 #include "net/rpc/rpc_dispatchor.h"
 #include "net/coder/protobuf_protocol.h"
+#include "common/error_code.h"
 
 namespace rpc {
 void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
@@ -22,13 +22,18 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
     // 得到全部的方法名称
     std::string method_full_name = req_protobuf_protocol->m_method_name;
 
+    // 先进行赋值
+    rsp_protobuf_protocol->m_msg_id = req_protobuf_protocol->m_msg_id;
+    rsp_protobuf_protocol->m_method_name = req_protobuf_protocol->m_method_name;
+
     std::string service_name {};
     std::string method_name {};
 
     // 进行转换
     if (parse_service_full_name(method_full_name, service_name, method_name)) {
-        /// TODO: 这里是转发错误的信息
-        ERROR_LOG("parse error");
+        // 设置
+        set_protubuf_error(rsp_protobuf_protocol, ERROR_PARSE_SERVICE_NAME,
+                           "parse service name error");
         return;
     }
 
@@ -66,23 +71,28 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
     //  virtual void CallMethod(const MethodDescriptor* method,
     //   RpcController* controller, const Message* request,
     //   Message* response, Closure* done)
-    // 通过这个来调用远程方法的 
+    // 通过这个来调用远程方法的
     service->CallMethod(method, nullptr, req_message, rsp_message, nullptr);
 
     // 加上其值，
-    rsp_protobuf_protocol->m_msg_id = req_protobuf_protocol->m_msg_id;
-    rsp_protobuf_protocol->m_method_name = req_protobuf_protocol->m_method_name;
+
     rsp_protobuf_protocol->m_err_code = 0;
     // 使用序列化
     rsp_protobuf_protocol->m_pb_data =
         rsp_message->SerializeToString(&(rsp_protobuf_protocol->m_pb_data));
-    
 }
 
 void RpcDispatcher::register_service(std::shared_ptr<google::protobuf::Service> service) {
 
     std::string service_name = service->GetDescriptor()->full_name();
     m_service_map[std::move(service_name)] = service;
+}
+
+void RpcDispatcher::set_protubuf_error(std::shared_ptr<ProtobufProtocol> msg,
+                                       int32_t err_code, const std::string err_info) {
+    msg->m_err_code = err_code;
+    msg->m_err_info_len = err_info.length();
+    msg->m_err_info = std::move(err_info);
 }
 bool RpcDispatcher::parse_service_full_name(const std::string& full_name,
                                             std::string& service_name,
@@ -99,7 +109,7 @@ bool RpcDispatcher::parse_service_full_name(const std::string& full_name,
         return false;
     }
 
-    // 解析成功 
+    // 解析成功
     // 前面是service_name, 后面的都是 method_name
     service_name = full_name.substr(0, pos);
     method_name = full_name.substr(pos + 1);

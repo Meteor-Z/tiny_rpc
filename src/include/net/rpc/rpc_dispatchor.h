@@ -22,6 +22,7 @@ service OrderService {
 #include <map>
 #include "net/coder/abstract_protocol.h"
 #include "google/protobuf/service.h"
+#include "net/coder/protobuf_protocol.h"
 
 namespace rpc {
 class RpcDispatcher {
@@ -41,6 +42,15 @@ public:
      * @param service 
      */
     void register_service(std::shared_ptr<google::protobuf::Service> service);
+
+    /**
+     * @brief 设置错误信息
+     * 
+     * @param msg 
+     * @param err_code 错误信息玛
+     * @param err_info 错误消息
+     */
+    void set_protubuf_error(std::shared_ptr<ProtobufProtocol> msg, int32_t err_code, const std::string err_info);
 
 private:
     /**
