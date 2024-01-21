@@ -13,6 +13,7 @@ service OrderService {
 5. func(request, response)
 6. 将 response 对象序列化成 pb_data, 做 encode 然后塞入 buffer 里面，就会发送回包了。
 */
+
 #ifndef RPC_NET_RPC_RPC_DISPATCHOR_H
 #define RPC_NET_RPC_RPC_DISPATCHOR_H
 
@@ -25,20 +26,39 @@ service OrderService {
 namespace rpc {
 class RpcDispatcher {
 public:
-    // 进行分发
+    /**
+     * @brief 进行分发
+     * 
+     * @param request 
+     * @param response 
+     */
     void dispatcher(std::shared_ptr<AbstractProtocol> request,
                     std::shared_ptr<AbstractProtocol> response);
 
-    // 将服务进行注册
+    /**
+     * @brief 对服务进行注册
+     * 
+     * @param service 
+     */
     void register_service(std::shared_ptr<google::protobuf::Service> service);
+
 private:
-    // 解析方法名称
-    // 将 full_name 的名称解析到 service_name 和 method_name
-    bool parse_service_full_name(const std::string& full_name, std::string& service_name, std::string& method_name);
+    /**
+     * @brief 解析方法名称，将full_name的名称解析成 service_name 和 method_name
+     * 
+     * @param full_name 全部的名称
+     * @param service_name 解析出来的service_name
+     * @param method_name 解析出来的full_name
+     * @return true 解析出来了，并且给了service_name 和 method_name
+     * @return false 没有解析出来，这时候并不应该使用servic_name 和 method_name
+     */
+    bool parse_service_full_name(const std::string& full_name, std::string& service_name,
+                                 std::string& method_name);
+
 private:
     // 这里的 Service 就是 上面的 OrderService,
     std::map<std::string, std::shared_ptr<google::protobuf::Service>>
-        m_service_map; // 存储的是 Service 对象
+        m_service_map; ///< 存储的是 Service 对象
 };
 } // namespace rpc
 

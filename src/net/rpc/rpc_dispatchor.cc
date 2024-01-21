@@ -15,6 +15,7 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
     // 智能指针转换
     std::shared_ptr<ProtobufProtocol> req_protobuf_protocol =
         std::dynamic_pointer_cast<ProtobufProtocol>(request);
+
     std::shared_ptr<ProtobufProtocol> rsp_protobuf_protocol =
         std::dynamic_pointer_cast<ProtobufProtocol>(response);
 
@@ -39,6 +40,7 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
     }
 
     std::shared_ptr<google::protobuf::Service> service { (*iter).second };
+
     const google::protobuf::MethodDescriptor* method =
         service->GetDescriptor()->FindMethodByName(method_name);
 
@@ -50,7 +52,8 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
     google::protobuf::Message* req_message = service->GetRequestPrototype(method).New();
 
     // 反序列化， pb_data 反序列化成 req_message;
-    if (req_message->ParseFromString(req_protobuf_protocol->m_pb_data)) {
+    // 这是失败处理
+    if (!req_message->ParseFromString(req_protobuf_protocol->m_pb_data)) {
         /// TODO: 失败处理
     }
 
@@ -63,8 +66,10 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
     //  virtual void CallMethod(const MethodDescriptor* method,
     //   RpcController* controller, const Message* request,
     //   Message* response, Closure* done)
+    // 通过这个来调用远程方法的 
     service->CallMethod(method, nullptr, req_message, rsp_message, nullptr);
 
+    // 加上其值，
     rsp_protobuf_protocol->m_msg_id = req_protobuf_protocol->m_msg_id;
     rsp_protobuf_protocol->m_method_name = req_protobuf_protocol->m_method_name;
     rsp_protobuf_protocol->m_err_code = 0;
@@ -87,12 +92,14 @@ bool RpcDispatcher::parse_service_full_name(const std::string& full_name,
     }
 
     size_t pos = full_name.find_first_of(".");
+    // 没有找到
     if (pos == full_name.npos) {
         ERROR_LOG(
             fmt::format("not found [.] in fulle name[{}], wrong format", full_name));
         return false;
     }
 
+    // 解析成功 
     // 前面是service_name, 后面的都是 method_name
     service_name = full_name.substr(0, pos);
     method_name = full_name.substr(pos + 1);

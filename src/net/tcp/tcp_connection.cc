@@ -154,7 +154,7 @@ void TcpConnection::excute() {
                 std::make_shared<ProtobufProtocol>();
             // message->m_pb_data = "hello txt....";
             // message->m_msg_id = result[i]->m_msg_id;
-            // 这里面进行反序列化
+            // 以前是随便写的，现在换成 dispatcher的
             m_dispatcher->dispatcher(result[i], message);
             replay_result.emplace_back(message);
         }

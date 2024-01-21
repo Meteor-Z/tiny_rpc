@@ -34,18 +34,24 @@ write(): 将RPC相应发送到客户端
 namespace rpc {
 class TcpConnection {
 public:
-    // 连接状态
+    /**
+     * @brief 连接状态
+     * 
+     */
     enum class TcpState {
-        NotConnected = 1, // 无连接
-        Connected = 2,    // 连接
-        HalfClosing = 3,  // 半连接
-        Closed = 4,       // 关闭
+        NotConnected = 1, //< 无连接
+        Connected = 2,    //< 连接
+        HalfClosing = 3,  //< 半连接
+        Closed = 4,       //< 关闭
     };
 
-    // 区分TcpConnection的类型
+    /**
+     * @brief 区分TcpConnection的类型
+     * 
+     */
     enum class TcpConnectionType {
-        TcpConnectionByServer = 1, // 服务端使用,客户端连接
-        TcpConnectionByClient = 2, // 客户端使用，对服务端连接
+        TcpConnectionByServer = 1, //< 服务端使用,客户端连接
+        TcpConnectionByClient = 2, //< 客户端使用，对服务端连接
     };
 
 public:
