@@ -1,0 +1,19 @@
+syntax = "proto3";
+// c++ 的 service
+option cc_generic_services = true;
+
+message make_order_request {
+    int32 price = 1;
+    string goods = 2;
+}
+
+message make_order_response {
+    int32 ret_code = 1;
+    string res_info = 2;
+    string order_id = 3;
+}
+
+//
+service Order {
+    rpc make_order(make_order_request) returns (make_order_response);
+}
