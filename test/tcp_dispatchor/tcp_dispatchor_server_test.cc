@@ -28,32 +28,6 @@ public:
     }
 };
 
-// void test_tcp_dispatchor() {
-//     std::shared_ptr<rpc::IPv4NetAddr> addr =
-//         std::make_shared<rpc::IPv4NetAddr>("127.0.0.1", 11451);
-//     std::shared_ptr<rpc::TcpClient> client = std::make_shared<rpc::TcpClient>(addr);
-
-//     client->connect([addr, &client]() {
-//         DEBUG_LOG(fmt::format("connect to {} success", addr->to_string()));
-//         std::shared_ptr<rpc::ProtobufProtocol> message =
-//             std::make_shared<rpc::ProtobufProtocol>();
-//         message->m_msg_id = "12345678";
-//         message->m_pb_data = "test pb data";
-//         client->write_message(message,
-//                               [](std::shared_ptr<rpc::AbstractProtocol> msg_ptr) {
-//                                   DEBUG_LOG("send mssage success");
-//                               });
-//     });
-
-//     client->read_message("12345678", [](std::shared_ptr<rpc::AbstractProtocol> msg_ptr)
-//     {
-//         std::shared_ptr<rpc::ProtobufProtocol> message =
-//             std::dynamic_pointer_cast<rpc::ProtobufProtocol>(msg_ptr);
-//         DEBUG_LOG(fmt::format("req_id {}, get response {}", message->m_msg_id,
-//                               message->m_pb_data));
-//     });
-// }
-
 void test_tcp_server() {
     std::shared_ptr<rpc::IPv4NetAddr> addr =
         std::make_shared<rpc::IPv4NetAddr>("127.0.0.1", 12347);
