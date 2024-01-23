@@ -32,19 +32,27 @@ add_library(tcp_dispatchor_libs STATIC
     ${CMAKE_SOURCE_DIR}/src/net/rpc/rpc_dispatchor.cc
     ${CMAKE_SOURCE_DIR}/src/net/rpc/rpc_controller.cc
     ${CMAKE_SOURCE_DIR}/src/net/rpc/rpc_closure.cc
+    ${CMAKE_SOURCE_DIR}/src/net/tcp/tcp_client.cc
+    ${CMAKE_SOURCE_DIR}/src/net/tcp/tcp_server.cc
+    order.pb.cc
 
 
 )
+find_package(Protobuf REQUIRED)
 
 # Tcp Server的
 target_link_libraries(tcp_dispatchor_server PRIVATE tcp_dispatchor_libs)
 target_link_libraries(tcp_dispatchor_server PRIVATE ${TINYXML})
 target_link_libraries(tcp_dispatchor_server PRIVATE fmt)
+target_link_libraries(tcp_dispatchor_server PRIVATE ${Protobuf_LIBRARIES})
 
 # Tcp Client 的
 target_link_libraries(tcp_dispatchor_client PRIVATE tcp_dispatchor_libs)
 target_link_libraries(tcp_dispatchor_client PRIVATE ${TINYXML})
 target_link_libraries(tcp_dispatchor_client PRIVATE fmt)
+target_link_libraries(tcp_dispatchor_client PRIVATE ${Protobuf_LIBRARIES})
+
+message("yes" ${Protobuf_LIBRARIES} "找到这个库了")
 
 
 add_test(NAME tcp_dispatchor_server COMMAND tcp_dispatchor_server) # 这个是添加一个子cmake目录。
