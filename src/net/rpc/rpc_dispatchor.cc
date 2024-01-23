@@ -106,7 +106,7 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
     // 加上其值，
 
     // 使用序列化
-    if (rsp_message->SerializeToString(&(rsp_protobuf_protocol->m_pb_data))) {
+    if (!rsp_message->SerializeToString(&(rsp_protobuf_protocol->m_pb_data))) {
         set_protubuf_error(rsp_protobuf_protocol, ERROR_SERVICE_NOT_FOUND,
                            "serilize error");
 

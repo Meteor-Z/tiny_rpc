@@ -29,12 +29,19 @@ add_library(tcp_server_libs STATIC
     ${CMAKE_SOURCE_DIR}/src/net/tcp/tcp_connection.cc
     ${CMAKE_SOURCE_DIR}/src/net/tcp/tcp_buffer.cc
     ${CMAKE_SOURCE_DIR}/src/net/coder/protobuf_coder.cc
-
-
+    ${CMAKE_SOURCE_DIR}/src/net/coder/protobuf_coder.cc
+    ${CMAKE_SOURCE_DIR}/src/net/rpc/rpc_dispatchor.cc
+    ${CMAKE_SOURCE_DIR}/src/net/rpc/rpc_controller.cc
+    ${CMAKE_SOURCE_DIR}/src/net/rpc/rpc_closure.cc
 )
+
+
+
 # 依赖
 target_link_libraries(tcp_server PRIVATE tcp_server_libs)
 target_link_libraries(tcp_server PRIVATE ${TINYXML})
 target_link_libraries(tcp_server PRIVATE fmt)
+
+
 
 add_test(NAME tcp_server COMMAND tcp_server) # 这个是添加一个子cmake目录。

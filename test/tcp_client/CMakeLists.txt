@@ -30,8 +30,11 @@ add_library(tcp_client_libs STATIC
     ${CMAKE_SOURCE_DIR}/src/net/tcp/tcp_buffer.cc
     ${CMAKE_SOURCE_DIR}/src/net/tcp/tcp_client.cc
     ${CMAKE_SOURCE_DIR}/src/net/coder/protobuf_coder.cc
-
+    ${CMAKE_SOURCE_DIR}/src/net/rpc/rpc_dispatchor.cc
+    ${CMAKE_SOURCE_DIR}/src/net/rpc/rpc_controller.cc
+    ${CMAKE_SOURCE_DIR}/src/net/rpc/rpc_closure.cc
 )
+
 # 依赖
 target_link_libraries(tcp_client PRIVATE tcp_client_libs)
 target_link_libraries(tcp_client PRIVATE ${TINYXML})

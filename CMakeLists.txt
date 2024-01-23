@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # 设置生成 compile_commands
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-# 我也不知道，是protobuf里面的库需要的，别动
+
 # 显示编译时间
 set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_COMMAND} -E time")
 set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "${CMAKE_COMMAND} -E time")
@@ -23,6 +23,10 @@ include_directories(${CMAKE_SOURCE_DIR}/src/include)
 # fmt的头文件
 include_directories(${CMAKE_SOURCE_DIR}/third_party/fmt/include)
 add_subdirectory(third_party/fmt)
+
+# protobuf的头文件
+include_directories(${CMAKE_SOURCE_DIR}/third_party/protobuf/src/google/protobuf)
+add_subdirectory(third_party/protobuf)
 
 # 以下是测试文件
 add_subdirectory(test/timer_event)
