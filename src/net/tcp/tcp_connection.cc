@@ -12,6 +12,7 @@
 #include "fmt/core.h"
 #include "common/log.h"
 #include "net/eventloop.h"
+#include "net/rpc/rpc_dispatchor.h"
 #include "net/tcp/ipv4_net_addr.h"
 #include "net/tcp/tcp_connection.h"
 #include "net/tcp/tcp_buffer.h"
@@ -54,7 +55,7 @@ TcpConnection::TcpConnection(
     if (m_connection_type == TcpConnectionType::TcpConnectionByServer) {
         listen_read();
         // 只有作为 Server 的时候才会使用
-        m_dispatcher = std::make_shared<RpcDispatcher>();
+        // m_dispatcher = std::make_shared<RpcDispatcher>();
     }
 }
 
@@ -155,7 +156,8 @@ void TcpConnection::excute() {
             // message->m_pb_data = "hello txt....";
             // message->m_msg_id = result[i]->m_msg_id;
             // 以前是随便写的，现在换成 dispatcher的
-            m_dispatcher->dispatcher(result[i], message, this);
+            // 全局Rpc框架
+            RpcDispatcher::GET_RPC_DISPATCHER()->dispatcher(result[i], message, this);
             replay_result.emplace_back(message);
         }
 

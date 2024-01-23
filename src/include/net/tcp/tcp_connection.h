@@ -22,7 +22,7 @@ write(): 将RPC相应发送到客户端
 #include "net/eventloop.h"
 #include "net/fd_event/fd_event.h"
 #include "net/io_thread/io_thread.h"
-#include "net/rpc/rpc_dispatchor.h"
+// #include "net/rpc/rpc_dispatchor.h"
 #include "net/tcp/ipv4_net_addr.h"
 #include "net/tcp/tcp_buffer.h"
 #include "net/coder/abstract_coder.h"
@@ -142,7 +142,7 @@ private:
     std::map<std::string, std::function<void(std::shared_ptr<AbstractProtocol>)>>
         m_read_dones;
 
-    std::shared_ptr<RpcDispatcher> m_dispatcher;
+    // std::shared_ptr<RpcDispatcher> m_dispatcher;
 };
 } // namespace rpc
 #endif

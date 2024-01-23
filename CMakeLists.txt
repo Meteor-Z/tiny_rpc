@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.22.1)
 
 project(tiny_rpc)
 set(CMAKE_CXX_STANDARD 17)
+# 设置必须跟上面的一样，即c++17
+set(CMAKE_CXX_STANDARD_REQUIRED ON) 
 
 # 设置生成 compile_commands
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

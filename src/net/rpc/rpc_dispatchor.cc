@@ -12,6 +12,13 @@
 #include "net/tcp/tcp_connection.h"
 
 namespace rpc {
+static std::shared_ptr<RpcDispatcher> g_rpc_dispatchor { nullptr };
+std::shared_ptr<RpcDispatcher> RpcDispatcher::GET_RPC_DISPATCHER() {
+    if (!g_rpc_dispatchor) {
+        g_rpc_dispatchor = std::make_shared<RpcDispatcher>();
+    }
+    return g_rpc_dispatchor;
+}
 void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
                                std::shared_ptr<AbstractProtocol> response,
                                TcpConnection* conection) {

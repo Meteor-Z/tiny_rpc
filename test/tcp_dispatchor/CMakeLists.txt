@@ -1,4 +1,4 @@
-add_executable(tcp_dispatchor tcp_dispatchor_test.cc)
+add_executable(tcp_dispatchor_server tcp_dispatchor_server_test.cc)
 
 include_directories(${CMAKE_SOURCE_DIR}/src/include)
 
@@ -8,7 +8,7 @@ include_directories(${CMAKE_SOURCE_DIR}/third_party/tinyxml/include)
 # 这个是tinyxml的lib库
 find_library(TINYXML tinyxml ${CMAKE_SOURCE_DIR}/third_party/tinyxml/lib)
 
-target_include_directories(tcp_server PRIVATE ${CMAKE_SOURCE_DIR}/third_party/fmt/include)
+target_include_directories(tcp_dispatchor_server PRIVATE ${CMAKE_SOURCE_DIR}/third_party/fmt/include)
 
 add_library(tcp_dispatchor_libs STATIC
     ${CMAKE_SOURCE_DIR}/src/common/config.cc
@@ -33,8 +33,6 @@ add_library(tcp_dispatchor_libs STATIC
 
 )
 # 依赖
-target_link_libraries(tcp_dispatchor PRIVATE tcp_dispatchor_libs)
-target_link_libraries(tcp_dispatchor PRIVATE ${TINYXML})
-target_link_libraries(tcp_dispatchor PRIVATE fmt)
+ 
 
-add_test(NAME tcp_dispatchor COMMAND tcp_dispatchor) # 这个是添加一个子cmake目录。
+add_test(NAME tcp_dispatchor_server COMMAND tcp_dispatchor_server) # 这个是添加一个子cmake目录。

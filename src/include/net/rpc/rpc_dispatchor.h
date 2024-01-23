@@ -31,6 +31,8 @@ namespace rpc {
 class TcpConnection;
 class RpcDispatcher {
 public:
+    static std::shared_ptr<RpcDispatcher> GET_RPC_DISPATCHER();
+public:
     /**
      * @brief 进行分发
      *
