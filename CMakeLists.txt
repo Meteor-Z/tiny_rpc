@@ -24,6 +24,8 @@ include_directories(${CMAKE_SOURCE_DIR}/src/include)
 include_directories(${CMAKE_SOURCE_DIR}/third_party/fmt/include)
 add_subdirectory(third_party/fmt)
 
+# set(ABSL_PROPAGATE_CXX_STD ON)
+# add_subdirectory(third_party/abseil-cpp)
 # include_directories(${Protobuf_INCLUDE_DIRS})
 
 # 以下是测试文件
