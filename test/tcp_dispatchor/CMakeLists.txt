@@ -56,6 +56,6 @@ target_link_libraries(tcp_dispatchor_server PRIVATE ${Protobuf_LIBRARIES})
 # target_link_libraries(tcp_dispatchor_client PRIVATE ${Protobuf_LIBRARIES})
 
 message("yes" ${Protobuf_LIBRARIES} "找到这个库了")
-
+message("protobuf版本:" ${Protobuf_VERSION})
 
 add_test(NAME tcp_dispatchor_server COMMAND tcp_dispatchor_server) # 这个是添加一个子cmake目录。
