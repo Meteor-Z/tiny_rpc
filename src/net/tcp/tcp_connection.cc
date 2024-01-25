@@ -155,7 +155,7 @@ void TcpConnection::excute() {
                 std::make_shared<ProtobufProtocol>();
             // message->m_pb_data = "hello txt....";
             // message->m_msg_id = result[i]->m_msg_id;
-            // 以前是随便写的，现在换成 dispatcher的
+            // 以前是随便写的，现在换成 dispatcher 的
             // 全局Rpc框架
             RpcDispatcher::GET_RPC_DISPATCHER()->dispatcher(result[i], message, this);
             replay_result.emplace_back(message);
@@ -230,7 +230,6 @@ void TcpConnection::listen_write() {
     m_event_loop->add_epoll_event(m_fd_event);
 }
 
-// ok
 void TcpConnection::listen_read() {
     m_fd_event->listen(FdEvent::TriggerEvent::IN_EVENT,
                        std::bind(&TcpConnection::on_read, this));

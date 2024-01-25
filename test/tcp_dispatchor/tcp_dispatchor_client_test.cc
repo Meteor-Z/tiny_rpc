@@ -13,9 +13,9 @@
 #include "common/log_config.h"
 #include "net/coder/protobuf_protocol.h"
 
-void test_tcp_dispatchor() {
+void test_tcp_dispatchor_client() {
     std::shared_ptr<rpc::IPv4NetAddr> addr =
-        std::make_shared<rpc::IPv4NetAddr>("127.0.0.1", 11451);
+        std::make_shared<rpc::IPv4NetAddr>("127.0.0.1", 12347);
     std::shared_ptr<rpc::TcpClient> client = std::make_shared<rpc::TcpClient>(addr);
 
     client->connect([addr, &client]() {
@@ -25,7 +25,7 @@ void test_tcp_dispatchor() {
         message->m_msg_id = "114514";
         message->m_pb_data = "test pb data";
 
-        make_order_request request;
+        makeOrderRequest request;
         request.set_price(100);
         request.set_goods("apple");
 
@@ -35,7 +35,7 @@ void test_tcp_dispatchor() {
             return;
         }
 
-        message->m_method_name = "Order.make_order_request";
+        message->m_method_name = "Order.makeOrder";
 
         client->write_message(message,
                               [](std::shared_ptr<rpc::AbstractProtocol> msg_ptr) {
@@ -49,7 +49,7 @@ void test_tcp_dispatchor() {
         DEBUG_LOG(fmt::format("req_id {}, get response {}", message->m_msg_id,
                               message->m_pb_data));
 
-        make_order_response response;
+        makeOrderResponse response;
         if (!response.ParseFromString(message->m_pb_data)) {
             ERROR_LOG("寄了");
             return;
@@ -60,9 +60,9 @@ void test_tcp_dispatchor() {
 }
 
 int main() {
-    rpc::LogConfig::SET_GLOBAL_CONFIG("/home/lzc/tiny_rpc/conf/rpc.xml");
+    rpc::LogConfig::SET_GLOBAL_CONFIG("/home/lzc/code/tiny_rpc/conf/rpc.xml");
 
     rpc::Logger::INIT_GLOBAL_LOGGER();
 
-    test_tcp_dispatchor();
+    test_tcp_dispatchor_client();
 }

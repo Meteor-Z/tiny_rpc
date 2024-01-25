@@ -174,7 +174,7 @@ void ProtobufCoder::decode(std::vector<std::shared_ptr<AbstractProtocol>>& out_m
 const char* ProtobufCoder::encode_protubuf(std::shared_ptr<ProtobufProtocol>& message,
                                            int& len) {
     if (message->m_msg_id.empty()) {
-        message->m_msg_id = "123456";
+        message->m_msg_id = "123456789";
     }
     DEBUG_LOG(fmt::format("msg_id = {}", message->m_msg_id));
 

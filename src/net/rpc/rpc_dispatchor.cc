@@ -16,12 +16,14 @@ static std::shared_ptr<RpcDispatcher> g_rpc_dispatchor { nullptr };
 std::shared_ptr<RpcDispatcher> RpcDispatcher::GET_RPC_DISPATCHER() {
     if (!g_rpc_dispatchor) {
         g_rpc_dispatchor = std::make_shared<RpcDispatcher>();
+        DEBUG_LOG("first make_shared<RpcDispatcher>()");
     }
     return g_rpc_dispatchor;
 }
 void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
                                std::shared_ptr<AbstractProtocol> response,
                                TcpConnection* conection) {
+
     // 智能指针转换
     std::shared_ptr<ProtobufProtocol> req_protobuf_protocol =
         std::dynamic_pointer_cast<ProtobufProtocol>(request);
@@ -32,15 +34,15 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
     // 得到全部的方法名称
     std::string method_full_name = req_protobuf_protocol->m_method_name;
 
+    std::string service_name {};
+    std::string method_name {};
+
     // 先进行赋值
     rsp_protobuf_protocol->m_msg_id = req_protobuf_protocol->m_msg_id;
     rsp_protobuf_protocol->m_method_name = req_protobuf_protocol->m_method_name;
 
-    std::string service_name {};
-    std::string method_name {};
-
-    // 进行转换
-    if (parse_service_full_name(method_full_name, service_name, method_name)) {
+    // 进行转换, 如果转换失败
+    if (!parse_service_full_name(method_full_name, service_name, method_name)) {
         // 设置
         ERROR_LOG("parse service name error");
         set_protubuf_error(rsp_protobuf_protocol, ERROR_PARSE_SERVICE_NAME,
@@ -48,6 +50,7 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
         return;
     }
 
+    DEBUG_LOG(fmt::format("method_name = {}", method_name));
     auto iter = m_service_map.find(service_name);
 
     // service不存在
@@ -55,26 +58,34 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
         ERROR_LOG("service not found");
         set_protubuf_error(rsp_protobuf_protocol, ERROR_SERVICE_NOT_FOUND,
                            "service not found");
+        return;
     }
-
+    DEBUG_LOG("1 到这里是对的");
     std::shared_ptr<google::protobuf::Service> service { (*iter).second };
 
     // 这里有可能发生内存泄漏
     const google::protobuf::MethodDescriptor* method =
         service->GetDescriptor()->FindMethodByName(method_name);
 
-    if (!method) {
+    // may be is error
+    if (method == nullptr) {
         ERROR_LOG("error_method not found");
         set_protubuf_error(rsp_protobuf_protocol, ERROR_METHOD_NOT_FOUND,
                            "method not found");
+        return;
     }
 
     // 方法名
     google::protobuf::Message* req_message = service->GetRequestPrototype(method).New();
 
+    DEBUG_LOG("2 到这里是对的");
+
     // 反序列化， pb_data 反序列化成 req_message;
     // 反序列化错误
     if (!req_message->ParseFromString(req_protobuf_protocol->m_pb_data)) {
+        ERROR_LOG(fmt::format("{} {} {} | deserilize error",
+                              req_protobuf_protocol->m_msg_id,
+                              req_protobuf_protocol->m_method_name, service_name));
         set_protubuf_error(rsp_protobuf_protocol, ERROR_FAILED_DESERIALIZE,
                            "serialize error");
         if (!req_message) {
@@ -83,12 +94,13 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
         }
         return;
     }
-
-    INFO_LOG(fmt::format("request id [{}], get rpc request [{}]",
+    DEBUG_LOG("3 到这里是对的");
+    INFO_LOG(fmt::format("request id [{}], get rpc request, info =[{}]",
                          req_protobuf_protocol->m_msg_id,
                          req_message->ShortDebugString()));
 
     google::protobuf::Message* rsp_message = service->GetResponsePrototype(method).New();
+    DEBUG_LOG("4 这里是对的");
 
     //  virtual void CallMethod(const MethodDescriptor* method,
     //   RpcController* controller, const Message* request,
@@ -101,12 +113,20 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
     rpc_controller.set_peer_addr(conection->get_peer_addr());
     rpc_controller.set_req_id(req_protobuf_protocol->m_msg_id);
 
-    service->CallMethod(method, &rpc_controller, req_message, rsp_message, nullptr);
+    DEBUG_LOG(fmt::format("local_addr = {}, peer_addr = {}, req_id = {}",
+                          rpc_controller.get_local_addr()->to_string(),
+                          rpc_controller.get_peer_addr()->to_string(),
+                          rpc_controller.get_req_id()));
 
-    // 加上其值，
+    DEBUG_LOG("5 这里是对的");
+    /// TODO: 这里是错误的
+    service->CallMethod(method, &rpc_controller, req_message, rsp_message, nullptr);
+    DEBUG_LOG("6 这个是错误的");
 
     // 使用序列化
     if (!rsp_message->SerializeToString(&(rsp_protobuf_protocol->m_pb_data))) {
+        ERROR_LOG(fmt::format("{} serialize error", req_protobuf_protocol->m_msg_id,
+                              rsp_message->ShortDebugString()));
         set_protubuf_error(rsp_protobuf_protocol, ERROR_SERVICE_NOT_FOUND,
                            "serilize error");
 
@@ -124,7 +144,7 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
     // 最后的错误代码，表示正确
     rsp_protobuf_protocol->m_err_code = 0;
     // dispatch success
-    INFO_LOG(fmt::format("{} | dispatch success, request = {}, response = {}",
+    INFO_LOG(fmt::format("{} | dispatchor success!!!, request = {}, response = {}",
                          request->m_msg_id, req_message->ShortDebugString(),
                          req_message->ShortDebugString()));
     delete req_message;
@@ -137,7 +157,7 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
 void RpcDispatcher::register_service(std::shared_ptr<google::protobuf::Service> service) {
 
     std::string service_name = service->GetDescriptor()->full_name();
-    m_service_map[std::move(service_name)] = service;
+    m_service_map[service_name] = service;
 }
 
 void RpcDispatcher::set_protubuf_error(std::shared_ptr<ProtobufProtocol> msg,

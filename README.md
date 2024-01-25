@@ -33,6 +33,8 @@ doxygen Doxyfile
 
 ### 生成protobuf文件
 
+protobuf版本：3.19.4，别弄高了，弄高了，属实没法链接上去
+
 ```shell
 # 根据order.proto文件生成文件，输出在当前文件中
 protoc --cpp_out=./ order.proto 

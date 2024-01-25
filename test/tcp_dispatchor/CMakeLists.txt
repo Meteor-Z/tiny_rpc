@@ -1,5 +1,5 @@
 add_executable(tcp_dispatchor_server tcp_dispatchor_server_test.cc)
-# add_executable(tcp_dispatchor_client tcp_dispatchor_client_test.cc)
+add_executable(tcp_dispatchor_client tcp_dispatchor_client_test.cc)
 
 include_directories(${CMAKE_SOURCE_DIR}/src/include)
 
@@ -9,7 +9,7 @@ include_directories(${CMAKE_SOURCE_DIR}/third_party/tinyxml/include)
 find_library(TINYXML tinyxml ${CMAKE_SOURCE_DIR}/third_party/tinyxml/lib)
 
 target_include_directories(tcp_dispatchor_server PRIVATE ${CMAKE_SOURCE_DIR}/third_party/fmt/include)
-# target_include_directories(tcp_dispatchor_client PRIVATE ${CMAKE_SOURCE_DIR}/third_party/fmt/include)
+target_include_directories(tcp_dispatchor_client PRIVATE ${CMAKE_SOURCE_DIR}/third_party/fmt/include)
 
 add_library(tcp_dispatchor_libs STATIC
     ${CMAKE_SOURCE_DIR}/src/common/config.cc
@@ -50,10 +50,10 @@ target_link_libraries(tcp_dispatchor_server PRIVATE ${Protobuf_LIBRARIES})
 
 
 # Tcp Client 的
-# target_link_libraries(tcp_dispatchor_client PRIVATE tcp_dispatchor_libs)
-# target_link_libraries(tcp_dispatchor_client PRIVATE ${TINYXML})
-# target_link_libraries(tcp_dispatchor_client PRIVATE fmt)
-# target_link_libraries(tcp_dispatchor_client PRIVATE ${Protobuf_LIBRARIES})
+target_link_libraries(tcp_dispatchor_client PRIVATE tcp_dispatchor_libs)
+target_link_libraries(tcp_dispatchor_client PRIVATE ${TINYXML})
+target_link_libraries(tcp_dispatchor_client PRIVATE fmt)
+target_link_libraries(tcp_dispatchor_client PRIVATE ${Protobuf_LIBRARIES})
 
 message("yes" ${Protobuf_LIBRARIES} "找到这个库了")
 message("protobuf版本:" ${Protobuf_VERSION})

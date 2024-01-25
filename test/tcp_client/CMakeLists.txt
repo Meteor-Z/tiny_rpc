@@ -34,11 +34,12 @@ add_library(tcp_client_libs STATIC
     ${CMAKE_SOURCE_DIR}/src/net/rpc/rpc_controller.cc
     ${CMAKE_SOURCE_DIR}/src/net/rpc/rpc_closure.cc
 )
+find_package(Protobuf REQUIRED)
 
 # 依赖
 target_link_libraries(tcp_client PRIVATE tcp_client_libs)
 target_link_libraries(tcp_client PRIVATE ${TINYXML})
 target_link_libraries(tcp_client PRIVATE fmt)
-target_link_libraries(tcp_server PRIVATE ${Protobuf_LIBRARY})
+target_link_libraries(tcp_client PRIVATE ${Protobuf_LIBRARIES})
 
 add_test(NAME tcp_client COMMAND tcp_client) # 这个是添加一个子cmake目录。

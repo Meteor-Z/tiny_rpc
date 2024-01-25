@@ -16,15 +16,14 @@
 class OrderImpl : public Order {
 public:
     void make_order(google::protobuf::RpcController* controller,
-                    const ::make_order_request* request, ::make_order_response* response,
-                    ::google::protobuf::Closure* done) override {
-        if (request->price() < 4) {
+                    const ::makeOrderRequest* request, ::makeOrderResponse* response,
+                    ::google::protobuf::Closure* done) {
+        if (request->price() < 10) {
             response->set_ret_code(-1);
-            response->set_res_info("买不起");
+            response->set_res_info("short balance, 全部寄了，思密达");
             return;
-        } else {
-            response->set_order_id("1145148109");
         }
+        response->set_order_id("20230514");
     }
 };
 
@@ -37,10 +36,11 @@ void test_tcp_server() {
     tcp_server->start();
 }
 int main() {
-    rpc::LogConfig::SET_GLOBAL_CONFIG("/home/lzc/tiny_rpc/conf/rpc.xml");
+    rpc::LogConfig::SET_GLOBAL_CONFIG("/home/lzc/code/tiny_rpc/conf/rpc.xml");
 
     rpc::Logger::INIT_GLOBAL_LOGGER();
 
+    // 注册方法
     std::shared_ptr<OrderImpl> order_ptr = std::make_shared<OrderImpl>();
     rpc::RpcDispatcher::GET_RPC_DISPATCHER()->register_service(order_ptr);
 
