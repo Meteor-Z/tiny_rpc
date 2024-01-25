@@ -41,21 +41,22 @@ void test_tcp_dispatchor_client() {
                               [](std::shared_ptr<rpc::AbstractProtocol> msg_ptr) {
                                   DEBUG_LOG("send mssage success");
                               });
-    });
+        DEBUG_LOG("YES,下面是收到的信息");
+        client->read_message(
+            "114514", [](std::shared_ptr<rpc::AbstractProtocol> msg_ptr) {
+                std::shared_ptr<rpc::ProtobufProtocol> message =
+                    std::dynamic_pointer_cast<rpc::ProtobufProtocol>(msg_ptr);
+                DEBUG_LOG(fmt::format("req_id {}, get response {}", message->m_msg_id,
+                                      message->m_pb_data));
 
-    client->read_message("114514", [](std::shared_ptr<rpc::AbstractProtocol> msg_ptr) {
-        std::shared_ptr<rpc::ProtobufProtocol> message =
-            std::dynamic_pointer_cast<rpc::ProtobufProtocol>(msg_ptr);
-        DEBUG_LOG(fmt::format("req_id {}, get response {}", message->m_msg_id,
-                              message->m_pb_data));
-
-        makeOrderResponse response;
-        if (!response.ParseFromString(message->m_pb_data)) {
-            ERROR_LOG("寄了");
-            return;
-        }
-        INFO_LOG(
-            fmt::format("message success, response = {}", response.ShortDebugString()));
+                makeOrderResponse response;
+                if (!response.ParseFromString(message->m_pb_data)) {
+                    ERROR_LOG("寄了");
+                    return;
+                }
+                INFO_LOG(fmt::format("message success, response = {}",
+                                     response.ShortDebugString()));
+            });
     });
 }
 

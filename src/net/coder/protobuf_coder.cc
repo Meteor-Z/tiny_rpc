@@ -247,7 +247,7 @@ const char* ProtobufCoder::encode_protubuf(std::shared_ptr<ProtobufProtocol>& me
     message->m_parse_success = true;
     len = pk_len;
 
-    DEBUG_LOG(fmt::format("endcode message {} success", message->m_msg_id));
+    DEBUG_LOG(fmt::format("encode message {} success", message->m_msg_id));
 
     return buf;
 }

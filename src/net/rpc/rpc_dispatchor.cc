@@ -121,7 +121,6 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
     DEBUG_LOG("5 这里是对的");
     /// TODO: 这里是错误的
     service->CallMethod(method, &rpc_controller, req_message, rsp_message, nullptr);
-    DEBUG_LOG("6 这个是错误的");
 
     // 使用序列化
     if (!rsp_message->SerializeToString(&(rsp_protobuf_protocol->m_pb_data))) {
