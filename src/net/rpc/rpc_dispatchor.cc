@@ -111,12 +111,12 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
     RpcController rpc_controller;
     rpc_controller.set_local_addr(conection->get_local_addr());
     rpc_controller.set_peer_addr(conection->get_peer_addr());
-    rpc_controller.set_req_id(req_protobuf_protocol->m_msg_id);
+    rpc_controller.set_msg_id(req_protobuf_protocol->m_msg_id);
 
     DEBUG_LOG(fmt::format("local_addr = {}, peer_addr = {}, req_id = {}",
                           rpc_controller.get_local_addr()->to_string(),
                           rpc_controller.get_peer_addr()->to_string(),
-                          rpc_controller.get_req_id()));
+                          rpc_controller.get_msg_id()));
 
     DEBUG_LOG("5 这里是对的");
     /// TODO: 这里是错误的

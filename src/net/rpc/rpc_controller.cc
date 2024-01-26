@@ -4,7 +4,7 @@ namespace rpc {
 void RpcController::Reset() {
     m_error_code = 0;
     m_error_info.clear();
-    m_req_id.clear();
+    m_msg_id.clear();
     m_is_failed = false;
     m_is_cancled = false;
 
@@ -29,15 +29,17 @@ void RpcController::NotifyOnCancel(google::protobuf::Closure* callback) {}
 void RpcController::set_error(int32_t error_code, const std::string& error_info) {
     m_error_code = error_code;
     m_error_info = error_info;
+    // 设置调用失败了
+    m_is_failed = true;
 }
 
 int32_t RpcController::get_error_code() { return m_error_code; }
 
 std::string RpcController::get_error_info() { return m_error_info; }
 
-void RpcController::set_req_id(const std::string& req_id) { m_req_id = req_id; }
+void RpcController::set_msg_id(const std::string& msg_id) { m_msg_id = msg_id; }
 
-std::string RpcController::get_req_id() { return m_req_id; }
+std::string RpcController::get_msg_id() { return m_msg_id; }
 
 void RpcController::set_local_addr(std::shared_ptr<IPv4NetAddr> local_addr) {
     m_local_addr = local_addr;

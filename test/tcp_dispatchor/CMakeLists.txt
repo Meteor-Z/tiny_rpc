@@ -35,8 +35,6 @@ add_library(tcp_dispatchor_libs STATIC
     ${CMAKE_SOURCE_DIR}/src/net/tcp/tcp_client.cc
     ${CMAKE_SOURCE_DIR}/src/net/tcp/tcp_server.cc
     order.pb.cc
-
-
 )
 find_package(Protobuf REQUIRED)
 
@@ -55,7 +53,7 @@ target_link_libraries(tcp_dispatchor_client PRIVATE ${TINYXML})
 target_link_libraries(tcp_dispatchor_client PRIVATE fmt)
 target_link_libraries(tcp_dispatchor_client PRIVATE ${Protobuf_LIBRARIES})
 
-message("yes" ${Protobuf_LIBRARIES} "找到这个库了")
-message("protobuf版本:" ${Protobuf_VERSION})
+message("库的位置：" ${Protobuf_LIBRARIES})
+message("protobuf版本：" ${Protobuf_VERSION})
 
 add_test(NAME tcp_dispatchor_server COMMAND tcp_dispatchor_server) # 这个是添加一个子cmake目录。

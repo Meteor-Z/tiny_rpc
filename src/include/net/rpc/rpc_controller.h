@@ -30,7 +30,7 @@ public:
     ~RpcController() = default;
 
     /**
-     * @brief 将其成员全部变成初始值
+     * @brief 将其成员变量全部变成初始值
      *
      */
     void Reset() override;
@@ -105,14 +105,14 @@ public:
      *
      * @param req_id 请求id
      */
-    void set_req_id(const std::string& req_id);
+    void set_msg_id(const std::string& msg_id);
 
     /**
      * @brief 获取req_id(请求id)
      *
      * @return std::string
      */
-    std::string get_req_id();
+    std::string get_msg_id();
 
     /**
      * @brief Set the local addr object
@@ -159,7 +159,7 @@ public:
 private:
     int m_error_code { 0 };      ///< 错误信息码
     std::string m_error_info {}; ///<  错误信息
-    std::string m_req_id {};     ///< 请求id
+    std::string m_msg_id {};     ///< 请求id
     bool m_is_failed { false };  ///< 是否是失败的
     bool m_is_cancled { false }; ///< 是否取消的
 
