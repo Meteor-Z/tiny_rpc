@@ -76,10 +76,23 @@ void RpcChannel::CallMethod(const google::protobuf::MethodDescriptor* method,
     std::shared_ptr<RpcChannel> channel = shared_from_this();
     DEBUG_LOG(fmt::format("peer_addr = {}", m_peer_addr->to_string()));
 
-    m_client->connect([req_protocol, channel]() mutable {
+    m_client->connect([req_protocol, channel, my_controller]() mutable {
+        // RpcController* my_controller =
+        //     dynamic_cast<RpcController*>(channel->get_controller().get());
+
+        // error_code 不等于0，说明连接失败
+        if (channel->get_client()->get_connect_error_code() != 0) {
+            my_controller->set_error(channel->get_client()->get_connect_error_code(),
+                                     channel->get_client()->get_connect_error_info());
+
+            ERROR_LOG(fmt::format("error, error code {}, error info = {}",
+                                  my_controller->get_error_code(),
+                                  my_controller->get_error_info()));
+        }
+
         channel->get_client()->write_message(
             req_protocol,
-            [req_protocol, channel](std::shared_ptr<AbstractProtocol>) mutable {
+            [req_protocol, channel, my_controller](std::shared_ptr<AbstractProtocol>) mutable {
                 INFO_LOG(fmt::format("{} | send request success, call method name {}",
                                      req_protocol->m_msg_id,
                                      req_protocol->m_method_name));
@@ -87,7 +100,7 @@ void RpcChannel::CallMethod(const google::protobuf::MethodDescriptor* method,
                 // 回包
                 channel->get_client()->read_message(
                     req_protocol->m_msg_id,
-                    [channel](std::shared_ptr<AbstractProtocol> msg) mutable {
+                    [channel, my_controller](std::shared_ptr<AbstractProtocol> msg) mutable {
                         std::shared_ptr<ProtobufProtocol> rsp_protocol =
                             std::dynamic_pointer_cast<ProtobufProtocol>(msg);
 
@@ -95,8 +108,8 @@ void RpcChannel::CallMethod(const google::protobuf::MethodDescriptor* method,
                                               rsp_protocol->m_msg_id,
                                               rsp_protocol->m_method_name));
 
-                        RpcController* my_controller =
-                            dynamic_cast<RpcController*>(channel->get_controller().get());
+                        // RpcController* my_controller =
+                        //     dynamic_cast<RpcController*>(channel->get_controller().get());
 
                         if (!(channel->get_response()->ParseFromString(
                                 rsp_protocol->m_pb_data))) {

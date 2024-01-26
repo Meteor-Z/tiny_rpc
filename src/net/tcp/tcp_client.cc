@@ -1,13 +1,17 @@
 #include "net/tcp/tcp_client.h"
+#include "common/error_code.h"
 #include "common/log.h"
 #include "net/eventloop.h"
 #include "net/fd_event/fd_event.h"
 #include "net/fd_event/fd_event_group.h"
+#include "net/tcp/ipv4_net_addr.h"
 #include "net/tcp/tcp_connection.h"
+#include <asm-generic/errno.h>
 #include <cerrno>
 #include <cmath>
 #include <cstring>
 #include <map>
+#include <netinet/in.h>
 #include <sys/epoll.h>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -71,6 +75,8 @@ void TcpClient::connect(std::function<void()> done) {
 
     if (result == 0) {
         INFO_LOG("connect success");
+        m_connection->set_state(TcpConnection::TcpState::Connected);
+        init_local_addr();
 
         // 执行回调函数
         if (done) {
@@ -79,35 +85,63 @@ void TcpClient::connect(std::function<void()> done) {
     } else if (result == -1) {
         if (errno == EINPROGRESS) {
             // epoll 监听可写事件,判断错误码
-            m_fd_event->listen(FdEvent::TriggerEvent::OUT_EVENT, [this, done]() {
-                int error = 0;
-                socklen_t error_len = sizeof(error);
+            m_fd_event->listen(
+                FdEvent::TriggerEvent::OUT_EVENT,
+                [this, done]() {
+                    int error = 0;
+                    socklen_t error_len = sizeof(error);
 
-                /// TODO: 什么东西
-                getsockopt(m_fd, SOL_SOCKET, SO_ERROR, &error, &error_len);
-                bool is_connected_flag = false;
-                // 这里也算连接成功
-                if (error == 0) {
-                    DEBUG_LOG(
-                        fmt::format("connect {} success", m_peer_addr->to_string()));
-                    // 设置连接状态
-                    is_connected_flag = true;
-                    m_connection->set_state(TcpConnection::TcpState::Connected);
-                } else {
-                    // 这里是其他错误，直接报错即可
-                    ERROR_LOG(fmt::format(
-                        "TcpClient connection() error, errnno = {}, error = {}", errno,
-                        strerror(errno)));
-                }
+                    /// TODO: 什么东西
+                    getsockopt(m_fd, SOL_SOCKET, SO_ERROR, &error, &error_len);
+                    bool is_connected_flag = false;
+                    // 这里也算连接成功
+                    if (error == 0) {
+                        DEBUG_LOG(
+                            fmt::format("connect {} success", m_peer_addr->to_string()));
+                        init_local_addr();
+                        // 设置连接状态
+                        is_connected_flag = true;
+                        m_connection->set_state(TcpConnection::TcpState::Connected);
+                    } else {
+                        // 连接失败
+                        m_connect_error_code = ERROR_FAILED_CONNECT;
+                        // 错误信息
+                        m_connect_error_info =
+                            "connect error, sys error" + std::string(strerror(errno));
+                        // 这里是其他错误，直接报错即可
+                        ERROR_LOG(fmt::format(
+                            "TcpClient connection() error, errnno = {}, error = {}",
+                            errno, strerror(errno)));
+                    }
 
-                // 去掉可写事件的监听
-                m_fd_event->cancel(FdEvent::TriggerEvent::OUT_EVENT);
-                m_event_loop->add_epoll_event(m_fd_event);
+                    // 去掉可写事件的监听
+                    m_fd_event->cancel(FdEvent::TriggerEvent::OUT_EVENT);
+                    m_event_loop->add_epoll_event(m_fd_event);
 
-                if (is_connected_flag && done) {
-                    done();
-                }
-            });
+                    if (done) {
+                        done();
+                    }
+                },
+                [this, done]() {
+                    m_fd_event->cancel(FdEvent::TriggerEvent::OUT_EVENT);
+                    m_event_loop->add_epoll_event(m_fd_event);
+                    if (errno == ECONNREFUSED) {
+                        m_connect_error_code = ERROR_FAILED_CONNECT;
+                        m_connect_error_info = "connect refused, sys error = " +
+                                               std::string(strerror(errno));
+
+                        ERROR_LOG(fmt::format("connect errror, errno = {}, error = {}",
+                                              errno, strerror(errno)));
+                    } else {
+                         m_connect_error_code = ERROR_FAILED_CONNECT;
+                        m_connect_error_info = "connect unknown, sys error = " +
+                                               std::string(strerror(errno));
+
+                        ERROR_LOG(fmt::format("connect errror, errno = {}, error = {}",
+                                              errno, strerror(errno)));
+                        
+                    }
+                });
 
             // 要加入到 epoll_event上面
             m_event_loop->add_epoll_event(m_fd_event);
@@ -121,6 +155,14 @@ void TcpClient::connect(std::function<void()> done) {
     } else {
         ERROR_LOG(fmt::format("TcpClient connection() error, errnno = {}, error = {}",
                               errno, strerror(errno)));
+
+        // 连接失败
+        m_connect_error_code = ERROR_FAILED_CONNECT;
+        // 错误信息
+        m_connect_error_info = "connect error, sys error" + std::string(strerror(errno));
+        if (done) {
+            done();
+        }
     }
 
     if (!m_event_loop->is_looping()) {
@@ -132,4 +174,27 @@ void TcpClient::stop() {
         m_event_loop->stop();
     }
 }
+
+int TcpClient::get_connect_error_code() { return m_connect_error_code; }
+
+std::string TcpClient::get_connect_error_info() { return m_connect_error_info; }
+
+std::shared_ptr<IPv4NetAddr> TcpClient::get_peer_addr() { return m_peer_addr; }
+
+std::shared_ptr<IPv4NetAddr> TcpClient::get_local_addr() { return m_local_addr; };
+
+void TcpClient::init_local_addr() {
+    sockaddr_in local_addr {};
+    socklen_t len { sizeof(local_addr) };
+
+    int ret = getsockname(m_fd, reinterpret_cast<sockaddr*>(&local_addr), &len);
+    if (ret != 0) {
+        ERROR_LOG(fmt::format("initaddr error, getsockname error, errno = {}",
+                              strerror(errno)));
+        return;
+    }
+
+    m_local_addr = std::make_shared<IPv4NetAddr>(local_addr);
+}
+
 } // namespace rpc

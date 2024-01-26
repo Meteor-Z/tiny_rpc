@@ -46,7 +46,7 @@ public:
     // req_id： 是读这个请求参数
     /**
      * @brief 发送请求
-     * 
+     *
      * @param req_id 请求号
      * @param done 执行的回调函数
      */
@@ -55,16 +55,54 @@ public:
 
     /**
      * @brief 客户端能够停止下来，不要一直循环
-     * 
+     *
      */
     void stop();
 
+    /**
+     * @brief Get the peer addr object
+     *
+     * @return std::shared_ptr<IPv4NetAddr>
+     */
+    std::shared_ptr<IPv4NetAddr> get_peer_addr();
+
+    /**
+     * @brief Get the local addr object
+     * 
+     * @return std::shared_ptr<IPv4NetAddr> 
+     */
+    std::shared_ptr<IPv4NetAddr> get_local_addr();
+
+    /**
+     * @brief Get the connect error code object
+     *
+     * @return int 错误码
+     */
+    int get_connect_error_code();
+
+    /**
+     * @brief Get the connect error info object
+     *
+     * @return std::string 错误信息
+     */
+    std::string get_connect_error_info();
+
+    /**
+     * @brief 初始化本地地址
+     * 
+     */
+    void init_local_addr();
+
 private:
-    std::shared_ptr<IPv4NetAddr> m_peer_addr { nullptr };    // 对端地址
-    std::shared_ptr<EventLoop> m_event_loop { nullptr };     // 处理事件
-    int m_fd { -1 };                                         // 文件描述符
-    std::shared_ptr<FdEvent> m_fd_event { nullptr };         // 事件
-    std::shared_ptr<TcpConnection> m_connection { nullptr }; // 处理连接
+    std::shared_ptr<IPv4NetAddr> m_local_addr { nullptr };   ///< 本地地址
+    std::shared_ptr<IPv4NetAddr> m_peer_addr { nullptr };    ///< 对端地址
+    std::shared_ptr<EventLoop> m_event_loop { nullptr };     ///< 处理事件
+    int m_fd { -1 };                                         ///< 文件描述符
+    std::shared_ptr<FdEvent> m_fd_event { nullptr };         ///< 事件描述符
+    std::shared_ptr<TcpConnection> m_connection { nullptr }; ///< 处理连接
+
+    int m_connect_error_code { 0 };      ///< 连接对端的错误码
+    std::string m_connect_error_info {}; ///< 错误信息
 };
 } // namespace rpc
 

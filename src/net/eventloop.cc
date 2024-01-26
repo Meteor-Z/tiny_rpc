@@ -73,7 +73,6 @@ EventLoop::EventLoop() {
 EventLoop::~EventLoop() {
     // 先这样处理，因为这样也是线程不安全的
     close(m_epoll_fd);
-
 }
 
 void EventLoop::init_wakeup_fd_event() {
@@ -153,6 +152,19 @@ void EventLoop::loop() {
                     DEBUG_LOG(fmt::format("fd {} trigger EPOLLOUT event",
                                           fd_event_ptr->get_fd()));
                     add_task(fd_event_ptr->handler(FdEvent::TriggerEvent::OUT_EVENT));
+                }
+
+                // if (!(trigger_event.events & EPOLLIN) &&
+                //     !(trigger_event.events & EPOLLOUT)) {
+
+                //     DEBUG_LOG(fmt::format("unkonow event = {}", trigger_event.events));
+                // }
+                if (trigger_event.events & EPOLLERR) {
+                    DEBUG_LOG(fmt::format("fd = {}, EPOLLERR", fd_event_ptr->get_fd()));
+                    if (fd_event_ptr->handler(FdEvent::TriggerEvent::ERROR_EVENT) !=
+                        nullptr) {
+                        add_task(fd_event_ptr->handler(FdEvent::TriggerEvent::OUT_EVENT));
+                    }
                 }
             }
         }
