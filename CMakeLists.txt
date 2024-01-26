@@ -1,9 +1,13 @@
 cmake_minimum_required(VERSION 3.22.1)
+# 设置编译器为gcc/g++
+SET(CMAKE_C_COMPILER /usr/bin/gcc)
+SET(CMAKE_CXX_COMPILER /usr/bin/g++)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON) 
 
 project(tiny_rpc)
-set(CMAKE_CXX_STANDARD 17)
 # 设置必须跟上面的一样，即c++17
-set(CMAKE_CXX_STANDARD_REQUIRED ON) 
 
 # 设置生成 compile_commands
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -33,3 +37,4 @@ add_subdirectory(test/tcp)
 add_subdirectory(test/tcp_server)
 add_subdirectory(test/tcp_client)
 add_subdirectory(test/tcp_dispatchor)
+add_subdirectory(test/tcp_channel)

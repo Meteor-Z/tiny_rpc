@@ -1,16 +1,16 @@
-#include <sys/epoll.h>
-#include <unistd.h>
+#include "net/tcp/tcp_client.h"
+#include "common/log.h"
+#include "net/eventloop.h"
+#include "net/fd_event/fd_event.h"
+#include "net/fd_event/fd_event_group.h"
+#include "net/tcp/tcp_connection.h"
 #include <cerrno>
 #include <cmath>
 #include <cstring>
 #include <map>
+#include <sys/epoll.h>
 #include <sys/socket.h>
-#include "net/fd_event/fd_event.h"
-#include "net/fd_event/fd_event_group.h"
-#include "net/tcp/tcp_client.h"
-#include "net/eventloop.h"
-#include "net/tcp/tcp_connection.h"
-#include "common/log.h"
+#include <unistd.h>
 
 namespace rpc {
 TcpClient::TcpClient(std::shared_ptr<IPv4NetAddr> peer_addr) : m_peer_addr(peer_addr) {
@@ -38,10 +38,10 @@ TcpClient::TcpClient(std::shared_ptr<IPv4NetAddr> peer_addr) : m_peer_addr(peer_
 }
 
 TcpClient::~TcpClient() {
-    DEBUG_LOG("TcpClient:~TcpClient()");
     if (m_fd > 0) {
         close(m_fd);
     }
+    DEBUG_LOG("TcpClient:~TcpClient()");
 }
 
 void TcpClient::write_message(
@@ -60,7 +60,7 @@ void TcpClient::read_message(
     m_connection->push_read_message(req_id, done);
     // 1. 监听可读事件
     m_connection->listen_read();
-    
+
     // 2. 从buffer里面 decode得到message事件
 }
 
@@ -83,7 +83,7 @@ void TcpClient::connect(std::function<void()> done) {
                 int error = 0;
                 socklen_t error_len = sizeof(error);
 
-                /// TODO:什么东西
+                /// TODO: 什么东西
                 getsockopt(m_fd, SOL_SOCKET, SO_ERROR, &error, &error_len);
                 bool is_connected_flag = false;
                 // 这里也算连接成功
@@ -112,7 +112,7 @@ void TcpClient::connect(std::function<void()> done) {
             // 要加入到 epoll_event上面
             m_event_loop->add_epoll_event(m_fd_event);
 
-            // 没有loop的时候才会进行loop
+            // 没有loop的时候才会进行loop，死循环。
             if (!m_event_loop->is_looping()) {
                 m_event_loop->loop();
             }
@@ -125,6 +125,11 @@ void TcpClient::connect(std::function<void()> done) {
 
     if (!m_event_loop->is_looping()) {
         m_event_loop->loop();
+    }
+}
+void TcpClient::stop() {
+    if (m_event_loop->is_looping()) {
+        m_event_loop->stop();
     }
 }
 } // namespace rpc

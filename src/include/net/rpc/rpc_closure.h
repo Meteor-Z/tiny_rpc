@@ -7,6 +7,17 @@
 namespace rpc {
 class RpcClosure : public google::protobuf::Closure {
 public:
+    /**
+     * @brief Construct a new Rpc Closure object
+     * 
+     * @param function 
+     */
+    RpcClosure(std::function<void()> function);
+    
+    /**
+     * @brief 重载了 google::protobuf::Closure
+     * 
+     */
     void Run() override;
 
 private:

@@ -14,6 +14,7 @@ void RpcController::Reset() {
     m_timeout_ms = 1000;
 }
 
+
 bool RpcController::Failed() const { return m_is_failed; }
 
 std::string RpcController::ErrorText() const { return m_error_info; }

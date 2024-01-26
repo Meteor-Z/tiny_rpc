@@ -44,8 +44,20 @@ public:
     // read message (使用协议进行封装)
     // 如果成功，会调用 done函数，函数入参就是message
     // req_id： 是读这个请求参数
+    /**
+     * @brief 发送请求
+     * 
+     * @param req_id 请求号
+     * @param done 执行的回调函数
+     */
     void read_message(const std::string& req_id,
                       std::function<void(std::shared_ptr<AbstractProtocol>)> done);
+
+    /**
+     * @brief 客户端能够停止下来，不要一直循环
+     * 
+     */
+    void stop();
 
 private:
     std::shared_ptr<IPv4NetAddr> m_peer_addr { nullptr };    // 对端地址
