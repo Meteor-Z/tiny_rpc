@@ -15,6 +15,13 @@ time_event.h
 namespace rpc {
 class TimerEvent {
 public:
+    /**
+     * @brief Construct a new Timer Event object
+     *
+     * @param interval 时间间隔
+     * @param repeat true表示重复， false表示不重复
+     * @param task 任务
+     */
     TimerEvent(int64_t interval, bool repeat, std::function<void()> task);
     int64_t get_arrive_time() const noexcept;
     bool is_cancel() const noexcept;
@@ -24,11 +31,11 @@ public:
     void reset_arrive_time();
 
 private:
-    int64_t m_arrive_time;        // 时间点 单位是 ms
-    int64_t m_interval;           // 事件间隔 单位是 ms
-    bool m_is_repeat { false };   // 是否重复
-    bool m_is_cancel { false };   // 是否取消这个定时任务
-    std::function<void()> m_task; // 当前回调函数
+    int64_t m_arrive_time;        ///< 时间点 单位是 ms
+    int64_t m_interval;           ///< 事件间隔 单位是 ms
+    bool m_is_repeat { false };   ///< 是否重复
+    bool m_is_cancel { false };   ///< 是否取消这个定时任务
+    std::function<void()> m_task; ///< 当前回调函数
 };
 } // namespace rpc
 

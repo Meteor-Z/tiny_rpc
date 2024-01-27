@@ -1,3 +1,11 @@
+#include <cerrno>
+#include <cmath>
+#include <cstring>
+#include <netinet/in.h>
+#include <sys/epoll.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <map>
 #include "net/tcp/tcp_client.h"
 #include "common/error_code.h"
 #include "common/log.h"
@@ -6,15 +14,8 @@
 #include "net/fd_event/fd_event_group.h"
 #include "net/tcp/ipv4_net_addr.h"
 #include "net/tcp/tcp_connection.h"
-#include <asm-generic/errno.h>
-#include <cerrno>
-#include <cmath>
-#include <cstring>
-#include <map>
-#include <netinet/in.h>
-#include <sys/epoll.h>
-#include <sys/socket.h>
-#include <unistd.h>
+#include "net/time/time_event.h"
+#include "net/time/timer.h"
 
 namespace rpc {
 TcpClient::TcpClient(std::shared_ptr<IPv4NetAddr> peer_addr) : m_peer_addr(peer_addr) {
@@ -32,13 +33,11 @@ TcpClient::TcpClient(std::shared_ptr<IPv4NetAddr> peer_addr) : m_peer_addr(peer_
     m_fd_event->set_no_block();
 
     // 连接,并且设置成客户端的
-    m_connection = std::make_shared<TcpConnection>(
-        m_event_loop, m_fd, 128, nullptr, peer_addr,
-        TcpConnection::TcpConnectionType::TcpConnectionByClient);
+    m_connection = std::make_shared<TcpConnection>(m_event_loop, m_fd, 128, nullptr, peer_addr,
+                                                   TcpConnection::TcpConnectionType::TcpConnectionByClient);
 
     // 设置成客户端的
-    m_connection->set_connection_type(
-        TcpConnection::TcpConnectionType::TcpConnectionByClient);
+    m_connection->set_connection_type(TcpConnection::TcpConnectionType::TcpConnectionByClient);
 }
 
 TcpClient::~TcpClient() {
@@ -48,9 +47,8 @@ TcpClient::~TcpClient() {
     DEBUG_LOG("TcpClient:~TcpClient()");
 }
 
-void TcpClient::write_message(
-    std::shared_ptr<AbstractProtocol> message,
-    std::function<void(std::shared_ptr<AbstractProtocol>)> done) {
+void TcpClient::write_message(std::shared_ptr<AbstractProtocol> message,
+                              std::function<void(std::shared_ptr<AbstractProtocol>)> done) {
     // client 将message 对象写入到Connection的buffer里面，done也要写入
     m_connection->push_send_message(message, done);
 
@@ -58,9 +56,7 @@ void TcpClient::write_message(
     m_connection->listen_write();
 }
 
-void TcpClient::read_message(
-    const std::string& req_id,
-    std::function<void(std::shared_ptr<AbstractProtocol>)> done) {
+void TcpClient::read_message(const std::string& req_id, std::function<void(std::shared_ptr<AbstractProtocol>)> done) {
     m_connection->push_read_message(req_id, done);
     // 1. 监听可读事件
     m_connection->listen_read();
@@ -70,103 +66,57 @@ void TcpClient::read_message(
 
 void TcpClient::connect(std::function<void()> done) {
     // 系统的 connect 函数
-    int result =
-        ::connect(m_fd, m_peer_addr->get_sock_addr(), m_peer_addr->get_sock_len());
-
-    if (result == 0) {
-        INFO_LOG("connect success");
+    int rt = ::connect(m_fd, m_peer_addr->get_sock_addr(), m_peer_addr->get_sock_len());
+    if (rt == 0) {
+        DEBUG_LOG(fmt::format("connect [%s] sussess", m_peer_addr->to_string().c_str()));
         m_connection->set_state(TcpConnection::TcpState::Connected);
         init_local_addr();
-
-        // 执行回调函数
         if (done) {
             done();
         }
-    } else if (result == -1) {
+    } else if (rt == -1) {
         if (errno == EINPROGRESS) {
-            // epoll 监听可写事件,判断错误码
-            m_fd_event->listen(
-                FdEvent::TriggerEvent::OUT_EVENT,
-                [this, done]() {
-                    int error = 0;
-                    socklen_t error_len = sizeof(error);
-
-                    /// TODO: 什么东西
-                    getsockopt(m_fd, SOL_SOCKET, SO_ERROR, &error, &error_len);
-                    bool is_connected_flag = false;
-                    // 这里也算连接成功
-                    if (error == 0) {
-                        DEBUG_LOG(
-                            fmt::format("connect {} success", m_peer_addr->to_string()));
-                        init_local_addr();
-                        // 设置连接状态
-                        is_connected_flag = true;
-                        m_connection->set_state(TcpConnection::TcpState::Connected);
-                    } else {
-                        // 连接失败
-                        m_connect_error_code = ERROR_FAILED_CONNECT;
-                        // 错误信息
-                        m_connect_error_info =
-                            "connect error, sys error" + std::string(strerror(errno));
-                        // 这里是其他错误，直接报错即可
-                        ERROR_LOG(fmt::format(
-                            "TcpClient connection() error, errnno = {}, error = {}",
-                            errno, strerror(errno)));
-                    }
-
-                    // 去掉可写事件的监听
-                    m_fd_event->cancel(FdEvent::TriggerEvent::OUT_EVENT);
-                    m_event_loop->add_epoll_event(m_fd_event);
-
-                    if (done) {
-                        done();
-                    }
-                },
-                [this, done]() {
-                    m_fd_event->cancel(FdEvent::TriggerEvent::OUT_EVENT);
-                    m_event_loop->add_epoll_event(m_fd_event);
+            // epoll 监听可写事件，然后判断错误码
+            m_fd_event->listen(FdEvent::TriggerEvent::OUT_EVENT, [this, done]() {
+                int rt = ::connect(m_fd, m_peer_addr->get_sock_addr(), m_peer_addr->get_sock_len());
+                if ((rt < 0 && errno == EISCONN) || (rt == 0)) {
+                    DEBUG_LOG(fmt::format("connect [%s] sussess", m_peer_addr->to_string()));
+                    init_local_addr();
+                    m_connection->set_state(TcpConnection::TcpState::Connected);
+                } else {
                     if (errno == ECONNREFUSED) {
-                        m_connect_error_code = ERROR_FAILED_CONNECT;
-                        m_connect_error_info = "connect refused, sys error = " +
-                                               std::string(strerror(errno));
-
-                        ERROR_LOG(fmt::format("connect errror, errno = {}, error = {}",
-                                              errno, strerror(errno)));
+                        m_connect_error_code = ERROR_PEER_CLOSED;
+                        m_connect_error_info = "connect refused, sys error = " + std::string(strerror(errno));
                     } else {
-                         m_connect_error_code = ERROR_FAILED_CONNECT;
-                        m_connect_error_info = "connect unknown, sys error = " +
-                                               std::string(strerror(errno));
-
-                        ERROR_LOG(fmt::format("connect errror, errno = {}, error = {}",
-                                              errno, strerror(errno)));
-                        
+                        m_connect_error_code = ERROR_FAILED_CONNECT;
+                        m_connect_error_info = "connect unkonwn error, sys error = " + std::string(strerror(errno));
                     }
-                });
+                    ERROR_LOG(fmt::format("connect errror, errno= {}, error= {}", errno, strerror(errno)));
+                    close(m_fd);
+                    m_fd = socket(m_peer_addr->get_family(), SOCK_STREAM, 0);
+                }
 
-            // 要加入到 epoll_event上面
+                // 连接完后需要去掉可写事件的监听，不然会一直触发
+                m_event_loop->delete_epoll_event(m_fd_event);
+                DEBUG_LOG("now begin to done");
+                // 如果连接完成，才会执行回调函数
+                if (done) {
+                    done();
+                }
+            });
             m_event_loop->add_epoll_event(m_fd_event);
 
-            // 没有loop的时候才会进行loop，死循环。
             if (!m_event_loop->is_looping()) {
                 m_event_loop->loop();
             }
+        } else {
+            ERROR_LOG(fmt::format("connect errror, errno= {}, error= {}", errno, strerror(errno)));
+            m_connect_error_code = ERROR_FAILED_CONNECT;
+            m_connect_error_info = "connect error, sys error = " + std::string(strerror(errno));
+            if (done) {
+                done();
+            }
         }
-
-    } else {
-        ERROR_LOG(fmt::format("TcpClient connection() error, errnno = {}, error = {}",
-                              errno, strerror(errno)));
-
-        // 连接失败
-        m_connect_error_code = ERROR_FAILED_CONNECT;
-        // 错误信息
-        m_connect_error_info = "connect error, sys error" + std::string(strerror(errno));
-        if (done) {
-            done();
-        }
-    }
-
-    if (!m_event_loop->is_looping()) {
-        m_event_loop->loop();
     }
 }
 void TcpClient::stop() {
@@ -189,12 +139,12 @@ void TcpClient::init_local_addr() {
 
     int ret = getsockname(m_fd, reinterpret_cast<sockaddr*>(&local_addr), &len);
     if (ret != 0) {
-        ERROR_LOG(fmt::format("initaddr error, getsockname error, errno = {}",
-                              strerror(errno)));
+        ERROR_LOG(fmt::format("initaddr error, getsockname error, errno = {}", strerror(errno)));
         return;
     }
 
     m_local_addr = std::make_shared<IPv4NetAddr>(local_addr);
 }
+void TcpClient::add_timer_event(std::shared_ptr<TimerEvent> timer_event) { m_event_loop->add_timer_event(timer_event); }
 
 } // namespace rpc

@@ -24,8 +24,13 @@ read(): 读取客户端发来的请求，组成rpc请求
 #include "net/tcp/ipv4_net_addr.h"
 #include "net/eventloop.h"
 #include "net/tcp/tcp_connection.h"
+#include "net/time/time_event.h"
 
 namespace rpc {
+
+#define NEW_MESSAGE(XX) \
+
+
 class TcpClient {
 public:
     TcpClient(std::shared_ptr<IPv4NetAddr> peer_addr);
@@ -50,8 +55,7 @@ public:
      * @param req_id 请求号
      * @param done 执行的回调函数
      */
-    void read_message(const std::string& req_id,
-                      std::function<void(std::shared_ptr<AbstractProtocol>)> done);
+    void read_message(const std::string& req_id, std::function<void(std::shared_ptr<AbstractProtocol>)> done);
 
     /**
      * @brief 客户端能够停止下来，不要一直循环
@@ -68,8 +72,8 @@ public:
 
     /**
      * @brief Get the local addr object
-     * 
-     * @return std::shared_ptr<IPv4NetAddr> 
+     *
+     * @return std::shared_ptr<IPv4NetAddr>
      */
     std::shared_ptr<IPv4NetAddr> get_local_addr();
 
@@ -89,9 +93,17 @@ public:
 
     /**
      * @brief 初始化本地地址
-     * 
+     *
      */
     void init_local_addr();
+
+    /**
+     * @brief 添加事件
+     *
+     * @param timer_event
+     */
+    void add_timer_event(std::shared_ptr<TimerEvent> timer_event);
+
 
 private:
     std::shared_ptr<IPv4NetAddr> m_local_addr { nullptr };   ///< 本地地址

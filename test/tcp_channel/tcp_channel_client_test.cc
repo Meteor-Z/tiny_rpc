@@ -64,8 +64,7 @@
 // }
 
 void test_rpc_channel_client() {
-    std::shared_ptr<rpc::IPv4NetAddr> addr =
-        std::make_shared<rpc::IPv4NetAddr>("127.0.0.1", 12347);
+    std::shared_ptr<rpc::IPv4NetAddr> addr = std::make_shared<rpc::IPv4NetAddr>("127.0.0.1", 12347);
     std::shared_ptr<rpc::RpcChannel> channel = std::make_shared<rpc::RpcChannel>(addr);
 
     std::shared_ptr<makeOrderRequest> request = std::make_shared<makeOrderRequest>();
@@ -74,24 +73,33 @@ void test_rpc_channel_client() {
 
     std::shared_ptr<makeOrderResponse> response = std::make_shared<makeOrderResponse>();
 
-    std::shared_ptr<rpc::RpcController> controller =
-        std::make_shared<rpc::RpcController>();
+    std::shared_ptr<rpc::RpcController> controller = std::make_shared<rpc::RpcController>();
     controller->set_msg_id("114514");
 
     std::shared_ptr<rpc::RpcClosure> closure =
-        std::make_shared<rpc::RpcClosure>([request, response, channel]()  mutable {
-            INFO_LOG(fmt::format("call rpc success, request = {}, response = {}",
-                                 request->ShortDebugString(),
-                                 response->ShortDebugString()));
-            // 退出 loop循环
-            INFO_LOG("exit eventloop")
-            channel->get_client()->stop();
-            channel.reset();
+        std::make_shared<rpc::RpcClosure>([request, response, channel, controller]() mutable {
+            // 只有表示不等于0， 才算是调用失败
+            if (controller->get_error_code() == 0) {
+                INFO_LOG(fmt::format("call rpc success, request = {}, response = {}", request->ShortDebugString(),
+                                     response->ShortDebugString()));
+
+                // 业务逻辑
+            } else {
+                ERROR_LOG(fmt::format("call rpc failed, request = {} ,error code = {}, error_info = {}",
+                                      request->ShortDebugString(), controller->get_error_code(),
+                                      controller->get_error_info()));
+                // 退出 loop循环
+                INFO_LOG("exit eventloop")
+                channel->get_client()->stop();
+                channel.reset();
+            }
         });
 
+    controller->set_timeout(10000);
     channel->init(controller, request, response, closure);
     Order_Stub stub(channel.get());
 
+    // controller->set_timeout(5000);
     stub.makeOrder(controller.get(), request.get(), response.get(), closure.get());
 }
 

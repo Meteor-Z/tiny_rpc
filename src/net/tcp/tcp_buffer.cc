@@ -1,5 +1,4 @@
 #include <cstring>
-#include <memory_resource>
 #include <vector>
 #include <fmt/core.h>
 #include "net/tcp/tcp_buffer.h"
@@ -12,14 +11,10 @@ TcpBuffer::TcpBuffer(int size) : m_size(size) { m_buffer.resize(size); }
 TcpBuffer::~TcpBuffer() {}
 
 //
-int TcpBuffer::can_read_bytes_num() const noexcept {
-    return m_write_index - m_read_index;
-}
+int TcpBuffer::can_read_bytes_num() const noexcept { return m_write_index - m_read_index; }
 
 //
-int TcpBuffer::can_write_bytes_num() const noexcept {
-    return m_buffer.size() - m_write_index;
-}
+int TcpBuffer::can_write_bytes_num() const noexcept { return m_buffer.size() - m_write_index; }
 
 //
 int TcpBuffer::read_index() const noexcept { return m_read_index; }
@@ -77,9 +72,8 @@ void TcpBuffer::read_from_buffer(std::vector<char>& re, int size) {
 void TcpBuffer::adjust_read_index(int size) {
     size_t j = m_read_index + size;
     if (j >= m_buffer.size()) {
-        ERROR_LOG(fmt::format(
-            "ajust_read_index() error, invalid size {}, old_read_index {}, buffer size{}",
-            size, m_read_index, m_buffer.size()));
+        ERROR_LOG(fmt::format("ajust_read_index() error, invalid size {}, old_read_index {}, buffer size{}", size,
+                              m_read_index, m_buffer.size()));
         return;
     }
     m_read_index = j;
@@ -91,8 +85,8 @@ void TcpBuffer::adjust_write_index(int size) {
     size_t j = m_write_index + size;
     if (j >= m_buffer.size()) {
         ERROR_LOG(fmt::format("ajust_read_index() error, invalid size {}, "
-                                          "old_write_index {}, buffer size{}",
-                                          size, m_write_index, m_buffer.size()));
+                              "old_write_index {}, buffer size{}",
+                              size, m_write_index, m_buffer.size()));
         return;
     }
     m_write_index = j;

@@ -23,7 +23,7 @@ ReflowComments: true
 # 对齐连续的尾随的注释
 AlignTrailingComments: true
 
-ColumnLimit: 90
+ColumnLimit: 120
 
 # 设置初始化的
 Cpp11BracedListStyle: false

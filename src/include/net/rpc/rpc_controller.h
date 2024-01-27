@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2024
  *
  */
- 
+
 #ifndef RPC_NET_RPC_RPC_CONTROLLER_H
 #define RPC_NET_RPC_RPC_CONTROLLER_H
 
@@ -116,43 +116,43 @@ public:
 
     /**
      * @brief Set the local addr object
-     * 
-     * @param local_addr 
+     *
+     * @param local_addr
      */
     void set_local_addr(std::shared_ptr<IPv4NetAddr> local_addr);
-    
+
     /**
      * @brief Get the local addr object
-     * 
-     * @return std::shared_ptr<IPv4NetAddr> 
+     *
+     * @return std::shared_ptr<IPv4NetAddr>
      */
     std::shared_ptr<IPv4NetAddr> get_local_addr();
 
     /**
      * @brief Set the peer addr object
-     * 
-     * @param peer_addr 
+     *
+     * @param peer_addr
      */
     void set_peer_addr(std::shared_ptr<IPv4NetAddr> peer_addr);
 
     /**
      * @brief Get the peer addr object
-     * 
-     * @return std::shared_ptr<IPv4NetAddr> 
+     *
+     * @return std::shared_ptr<IPv4NetAddr>
      */
-    std::shared_ptr<IPv4NetAddr> get_peer_addr();
+    std::shared_ptr<IPv4NetAddr>                                                                  get_peer_addr();
 
     /**
-     * @brief Set the timeout object
-     * 
-     * @param timeout 
+     * @brief 设置超时时间，如果超过这个时间，也算失败
+     *
+     * @param timeout 单位：ms(毫秒)
      */
     void set_timeout(int32_t timeout);
 
     /**
      * @brief Get the timeout object
-     * 
-     * @return int32_t 
+     *
+     * @return int32_t
      */
     int32_t get_timeout();
 
@@ -166,7 +166,7 @@ private:
     std::shared_ptr<IPv4NetAddr> m_local_addr; ///< 本地地址
     std::shared_ptr<IPv4NetAddr> m_peer_addr;  ///< 对端地址
 
-    int m_timeout_ms { 1000 }; ///< 超时时间，单位是毫秒
+    int m_timeout_ms { 1000 }; ///< 超时时间，单位是毫秒 默认是1秒 
 };
 } // namespace rpc
 #endif
