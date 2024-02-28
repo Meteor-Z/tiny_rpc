@@ -1,9 +1,6 @@
-#include <cstddef>
-#include <cstdio>
 #include <cstdlib>
 #include <iostream>
 #include <memory>
-#include "common/log.h"
 #include "fmt/core.h"
 #include "common/log_config.h"
 #include "tinyxml/tinyxml.h"

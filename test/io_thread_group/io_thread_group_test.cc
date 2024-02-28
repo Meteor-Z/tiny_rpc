@@ -1,3 +1,10 @@
+#include <arpa/inet.h>
+#include <cstring>
+#include <memory>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include "fmt/core.h"
 #include "common/log.h"
 #include "common/log_config.h"
 #include "net/eventloop.h"
@@ -5,17 +12,6 @@
 #include "net/io_thread/io_thread.h"
 #include "net/io_thread/io_thread_group.h"
 #include "net/time/time_event.h"
-#include <arpa/inet.h>
-#include <cstdio>
-#include <cstring>
-#include <filesystem>
-#include <fmt/core.h>
-#include <memory>
-#include <mutex>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <thread>
-#include <unistd.h>
 
 void test_io_thread() {
     int listenfd = socket(AF_INET, SOCK_STREAM, 0);

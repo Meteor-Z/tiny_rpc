@@ -7,9 +7,6 @@
 
 #include <sys/types.h>
 #include <unistd.h>
-#include <string>
-#include <string_view>
-#include "common/log.h"
 
 namespace rpc {
 namespace utils {

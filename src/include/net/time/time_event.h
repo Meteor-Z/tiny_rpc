@@ -10,7 +10,6 @@ time_event.h
 
 #include <cstdint>
 #include <functional>
-#include <memory>
 
 namespace rpc {
 class TimerEvent {

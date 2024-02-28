@@ -11,13 +11,10 @@
 #ifndef RPC_COMMON_LOG_H
 #define RPC_COMMON_LOG_H
 
-#include <iostream>
 #include <memory>
 #include <queue>
-#include <sstream>
 #include <string>
-#include <string_view>
-#include "fmt/core.h"
+#include "fmt/core.h" ///< 需要这个
 
 /**
  * @brief 根据xml格式进行调整的信息格式

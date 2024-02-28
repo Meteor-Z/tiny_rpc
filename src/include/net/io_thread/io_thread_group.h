@@ -7,7 +7,6 @@ IO_Group,讲起进行封装，
 
 #include <memory>
 #include <vector>
-#include "common/log.h"
 #include "net/io_thread/io_thread.h"
 
 namespace rpc {
