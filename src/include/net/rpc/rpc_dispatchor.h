@@ -23,8 +23,6 @@ service OrderService {
 #include "google/protobuf/service.h"
 #include "net/coder/abstract_protocol.h"
 #include "net/coder/protobuf_protocol.h"
-// #include "net/tcp/tcp_connection.h"
-// #include "net/tcp/tcp_connection.h"
 
 namespace rpc {
 // 前置声明

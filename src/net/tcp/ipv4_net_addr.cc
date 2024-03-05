@@ -5,7 +5,6 @@
 #include <fmt/core.h>
 #include "net/tcp/ipv4_net_addr.h"
 #include "common/log.h"
-#include "net/tcp/tcp_buffer.h"
 
 namespace rpc {
 IPv4NetAddr::IPv4NetAddr(std::string_view ip, uint16_t port) : m_ip(ip), m_port(port) {

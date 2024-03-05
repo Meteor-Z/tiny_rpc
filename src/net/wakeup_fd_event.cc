@@ -1,4 +1,3 @@
-#include <cerrno>
 #include <unistd.h>
 #include "fmt/core.h"
 #include "net/wakeup_fd_event.h"

@@ -1,4 +1,5 @@
 #include <memory>
+#include <unistd.h>
 #include "fmt/core.h"
 #include "net/rpc/rpc_dispatchor.h"
 #include "net/tcp/tcp_server.h"
@@ -10,10 +11,12 @@
 
 class OrderImpl : public Order {
 public:
-    void makeOrder(google::protobuf::RpcController* controller,
-                   const ::makeOrderRequest* request, ::makeOrderResponse* response,
-                   ::google::protobuf::Closure* done) {
-
+    void makeOrder(google::protobuf::RpcController* controller, const ::makeOrderRequest* request,
+                   ::makeOrderResponse* response, ::google::protobuf::Closure* done) {
+        // 测试超时的时间的限制
+        DEBUG_LOG("start sleep 5s");
+        sleep(5);
+        DEBUG_LOG("end sleep 5s");
         if (request->price() < 10) {
             response->set_ret_code(-1);
             response->set_res_info("short balance");
@@ -24,8 +27,7 @@ public:
 };
 
 void test_tcp_server() {
-    std::shared_ptr<rpc::IPv4NetAddr> addr =
-        std::make_shared<rpc::IPv4NetAddr>("127.0.0.1", 12347);
+    std::shared_ptr<rpc::IPv4NetAddr> addr = std::make_shared<rpc::IPv4NetAddr>("127.0.0.1", 12347);
     DEBUG_LOG(fmt::format("create addr = {}", addr->to_string()));
 
     std::shared_ptr<rpc::TcpServer> tcp_server = std::make_shared<rpc::TcpServer>(addr);

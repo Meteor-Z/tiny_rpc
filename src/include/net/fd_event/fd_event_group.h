@@ -11,6 +11,10 @@
 #include "net/fd_event/fd_event.h"
 
 namespace rpc {
+/**
+ * @brief 处理事件的Group，默认开启4个线程
+ * 
+ */
 class FdEventGroup {
 public:
     FdEventGroup(int size);
