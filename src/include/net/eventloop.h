@@ -35,10 +35,19 @@ public:
     // 添加epoll_event事件
     void add_epoll_event(std::shared_ptr<FdEvent> event);
 
-    // 删除epoll_event事件
+    /**
+     * @brief 删除epoll_event事件
+     * 
+     * @param event 事件
+     */
     void delete_epoll_event(std::shared_ptr<FdEvent> event);
 
-    // 是否是当前函数线程
+    /**
+     * @brief // 是否是当前函数线程
+     * 
+     * @return true 是当前线程函数
+     * @return false 不是当前线程函数
+     */
     bool is_in_current_loop_thread();
 
     void add_task(std::function<void()> task, bool is_wake_up = false);
@@ -46,6 +55,12 @@ public:
     // 添加定时任务
     void add_timer_event(std::shared_ptr<TimerEvent> shard_ptr);
 
+    /**
+     * @brief 是否在循环
+     * 
+     * @return true 
+     * @return false 
+     */
     bool is_looping() const noexcept;
 
 public:

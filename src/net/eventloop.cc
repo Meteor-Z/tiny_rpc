@@ -6,9 +6,7 @@
 #include <functional>
 #include <memory>
 #include <mutex>
-#include <new>
 #include <queue>
-#include "tinyxml/tinyxml.h"
 #include "net/eventloop.h"
 #include "common/log.h"
 #include "common/utils.h"
@@ -71,7 +69,7 @@ EventLoop::~EventLoop() {
 }
 
 void EventLoop::init_wakeup_fd_event() {
-    // 非阻塞
+    // 非堵塞的环形，然后加入到eventloop事件里面，然后进行唤醒
     m_wakeup_fd = eventfd(0, EFD_NONBLOCK);
     if (m_wakeup_fd < 0) {
         ERROR_LOG(fmt::format("failed to create eventloop,, eventfd create error ,error info {}", errno));
@@ -231,6 +229,7 @@ void EventLoop::add_to_epoll(std::shared_ptr<FdEvent> event) {
 
     INFO_LOG(fmt::format("epoll_event.events = {}", (int)tmp.events));
 
+    // 添加事件
     int rt = epoll_ctl(m_epoll_fd, op, event->get_fd(), &tmp); // 注册 添加事件
     if (rt == -1) {
         ERROR_LOG(fmt::format("failed epoll_ctl when add fd, errno={}, error={}", errno, strerror(errno)));

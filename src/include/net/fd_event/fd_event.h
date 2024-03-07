@@ -10,14 +10,14 @@ fd_evnet.h
 #include <functional>
 
 namespace rpc {
+/**
+ * @brief 事件
+ *
+ */
 class FdEvent {
 public:
     // 触发的Event事件
-    enum class TriggerEvent {
-        IN_EVENT = EPOLLIN,
-        OUT_EVENT = EPOLLOUT,
-        ERROR_EVENT = EPOLLERR
-    };
+    enum class TriggerEvent { IN_EVENT = EPOLLIN, OUT_EVENT = EPOLLOUT, ERROR_EVENT = EPOLLERR };
 
     // 将事件进行初始化，并且初始化 epoll_event
     FdEvent(int fd);
@@ -28,7 +28,8 @@ public:
     std::function<void()> handler(TriggerEvent event_type);
 
     // 监听
-    void listen(TriggerEvent event_type, std::function<void()> callback, std::function<void()> error_callback = nullptr);
+    void listen(TriggerEvent event_type, std::function<void()> callback,
+                std::function<void()> error_callback = nullptr);
 
     // 取消监听
     void cancel(TriggerEvent type_event);
@@ -36,12 +37,20 @@ public:
     // 返回事件标识符
     int get_fd() const noexcept;
 
-    // 设置非阻塞
+    /**
+     * @brief 设置成非阻塞模式
+     * 
+     */
     void set_no_block();
 
     // 返回 epoll 事件
     epoll_event get_epoll_event() const noexcept;
 
+    /**
+     * @brief 设置错误的回调函数信息
+     * 
+     * @param call_back 
+     */
     void set_error_callback(std::function<void()> call_back);
 
 protected:

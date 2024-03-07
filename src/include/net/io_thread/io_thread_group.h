@@ -10,6 +10,10 @@ IO_Group,讲起进行封装，
 #include "net/io_thread/io_thread.h"
 
 namespace rpc {
+/**
+ * @brief IO线程的封装
+ * 
+ */
 class IOThreadGroup {
 public:
     IOThreadGroup(int size);
