@@ -47,6 +47,16 @@ LogConfig::LogConfig(const std::string& xml_file) {
     TiXmlElement* root_ptr = get_son_node(xml_document_ptr.get(), "root");
     TiXmlElement* root_log_ptr = get_son_node(root_ptr, "log");
     TiXmlElement* root_log_level_ptr = get_son_node(root_log_ptr, "log_level");
+ 
+    TiXmlElement* root_log_file_path_ptr = get_son_node(root_log_ptr, "log_file_path");
+    TiXmlElement* root_log_file_name_ptr = get_son_node(root_log_ptr, "log_file_ptr");
+    TiXmlElement* root_log_file_max_size = get_son_node(root_log_ptr, "log_file_max_size");
+    TiXmlElement* root_log_log_sync_interval_ptr = get_son_node(root_log_ptr, "log_sync_interva");
+    //  赋值
     m_log_level = root_log_level_ptr->GetText();
+    m_file_path = root_log_file_path_ptr->GetText();
+    m_file_name = root_log_file_name_ptr->GetText();
+    m_file_max_size = atoi(root_log_file_max_size->GetText());
+    m_log_sync_inteval = atoi(root_log_log_sync_interval_ptr->GetText());
 }
 } // namespace rpc
