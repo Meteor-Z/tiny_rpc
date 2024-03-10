@@ -1,7 +1,7 @@
 /**
  * @file log.h
  * @author meteor_z (liuzechen.coder@qq.com)
- * @brief 日志库，提供DEBUG_LOG, ERROR_LOG, INFO_LOG 三种格式的信息
+ * @brief 库，提供DEBUG_LOG, ERROR_LOG, INFO_LOG 三种格式的信息
  * @version 0.1
  * @date 2023-12-24
  *
