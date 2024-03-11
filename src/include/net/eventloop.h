@@ -1,7 +1,13 @@
-/*
-EventLoop类，
-一直循环下去，当检测到事件的时候就会立刻返回，往里面加入事件，
-*/
+/**
+ * @file eventloop.h
+ * @author liuzechen (liuzechen.coder@qq.com)
+ * @brief 主从Reactor模块的重要文件
+ * @version 0.1
+ * @date 2024-03-11
+ *
+ * @copyright Copyright (c) 2024
+ *
+ */
 
 #ifndef RPC_NET_EVENTLOOP_H
 #define RPC_NET_EVENTLOOP_H
@@ -17,34 +23,51 @@ EventLoop类，
 #include "time/time_event.h"
 
 namespace rpc {
+/**
+ * @brief EventtLoop，事件循环类
+ *
+ */
 class EventLoop : public std::enable_shared_from_this<EventLoop> {
 public:
     EventLoop();
 
     ~EventLoop();
 
-    // EventLoop 启动！
+    /**
+     * @brief loop循环启动
+     *
+     */
     void loop();
 
-    // 唤醒这个eventloop
+    /**
+     * @brief 唤醒EventLoop
+     * 
+     */
     void wake_up();
 
-    // 停止，但是一般不会停止，在服务器上会一直运行
+    /**
+     * @brief 将EventLoop停下来，
+     * @note 不过一般不会停止，因为事件一直在循环
+     */
     void stop();
 
-    // 添加epoll_event事件
+    /**
+     * @brief 增加事件循环
+     * 
+     * @param event 事件
+     */
     void add_epoll_event(std::shared_ptr<FdEvent> event);
 
     /**
      * @brief 删除epoll_event事件
-     * 
+     *
      * @param event 事件
      */
     void delete_epoll_event(std::shared_ptr<FdEvent> event);
 
     /**
      * @brief // 是否是当前函数线程
-     * 
+     *
      * @return true 是当前线程函数
      * @return false 不是当前线程函数
      */
@@ -57,9 +80,9 @@ public:
 
     /**
      * @brief 是否在循环
-     * 
-     * @return true 
-     * @return false 
+     *
+     * @return true
+     * @return false
      */
     bool is_looping() const noexcept;
 
@@ -83,16 +106,16 @@ private:
     void init_timer();
 
 private:
-    pid_t m_thread_id { 0 };                      // 线程号
-    int m_epoll_fd { 0 };                         // epoll句柄
-    int m_wakeup_fd { 0 };                        // 唤醒标识符
-    std::shared_ptr<WakeUpFdEvent> m_wakeup_fd_event { nullptr }; // 唤醒的事件
-    bool m_stop_flag { false };                   // eventloop是否暂停？
-    std::set<int> m_listen_fds; // 监听的套接字，存入的是文件描述符
-    std::queue<std::function<void()>> m_pending_tasks; // 待执行的任务队列。
-    std::mutex m_mtx;                                  // 这个是锁
-    std::shared_ptr<Timer> m_timer { nullptr };                        // 之后要改成智能指针
-    bool m_is_looping { false };                       // 是否正在loop中
+    pid_t m_thread_id { 0 };                                      ///< 线程号
+    int m_epoll_fd { 0 };                                         ///< epoll句柄
+    int m_wakeup_fd { 0 };                                        ///< 唤醒标识符
+    std::shared_ptr<WakeUpFdEvent> m_wakeup_fd_event { nullptr }; ///< 要进行唤醒
+    bool m_stop_flag { false };                                   ///< eventloop是否暂停？
+    std::set<int> m_listen_fds;                                   ///< 正在监听的套接字
+    std::queue<std::function<void()>> m_pending_tasks;            ///< 待执行的任务队列。
+    std::mutex m_mtx;                                             ///< 互斥锁
+    std::shared_ptr<Timer> m_timer { nullptr };                   ///< 定时任务
+    bool m_is_looping { false };                                  ///< 是否正在loop中
 };
 } // namespace rpc
 
