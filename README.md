@@ -10,19 +10,17 @@
   - 为什么使用`xml`进行文件配置开发，其实就是简单，你也可以使用`json`或者说`yml`进行配置文件，都可以，没啥区别
   - 调用的是库是`third_party/tinyxml`的文件，链接直接使用就行了，注意，这里不能使用指针指针进行包装，因为这里删除父亲的指针，子指针就会相关析构。
   - 配置文件放在`conf/rpc.xml`里面，具体配置可以参考xml的配置文件
-  - 最终的格式文件是：`INFO 2023年9月3日16时21分37秒 文件名:/home/lzc/test_c++/main.cc`
+  - 最终的格式文件是：`INFO 2023年9月3日16时21分37秒 文件名:/home/lzc/test_c++/main.cc:line`，相关行号
   - 日志如何进行处理？
     - 这里是额外的开了一个线程去打印和处理文件，`每一个处理线程都有一个Logger类的对象，会将产生的Logger通过定时任务加入到一个AsyncLogger里面`，每一个处理线程产生的日志文件，在buffer有定的数量的时候，加入到AsyncLogger里面，然后统一输出到硬盘上，（这里是直接放到定时任务里面了）
   - 相关文件：
     - `src/include/common/log.h`：log日志
-    - `src/include/common/config.h`: 读取xml配置文件
+    - `src/include/common/log_config.h`: 读取xml配置文件
     - `src/include/common/utils.h`：其他工具函数
 - 主从Reactor模块的相关配置
   - Reactor模块是项目中的重点，主线程是mainReactor，然后还有四个subReactor，主线程通过epoll监听可读事件，之后accept()获得对应的`clientfd`，然后将这个fd加入到四个subReactor中，然后进行处理相关的IO读写
     - 四个线程如何进行选举？
-      - 从零开始，然后依次选举，然后再次从0开始
-  - 相关文件：
-    - `src/include/time/eventloop.h`: EventLoop模块
+      - 从零开始，然后依次选举，然后再次从0开始(没有做相关的复杂均衡。。。)`src/include/time/eventloop.h`: EventLoop模块
 - 定时器Timer的开发
   - 很多任务需要加入定时器的装置，所以实现了相关内容，
 - 内容缓冲区的开发，也就是Buffer的相关使用，std::vector&lt;char&gt;的形式进行开发
