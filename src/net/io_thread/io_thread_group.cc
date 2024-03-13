@@ -1,6 +1,6 @@
+#include <cstddef>
 #include "net/io_thread/io_thread_group.h"
 #include "net/io_thread/io_thread.h"
-#include <cstddef>
 
 namespace rpc {
 IOThreadGroup::IOThreadGroup(int size) : m_size { size } {
