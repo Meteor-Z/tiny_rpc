@@ -33,12 +33,12 @@ public:
      * @brief Construct a new Event Loop object
      *
      */
+    /**
+     * @brief Construct a new Event Loop object
+     * 
+     */
     EventLoop();
 
-    /**
-     * @brief Destroy the Event Loop object
-     *
-     */
     ~EventLoop();
 
     /**

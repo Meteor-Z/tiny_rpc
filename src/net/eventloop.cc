@@ -63,6 +63,7 @@ EventLoop::EventLoop() {
 
 EventLoop::~EventLoop() {
     // 先这样处理，因为这样也是线程不安全的
+    DEBUG_LOG("~EventLoop");
     close(m_epoll_fd);
 }
 
