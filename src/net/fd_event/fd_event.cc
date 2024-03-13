@@ -25,7 +25,6 @@ void FdEvent::set_no_block() {
     fcntl(m_fd, F_SETFL, is_block | O_NONBLOCK);
 }
 
-// 如果是读事件，那么就执行读回掉函数，否则，就是写回调函数
 std::function<void()> FdEvent::handler(TriggerEvent event_type) {
     if (event_type == TriggerEvent::IN_EVENT) {
         return m_read_callback;

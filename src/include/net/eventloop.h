@@ -29,8 +29,16 @@ namespace rpc {
  */
 class EventLoop : public std::enable_shared_from_this<EventLoop> {
 public:
+    /**
+     * @brief Construct a new Event Loop object
+     *
+     */
     EventLoop();
 
+    /**
+     * @brief Destroy the Event Loop object
+     *
+     */
     ~EventLoop();
 
     /**
@@ -41,7 +49,7 @@ public:
 
     /**
      * @brief 唤醒EventLoop
-     * 
+     *
      */
     void wake_up();
 
@@ -53,7 +61,7 @@ public:
 
     /**
      * @brief 增加事件循环
-     * 
+     *
      * @param event 事件
      */
     void add_epoll_event(std::shared_ptr<FdEvent> event);
@@ -72,8 +80,6 @@ public:
      * @return false 不是当前线程函数
      */
     bool is_in_current_loop_thread();
-
-    void add_task(std::function<void()> task, bool is_wake_up = false);
 
     // 添加定时任务
     void add_timer_event(std::shared_ptr<TimerEvent> shard_ptr);
@@ -94,10 +100,18 @@ private:
     // 处理wake_up事件
     void deal_wake_up();
 
-    // 添加事件
+    /**
+     * @brief 添加事件
+     *
+     * @param event 事件
+     */
     void add_to_epoll(std::shared_ptr<FdEvent> event);
 
-    // 删除当前事件
+    /**
+     * @brief 删除当前事件
+     *
+     * @param event
+     */
     void delete_from_epoll(std::shared_ptr<FdEvent> event);
 
     //  初始化wakeup_fd
@@ -105,10 +119,18 @@ private:
 
     void init_timer();
 
+    /**
+     * @brief 添加相关事件
+     *
+     * @param task
+     * @param is_wake_up
+     */
+    void add_task(std::function<void()> task, bool is_wake_up = false);
+
 private:
     pid_t m_thread_id { 0 };                                      ///< 线程号
-    int m_epoll_fd { 0 };                                         ///< epoll句柄
-    int m_wakeup_fd { 0 };                                        ///< 唤醒标识符
+    int m_epoll_fd { 0 };                                         ///< epoll文件描述符句柄
+    int m_wakeup_fd { 0 };                                        ///< 唤醒的文件描述符
     std::shared_ptr<WakeUpFdEvent> m_wakeup_fd_event { nullptr }; ///< 要进行唤醒
     bool m_stop_flag { false };                                   ///< eventloop是否暂停？
     std::set<int> m_listen_fds;                                   ///< 正在监听的套接字

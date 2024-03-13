@@ -18,11 +18,9 @@ namespace rpc {
 // 每一个线程独有的线程对象。
 static thread_local std::shared_ptr<EventLoop> thread_current_eventloop { nullptr };
 
-// epoll 最大的时间间隔
-static constexpr int G_EPOLL_MAX_TIMEOUT = 10000;
+static constexpr int G_EPOLL_MAX_TIMEOUT { 10000 }; ///< epoll 最大的事件间隔
 
-// epoll 最大的监听事件
-static constexpr int G_EPOLL_MAX_EVENTS = 10;
+static constexpr int G_EPOLL_MAX_EVENTS { 10 }; ///< 单次最大的监听事件
 
 bool EventLoop::is_in_current_loop_thread() { return m_thread_id == rpc::utils::get_thread_id(); }
 
@@ -38,7 +36,7 @@ EventLoop::EventLoop() {
     m_thread_id = rpc::utils::get_thread_id();
 
     // 创建 epoll句柄
-    m_epoll_fd = epoll_create(10); // 随便传入 现代操作系统已经不用管这个数字了
+    m_epoll_fd = epoll_create(100); // 随便传入 现代操作系统已经不用管这个数字了
 
     // 如果申请不了
     if (m_epoll_fd == -1) {
@@ -103,6 +101,7 @@ void EventLoop::loop() {
         lock.unlock();
         // ---------------------
 
+        // 执行相关的任务
         while (!temp_tasks.empty()) {
             std::function<void()> cb = temp_tasks.front();
             temp_tasks.pop();
@@ -116,6 +115,7 @@ void EventLoop::loop() {
 
         epoll_event result_event[G_EPOLL_MAX_EVENTS];
 
+        // 返回的是 number fd
         int epoll_num = epoll_wait(m_epoll_fd, result_event, G_EPOLL_MAX_EVENTS, time_out);
         DEBUG_LOG(fmt::format("epoll_wait。。。 rt = {}", epoll_num));
 
@@ -186,11 +186,12 @@ std::shared_ptr<EventLoop> EventLoop::Get_Current_Eventloop() {
 
     return thread_current_eventloop;
 }
-
+// 这里为啥要判断是当前线程啊
 void EventLoop::add_epoll_event(std::shared_ptr<FdEvent> event) {
     if (is_in_current_loop_thread()) {
         add_to_epoll(event);
     } else {
+        // 包装一层 lambda
         auto cb = [this, event]() { add_to_epoll(event); };
         add_task(cb, true);
     }
