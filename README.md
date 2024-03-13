@@ -17,12 +17,14 @@
     - `src/include/common/log.h`：log日志
     - `src/include/common/log_config.h`: 读取xml配置文件
     - `src/include/common/utils.h`：其他工具函数
+- 事件的封装
+  - linux中将事件统一抽象成了文件描述符，就是listendfd，这里将这些文件描述符给封装起来。
+  - 相关文件
+    - 
 - 主从Reactor模块的相关配置
   - Reactor模块是项目中的重点，主线程是mainReactor，然后还有四个subReactor，主线程通过epoll监听可读事件，之后accept()获得对应的`clientfd`，然后将这个fd加入到四个subReactor中，然后进行处理相关的IO读写
     - 四个线程如何进行选举？
       - 从零开始，然后依次选举，然后再次从0开始(没有做相关的复杂均衡。。。)`src/include/time/eventloop.h`: EventLoop模块
-- 定时器Timer的开发
-  - 很多任务需要加入定时器的装置，所以实现了相关内容，
 - 内容缓冲区的开发，也就是Buffer的相关使用，std::vector&lt;char&gt;的形式进行开发
 -  
 

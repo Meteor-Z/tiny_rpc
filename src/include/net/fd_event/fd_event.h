@@ -1,7 +1,7 @@
 /**
  * @file fd_event.h
  * @author lzc (liuzechen@qq.com)
- * @brief
+ * @brief 封装文件描述符的
  * @version 0.1
  * @date 2024-03-11
  *
