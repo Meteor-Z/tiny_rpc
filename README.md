@@ -19,14 +19,23 @@
     - `src/include/common/utils.h`：其他工具函数
 - 事件的封装
   - linux中将事件统一抽象成了文件描述符，就是listendfd，这里将这些文件描述符给封装起来。
+  - 如果进行操作，其实就是维护了一个`multimap`，这个mutimap会对定时器的事件从小到大进行排序，然后动态维护这个`multimap`，就可以了
   - 相关文件
-    - 
+    - `src/include/common/fd_event.h`：对文件描述符进行封装
+    - `src/include/common/net/wakeup_fd_event.h`：继承于上方的文件，对唤醒文件的进一步封装（也就是加入一个读入事件，表示唤醒
 - 定时器的封装
-  - 因为事件响应的时候需要有定时事件，比如说五秒之后还没有返回，那么就会报相关错，就不管它了。
+  - 网络框架中需要相关的定时器，比如说超时的问题，如果超过这个时间没有得到响应的结果，那么就会报一个超时的任务
+    - 问题1：如果判断一个定时任务需要执行
+    - 问题2：如何监听这个事件，在指定的事件返回相对应的任务
+  - 相关文件
+    - `src/include/net/time/time_event.h`：定时器中要执行的任务
+    - `src/include/net/time/timer.h`： 定时器，linux上的`timerfd_create`创建出来的`timerfd_create`得到的文件描述符
 - 主从Reactor模块的相关配置
   - Reactor模块是项目中的重点，主线程是mainReactor，然后还有四个subReactor，主线程通过epoll监听可读事件，之后accept()获得对应的`clientfd`，然后将这个fd加入到四个subReactor中，然后进行处理相关的IO读写
     - 四个线程如何进行选举？
-      - 从零开始，然后依次选举，然后再次从0开始(没有做相关的复杂均衡。。。)`src/include/time/eventloop.h`: EventLoop模块
+      - 从零开始，然后依次选举，然后再次从0开始(没有做相关的复杂均衡。。。)
+  - 相关文件：
+    - `src/include/time/eventloop.h`: EventLoop最主要的模块
 - 内容缓冲区的开发，也就是Buffer的相关使用，std::vector&lt;char&gt;的形式进行开发
 -  
 
@@ -88,4 +97,7 @@ protoc --cpp_out=./ order.proto
    2. 但是如果真的要解决这个问题，好像是可以使用`setsockopt()`进行端口复用解决
 5. 队列没有锁，导致多个线程访问buffer文件，因为`.top()`访问没有文件的信息的时候，就会出现UB的行为，这时候就会出错
    1. 很简单，直接加锁就行了
-6. 
+6. 重复引用调用导致空指针异常
+   1. 这个问题是：在初始化日志的时候，如果说你在初始化日志的时候调用相关日志的方法，那么你就会导致空指针异常，导致寄了
+      1. 问题解决差不多，gdb可以运行到错误的地方，然后`backtrace`打出调用栈，发现空指针异常了，（0x00）
+      2. 使用万能的pritnf打法进行调试，然后查出问题，不要在这里进行打印，直接使用cout输出文件就行了

@@ -133,12 +133,12 @@ void EventLoop::loop() {
                     ERROR_LOG("fd_event = nullptr, continue");
                     continue;
                 }
-
+                // 可读事件，而且不是唤醒的，优先级不是很高
                 if (trigger_event.events & EPOLLIN) {
                     DEBUG_LOG(fmt::format("fd {} trigger EPOLLIN event", fd_event_ptr->get_fd()));
                     add_task(fd_event_ptr->handler(FdEvent::TriggerEvent::IN_EVENT));
                 }
-
+                // 可写事件，不是唤醒，优先级不是很好
                 if (trigger_event.events & EPOLLOUT) {
                     DEBUG_LOG(fmt::format("fd {} trigger EPOLLOUT event", fd_event_ptr->get_fd()));
                     add_task(fd_event_ptr->handler(FdEvent::TriggerEvent::OUT_EVENT));
@@ -197,7 +197,7 @@ void EventLoop::add_epoll_event(std::shared_ptr<FdEvent> event) {
         add_task(cb, true);
     }
 }
-
+/// TODO: 只有是当前线程操作的时候，才会添加任务，否则包装一个任务，加入到epoll事件中
 void EventLoop::delete_epoll_event(std::shared_ptr<FdEvent> event) {
     if (is_in_current_loop_thread()) {
         delete_from_epoll(event);

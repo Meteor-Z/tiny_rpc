@@ -4,8 +4,6 @@
 #include <cstring>
 #include <unistd.h>
 #include <memory>
-#include <mutex>
-#include <thread>
 #include "common/log.h"
 #include "common/log_config.h"
 #include "net/eventloop.h"
@@ -69,6 +67,5 @@ int main() {
         });
     eventloop_ptr->add_timer_event(timer_event);
     eventloop_ptr->loop();
-    std::is_same
     return 0;
 }

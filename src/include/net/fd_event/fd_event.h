@@ -69,7 +69,11 @@ public:
     void listen(TriggerEvent event_type, std::function<void()> callback,
                 std::function<void()> error_callback = nullptr);
 
-    // 取消监听
+    /**
+     * @brief 取消监听
+     * 
+     * @param type_event 
+     */
     void cancel(TriggerEvent type_event);
 
     // 返回事件标识符

@@ -122,8 +122,8 @@ private:
     /**
      * @brief 添加相关事件
      *
-     * @param task
-     * @param is_wake_up
+     * @param task 任务
+     * @param is_wake_up 是否快速唤醒epoll_wait,相当于立刻加入到其中
      */
     void add_task(std::function<void()> task, bool is_wake_up = false);
 

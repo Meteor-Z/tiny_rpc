@@ -55,8 +55,10 @@ void FdEvent::listen(TriggerEvent event_type, std::function<void()> callback,
 }
 
 void FdEvent::cancel(TriggerEvent type_event) {
+// 取反，相当于消除这个 type_event
+// EPOLLIN 和 EPOLLOUT 是全局定义的一个文件描述符
     if (type_event == TriggerEvent::IN_EVENT) {
-        m_listen_events.events &= (~EPOLLIN);
+        m_listen_events.events &= (~EPOLLIN); 
     } else {
         m_listen_events.events &= (~EPOLLOUT);
     }

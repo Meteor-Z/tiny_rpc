@@ -29,7 +29,12 @@ pid_t get_pid() {
 //     long tv_sec;  // 秒
 //     long tv_usec; // 微秒
 // };
-// 得到当前时间点
+
+/**
+ * @brief 得到当前时间
+ * 
+ * @return int64_t 
+ */
 int64_t get_now_ms() {
     timeval value;
     gettimeofday(&value, nullptr);

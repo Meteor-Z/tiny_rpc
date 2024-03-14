@@ -1,15 +1,21 @@
-/*
-定时器 继承于 FdEvent
-TimeEvent的集合
+/**
+ * @file timer.h
+ * @author liuzechen (liuzechen.coder@qq.com)
+ * @brief 定时器的重要文件
+ * @version 0.1
+ * @date 2024-03-14
+ *
+ * @copyright Copyright (c) 2024
+ *
+ */
 
-*/
 #ifndef RPC_NET_TIMER_H
 #define RPC_NET_TIMER_H
 
 #include <memory>
 #include <mutex>
-#include "net/fd_event/fd_event.h"
 #include <map>
+#include "net/fd_event/fd_event.h"
 #include "net/time/time_event.h"
 
 namespace rpc {
@@ -18,17 +24,31 @@ public:
     Timer();
     ~Timer();
 
-    // 增加定时任务
+    /**
+     * @brief 添加事件
+     * 
+     * @param event 事件
+     */
     void add_time_event(std::shared_ptr<TimerEvent> event);
 
-    // 删除定时任务
+    /**
+     * @brief 删除定时事件
+     * 
+     * @param event 事件
+     */
     void delete_time_event(std::shared_ptr<TimerEvent> event);
 
-    // 发生IO事件之后，需要执行的方法
+    /**
+     * @brief 发生相关事件的时候才会执行
+     * 
+     */
     void on_timer();
 
 private:
-    // 修改定时任务
+    /**
+     * @brief 重新设置时间
+     * 
+     */
     void reset_arrive_time();
 
 private:
@@ -38,9 +58,9 @@ private:
     // std::function<void()> m_read_callback { nullptr };   // 读回掉函数
     // std::function<void()> m_write_callback { nullptr };  // 写回掉函数
 
-    // std::multimap<key(arrive_time), TimerEvent> m_pending_events;
+    // std::multimap<key(arrive_time), time_event> m_pending_events;
     std::multimap<int64_t, std::shared_ptr<TimerEvent>>
-        m_pending_events; // time_event的集合
+        m_pending_events; ///< TimerEvent的集合，因为key可能是重复的，那么就用multimap可重复的事件
 
     std::mutex m_mtx; // 锁
 };
