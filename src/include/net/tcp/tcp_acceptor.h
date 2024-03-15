@@ -1,4 +1,15 @@
 /**
+ * @file tcp_acceptor.h
+ * @author liuzechen (liuzechen.coder@qq.com)
+ * @brief 
+ * @version 0.1
+ * @date 2024-03-15
+ * @note 
+ * @copyright Copyright (c) 2024
+ * 
+ */
+
+/**
 TcpServr中的监听套接字
 
 socket()            bind()            listen()         accept()
@@ -12,6 +23,10 @@ socket()            bind()            listen()         accept()
 #include <net/tcp/ipv4_net_addr.h>
 
 namespace rpc {
+/**
+ * @brief T
+ *
+ */
 class TcpAcceptor {
 public:
     TcpAcceptor(std::shared_ptr<IPv4NetAddr> local_addr);
@@ -24,9 +39,9 @@ public:
     int get_listend_fd();
 
 private:
-    std::shared_ptr<IPv4NetAddr> m_local_addr; // 客户端的地址 bind的地址
-    int m_family { -1 };                       // 协议族
-    int m_listenfd { -1 };                     // 监听的套接字
+    std::shared_ptr<IPv4NetAddr> m_local_addr; ///< 客户端的地址 bind的地址
+    int m_family { -1 };                       ///< 协议族
+    int m_listenfd { -1 };                     ///< 监听的套接字
 };
 } // namespace rpc
 

@@ -36,8 +36,15 @@
       - 从零开始，然后依次选举，然后再次从0开始(没有做相关的复杂均衡。。。)
   - 相关文件：
     - `src/include/time/eventloop.h`: EventLoop最主要的模块
-- 内容缓冲区的开发，也就是Buffer的相关使用，std::vector&lt;char&gt;的形式进行开发
--  
+- 内容缓冲区的开发，
+  - Buffer的相关开发
+  - 内容不可能一字节一字节进行的传输，要开发一个buffer进行传输
+  - 相关文件
+    - `srcsrc/include/net/tcp/tcp_buffer.h`: tcp_buffer
+- Accpetor的开发
+  - `socket() -> bind() -> listen() -> accept()`的流程，封装一下，监听客户端的连接
+  - 相关文件：
+    - `src/include/net/tcp/ipv4_net_addr.h`：封装了IPv4，并没有支持Ipv6的协议
 
 ## 开发环境
 
