@@ -111,6 +111,7 @@ void TcpConnection::on_read() {
         DEBUG_LOG(fmt::format("peer closed, peer addr = {}, client_fd = {}",
                               m_peer_addr->to_string(), m_fd));
         clear();
+        // 要结束
         return;
     }
 
@@ -204,7 +205,7 @@ void TcpConnection::clear() {
         return;
     }
 
-    // 取消监听读和写事件
+    // 要取消相关cancel相关的事件
     m_fd_event->cancel(FdEvent::TriggerEvent::IN_EVENT);
     m_fd_event->cancel(FdEvent::TriggerEvent::OUT_EVENT);
 

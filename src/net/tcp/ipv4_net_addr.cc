@@ -10,7 +10,7 @@ namespace rpc {
 IPv4NetAddr::IPv4NetAddr(std::string_view ip, uint16_t port) : m_ip(ip), m_port(port) {
     std::memset(&m_addr, 0, sizeof(m_addr));
 
-    // 协议镞 地址 端口 设置
+    // 协议族 地址 端口 设置
     m_addr.sin_family = AF_INET;
     m_addr.sin_addr.s_addr = inet_addr(m_ip.c_str());
     m_addr.sin_port = htons(m_port);

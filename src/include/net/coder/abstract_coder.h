@@ -1,3 +1,14 @@
+/**
+ * @file abstract_coder.h
+ * @author liuzechen (liuzechen.coder@qq.com)
+ * @brief
+ * @version 0.1
+ * @date 2024-03-15
+ *
+ * @copyright Copyright (c) 2024
+ *
+ */
+
 /*
 编解码器
 网络传输的时候将数据进行编解码，

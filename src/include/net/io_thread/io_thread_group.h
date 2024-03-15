@@ -1,7 +1,13 @@
-/*
-IO_Group,讲起进行封装，
-
-*/
+/**
+ * @file io_thread_group.h
+ * @author liuzechen.coder (liuzechen.coder@qq.com)
+ * @brief
+ * @version 0.1
+ * @date 2024-03-15
+ *
+ * @copyright Copyright (c) 2024
+ *
+ */
 #ifndef RPC_NET_IO_THREAD_GROUP_H
 #define RPC_NET_IO_THREAD_GROUP_H
 
@@ -12,7 +18,7 @@ IO_Group,讲起进行封装，
 namespace rpc {
 /**
  * @brief IO线程的封装
- * 
+ *
  */
 class IOThreadGroup {
 public:
@@ -22,7 +28,7 @@ public:
 
     // 集体开始
     void start();
-    
+
     // 集体结束
     void join();
 
@@ -30,9 +36,9 @@ public:
     std::shared_ptr<IOThread> get_io_thread();
 
 private:
-    int m_size { 0 };                                          // groups的size
-    std::vector<std::shared_ptr<IOThread>> m_io_thread_groups; // groups
-    int m_idx { -1 };                                          // 得到的idx
+    int m_size { 0 };                                          ///< groups的size
+    std::vector<std::shared_ptr<IOThread>> m_io_thread_groups; ///< IO线程组
+    int m_idx { -1 };                                          ///< 得到的idx
 };
 } // namespace rpc
 

@@ -1,8 +1,6 @@
-#include <cstdio>
 #include <memory>
 #include <sys/socket.h>
 #include <fcntl.h>
-#include <system_error>
 #include <cerrno>
 #include <cstring>
 #include <fmt/core.h>
@@ -31,7 +29,7 @@ TcpAcceptor::TcpAcceptor(std::shared_ptr<IPv4NetAddr> local_addr)
 
     int valid = 0;
 
-    // 设定运训多个套接字绑定相同的地址和端口
+    // 设置成非阻塞
     int rt = setsockopt(m_listenfd, SOL_SOCKET, SO_REUSEPORT, &valid, sizeof(valid));
 
     // 非必需
@@ -42,6 +40,7 @@ TcpAcceptor::TcpAcceptor(std::shared_ptr<IPv4NetAddr> local_addr)
 
     socklen_t sock_len = m_local_addr->get_sock_len();
     sockaddr* sock_addr = m_local_addr->get_sock_addr();
+    
     if (bind(m_listenfd, sock_addr, sock_len) != 0) {
         ERROR_LOG(
             fmt::format("bind() error  errno = {}, errno = {}", errno, strerror(errno)));

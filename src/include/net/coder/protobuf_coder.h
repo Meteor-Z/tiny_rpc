@@ -1,9 +1,13 @@
-/*
-protobuf 编解码器
-
-
-
-*/
+/**
+ * @file protobuf_coder.h
+ * @author liuzechen (liuzechen.coder@qq.com)
+ * @brief 
+ * @version 0.1
+ * @date 2024-03-15
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
 #ifndef RPC_NET_CODER_PROTOBUF_CODER_H
 #define RPC_NET_CODER_PROTOBUF_CODER_H
 

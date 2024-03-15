@@ -8,11 +8,11 @@
 
 - 日志和配置文件的开发
   - 为什么使用`xml`进行文件配置开发，其实就是简单，你也可以使用`json`或者说`yml`进行配置文件，都可以，没啥区别
-  - 调用的是库是`third_party/tinyxml`的文件，链接直接使用就行了，注意，这里不能使用指针指针进行包装，因为这里删除父亲的指针，子指针就会相关析构。
+  - 调用的是库是`third_party/tinyxml`的文件，链接直接使用就行了，注意，这里不能使用指针指针进行包装，因为这里删除父亲的指针，子指针就会进行相关析构。
   - 配置文件放在`conf/rpc.xml`里面，具体配置可以参考xml的配置文件
   - 最终的格式文件是：`INFO 2023年9月3日16时21分37秒 文件名:/home/lzc/test_c++/main.cc:line`，相关行号
   - 日志如何进行处理？
-    - 这里是额外的开了一个线程去打印和处理文件，`每一个处理线程都有一个Logger类的对象，会将产生的Logger通过定时任务加入到一个AsyncLogger里面`，每一个处理线程产生的日志文件，在buffer有定的数量的时候，加入到AsyncLogger里面，然后统一输出到硬盘上，（这里是直接放到定时任务里面了）
+    - 这里是额外的开了一个线程去打印和处理文件，`每一个处理线程都有一个Logger类的对象，会将产生的Logger通过定时任务加入到一个AsyncLogger里面`，AyncLogger中会单独开一个线程。每一个处理线程产生的日志文件，在buffer有定的数量的时候，统一输出到硬盘上，（这里是直接放到定时任务里面了）
   - 相关文件：
     - `src/include/common/log.h`：log日志
     - `src/include/common/log_config.h`: 读取xml配置文件
@@ -36,15 +36,34 @@
       - 从零开始，然后依次选举，然后再次从0开始(没有做相关的复杂均衡。。。)
   - 相关文件：
     - `src/include/time/eventloop.h`: EventLoop最主要的模块
+    - `src/include/net/io_thread/io_thread.h`：对上方的eventloop再次封装一下
+    - `src/include/net/io_thread/io_thread_group.h`：线程组，里面是EventLoop循环，对io_thread的封装
 - 内容缓冲区的开发，
   - Buffer的相关开发
   - 内容不可能一字节一字节进行的传输，要开发一个buffer进行传输
+  - 注意，这里
   - 相关文件
-    - `srcsrc/include/net/tcp/tcp_buffer.h`: tcp_buffer
-- Accpetor的开发
-  - `socket() -> bind() -> listen() -> accept()`的流程，封装一下，监听客户端的连接
+    - `srcsrc/include/net/tcp/tcp_buffer.h`: tcp_buffer,
+- 协议开发
+  - 这里要自己设置一个protobuf的协议，protobuf只是序列化的，所以要自定义协议
+    - `src/include/net/coder/abstract_coder.h`：virtual基类，编解码器的基类
+    - `src/include/net/coder/abstract_protocol.h`：virtual基类，协议的基类
+    - `src/include/net/coder/protobuf_coder.h`：继承上方的类，是一个编解码器
+    - `src/include/net/coder/protobuf_protocol.h`：继承上方的类，实现了自定义的协议
+  - 大致协议如下：
+    - 开始符 - 整包长度 - MsigID长度 - MsgID - 方法名长度 - 方法名 - 错误码 - 错误信息长度 - 错误信息 - protobuf序列化数据 - 校验码 - 结束符
+    - 数据信息放在了`protobuf_protocol.h`文件中
+    - 开始符和结束符用特殊的码来标识，0x02 和 0x03
+    - msgid 是 rpc请求的唯一标识符
+    - 校验码必须要使用，因为tcp只是保证了数据的达到，但是并没有办法保证数据的正确性
+- 客户端/服务端的开发
+  - Acceptor的封装
+    - `socket() -> bind() -> listen() -> accept()`的流程，封装一下，监听客户端的连接
   - 相关文件：
-    - `src/include/net/tcp/ipv4_net_addr.h`：封装了IPv4，并没有支持Ipv6的协议
+    - `src/include/net/tcp/ipv4_net_addr.h`：封装了IPv4地址，但是并没有对IPv6进行包装
+    - `src/include/net/tcp/tcp_acceptor.h`：Acceptor, 注意，这里要设置成非阻塞的形式
+    - `src/include/net/tcp/tcp_connection.h`：读取数据，解析处理，然后返回客户端
+    - `src/include/net/tcp/tcp_client.h`：封装TcpClint的代码,其实就是发送消息，注意：返回错误，但是errno = EINPROGRESS，表示正在创建连接，这时候也应该加入到相关队列中
 
 ## 开发环境
 
@@ -108,3 +127,9 @@ protoc --cpp_out=./ order.proto
    1. 这个问题是：在初始化日志的时候，如果说你在初始化日志的时候调用相关日志的方法，那么你就会导致空指针异常，导致寄了
       1. 问题解决差不多，gdb可以运行到错误的地方，然后`backtrace`打出调用栈，发现空指针异常了，（0x00）
       2. 使用万能的pritnf打法进行调试，然后查出问题，不要在这里进行打印，直接使用cout输出文件就行了
+7. 当客户但发送连接的话，用户端接受，结果一直触发可写事件（日志一直刷新）
+   1. 在结束的时候。。要将事件的可读可写事件取消掉。。。
+
+## 其他
+
+[grpc快速使用](https://grpc.io/docs/languages/cpp/quickstart)

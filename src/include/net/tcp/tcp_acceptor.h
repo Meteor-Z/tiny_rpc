@@ -34,6 +34,12 @@ public:
     ~TcpAcceptor();
 
     // return : pair<套接字，地址>
+
+    /**
+     * @brief 
+     * 
+     * @return std::pair<int, std::shared_ptr<IPv4NetAddr>> pair<套接字，地址>
+     */
     std::pair<int, std::shared_ptr<IPv4NetAddr>> accept();
 
     int get_listend_fd();

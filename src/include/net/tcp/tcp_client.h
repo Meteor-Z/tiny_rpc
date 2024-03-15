@@ -28,22 +28,25 @@ read(): 读取客户端发来的请求，组成rpc请求
 #include "net/time/time_event.h"
 
 namespace rpc {
-
-#define NEW_MESSAGE(XX) \
-
-
 class TcpClient {
 public:
     TcpClient(std::shared_ptr<IPv4NetAddr> peer_addr);
 
     ~TcpClient();
 
-    // 异步进行连接
-    // 如果异步成功，那么 done会被执行
+    /**
+     * @brief 异步的进行连接
+     * 
+     * @param done 如果connect(),成功，那么donw就会成功执行
+     */
     void connect(std::function<void()> done);
 
-    // write message (使用协议进行封装)
-    // 如果成功，会调用 done函数，函数入参就是message
+    /**
+     * @brief 异步的发送message,
+     * 
+     * @param message 协议结构
+     * @param done 
+     */
     void write_message(std::shared_ptr<AbstractProtocol> message,
                        std::function<void(std::shared_ptr<AbstractProtocol>)> done);
 
@@ -105,11 +108,11 @@ public:
      */
     void add_timer_event(std::shared_ptr<TimerEvent> timer_event);
 
-
 private:
-    std::shared_ptr<IPv4NetAddr> m_local_addr { nullptr };   ///< 本地地址
-    std::shared_ptr<IPv4NetAddr> m_peer_addr { nullptr };    ///< 对端地址
-    std::shared_ptr<EventLoop> m_event_loop { nullptr };     ///< 处理事件
+    std::shared_ptr<IPv4NetAddr> m_local_addr { nullptr }; ///< 本地地址
+    std::shared_ptr<IPv4NetAddr> m_peer_addr { nullptr };  ///< 对端地址
+
+    std::shared_ptr<EventLoop> m_event_loop { nullptr };     ///< 主 Reactor
     int m_fd { -1 };                                         ///< 文件描述符
     std::shared_ptr<FdEvent> m_fd_event { nullptr };         ///< 事件描述符
     std::shared_ptr<TcpConnection> m_connection { nullptr }; ///< 处理连接

@@ -1,3 +1,14 @@
+/**
+ * @file tcp_connection.h
+ * @author liuzechen (liuzechen.coder@qq.com)
+ * @brief TcpConnection 连接
+ * @version 0.1
+ * @date 2024-03-15
+ *
+ * @copyright Copyright (c) 2024
+ *
+ */
+
 /*
 TcpConnection()
 
@@ -6,8 +17,8 @@ read() -> excute() -> write()
 read(): 读取客户端发来的请求，然后组装成RPC请求
 excute(): 将RPC请求作为入参，执行业务逻辑得到RPC相应
 write(): 将RPC相应发送到客户端
+以上三个步骤一直执行。、
 
-以上三个步骤一直执行。
 */
 
 #ifndef RPC_NET_TCP_TCP_CONNECTION_H
@@ -33,10 +44,10 @@ public:
      *
      */
     enum class TcpState {
-        NotConnected = 1, //< 无连接
-        Connected = 2,    //< 连接
-        HalfClosing = 3,  //< 半连接
-        Closed = 4,       //< 关闭
+        NotConnected = 1, ///< 无连接
+        Connected = 2,    ///< 连接
+        HalfClosing = 3,  ///< 半连接
+        Closed = 4,       ///< 关闭
     };
 
     /**
@@ -89,31 +100,30 @@ public:
     void push_send_message(std::shared_ptr<AbstractProtocol> message,
                            std::function<void(std::shared_ptr<AbstractProtocol>)> done);
 
-    void push_read_message(const std::string& req_id,
-                           std::function<void(std::shared_ptr<AbstractProtocol>)> done);
+    void push_read_message(const std::string& req_id, std::function<void(std::shared_ptr<AbstractProtocol>)> done);
 
     /**
      * @brief 得到本地地址
-     * 
+     *
      * @return std::shared_ptr<IPv4NetAddr> 对端地址
      */
     std::shared_ptr<IPv4NetAddr> get_local_addr();
 
     /**
      * @brief 得到对端地址
-     * 
+     *
      * @return std::shared_ptr<IPv4NetAddr> 对端地址
      */
     std::shared_ptr<IPv4NetAddr> get_peer_addr();
 
 private:
-    std::shared_ptr<IPv4NetAddr> m_local_addr { nullptr }; // 本地地址
-    std::shared_ptr<IPv4NetAddr> m_peer_addr { nullptr };  // 对方服务器的地址
+    std::shared_ptr<IPv4NetAddr> m_local_addr { nullptr }; ///< 本地地址
+    std::shared_ptr<IPv4NetAddr> m_peer_addr { nullptr };  ///< 对方服务器的地址
 
-    std::shared_ptr<TcpBuffer> m_in_buffer { nullptr };  // 接收缓冲区
-    std::shared_ptr<TcpBuffer> m_out_buffer { nullptr }; // 发送缓冲区
+    std::shared_ptr<TcpBuffer> m_in_buffer { nullptr };  ///< 接收缓冲区
+    std::shared_ptr<TcpBuffer> m_out_buffer { nullptr }; ///< 发送缓冲区
 
-    std::shared_ptr<EventLoop> m_event_loop { nullptr }; // 当前指向的IO线程
+    std::shared_ptr<EventLoop> m_event_loop { nullptr }; ///< 当前指向的IO线程 当前主EventLoop函数
 
     std::shared_ptr<FdEvent> m_fd_event { nullptr }; // 监听的文件描述符
 
@@ -123,19 +133,15 @@ private:
 
     int m_fd { -1 }; // 指向的套接字
 
-    TcpConnectionType m_connection_type {
-        TcpConnectionType::TcpConnectionByServer
-    }; // 默认server类型
+    TcpConnectionType m_connection_type { TcpConnectionType::TcpConnectionByServer }; // 默认server类型
 
-    std::vector<std::pair<std::shared_ptr<AbstractProtocol>,
-                          std::function<void(std::shared_ptr<AbstractProtocol>)>>>
+    std::vector<std::pair<std::shared_ptr<AbstractProtocol>, std::function<void(std::shared_ptr<AbstractProtocol>)>>>
         m_write_dones;
 
     // AbstractProtocol::req_id 唯一的请求号
     // std::function: 回调函数
     // 使用map,方便找这个std::string的req_id
-    std::map<std::string, std::function<void(std::shared_ptr<AbstractProtocol>)>>
-        m_read_dones;
+    std::map<std::string, std::function<void(std::shared_ptr<AbstractProtocol>)>> m_read_dones;
 
     // std::shared_ptr<RpcDispatcher> m_dispatcher;
 };

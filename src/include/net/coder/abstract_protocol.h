@@ -1,8 +1,14 @@
-/*
-协议
-rpc传输协议
-
-*/
+/**
+ * @file abstract_protocol.h
+ * @author liuzechen (liuzechen.coder@qq.com)
+ * @brief 编辑器吗器
+ * @version 0.1
+ * @date 2024-03-15
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
+ 
 #ifndef RPC_NET_TCP_ABSTRACT_PROTOCOL_H
 #define RPC_NET_TCP_ABSTRACT_PROTOCOL_H
 
