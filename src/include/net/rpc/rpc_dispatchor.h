@@ -32,7 +32,7 @@ public:
     static std::shared_ptr<RpcDispatcher> GET_RPC_DISPATCHER();
 public:
     /**
-     * @brief 进行分发
+     * @brief 进行分发,在这里就会将数据反序列化
      *
      * @param request
      * @param response
@@ -41,9 +41,9 @@ public:
                     std::shared_ptr<AbstractProtocol> response, TcpConnection* conection);
 
     /**
-     * @brief 对服务进行注册
+     * @brief 注册 service
      *
-     * @param service
+     * @param service gopogle:protobuf:Service 的对象
      */
     void register_service(std::shared_ptr<google::protobuf::Service> service);
 

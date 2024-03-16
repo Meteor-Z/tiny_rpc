@@ -119,8 +119,7 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
                           rpc_controller.get_peer_addr()->to_string(),
                           rpc_controller.get_msg_id()));
 
-    DEBUG_LOG("5 这里是对的");
-    /// TODO: 这里是错误的
+    // Rpc方法 CallMethod 
     service->CallMethod(method, &rpc_controller, req_message, rsp_message, nullptr);
 
     // 使用序列化

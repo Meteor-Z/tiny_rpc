@@ -1,7 +1,7 @@
 /**
  * @file rpc_channel.h
- * @author lzc (liuzechen.coder@qq.com)
- * @brief 客户端进行通讯用的
+ * @author liuzechen (liuzechen.coder@qq.com)
+ * @brief 将繁琐的连接简化的
  * @version 0.1
  * @date 2024-01-26
  *
@@ -12,13 +12,13 @@
 #ifndef RPC_NET_RPC_RPC_CHANNEL_H
 #define RPC_NET_RPC_RPC_CHANNEL_H
 
+#include <memory>
 #include "google/protobuf/service.h"
 #include "net/tcp/ipv4_net_addr.h"
 #include "net/tcp/tcp_client.h"
 #include "net/time/time_event.h"
 #include <google/protobuf/message.h>
 #include <google/protobuf/stubs/callback.h>
-#include <memory>
 
 namespace rpc {
 class RpcChannel : public google::protobuf::RpcChannel, public std::enable_shared_from_this<RpcChannel> {
@@ -67,11 +67,10 @@ public:
     std::shared_ptr<google::protobuf::Closure> get_closure();
     std::shared_ptr<TcpClient> get_client();
 
-    
     /**
      * @brief Get the timer event object
-     * 
-     * @return std::shared_ptr<TimerEvent> 
+     *
+     * @return std::shared_ptr<TimerEvent>
      */
     std::shared_ptr<TimerEvent> get_timer_event();
 
