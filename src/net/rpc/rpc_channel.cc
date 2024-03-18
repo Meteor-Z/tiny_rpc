@@ -84,7 +84,7 @@ void RpcChannel::CallMethod(const google::protobuf::MethodDescriptor* method,
             if (channel->get_closure()) {
                 channel->get_closure()->Run();
             }
-            channel.reset();
+            // channel.reset();
         });
 
     // 添加定时任务
