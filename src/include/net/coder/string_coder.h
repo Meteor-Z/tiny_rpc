@@ -6,6 +6,7 @@ abstract_coder的实现类
 #ifndef RPC_NET_TCP_STRING_CODER_H
 #define RPC_NET_TCP_STRING_CODER_H
 
+#include <iostream>
 #include "net/coder/abstract_coder.h"
 #include "net/coder/abstract_protocol.h"
 #include "net/coder/string_protocol.h"
@@ -18,10 +19,8 @@ public:
     void encode(std::vector<std::shared_ptr<AbstractProtocol>>& messages,
                 std::shared_ptr<TcpBuffer> out_buffer) override {
         for (size_t i = 0; i < messages.size(); i++) {
-            std::shared_ptr<StringProtocol> msg =
-                std::dynamic_pointer_cast<StringProtocol>(messages[i]);
-            std::cout << "hahaha" << ' ' << msg->m_info.c_str() << ' '
-                      << msg->m_info.size() << std::endl;
+            std::shared_ptr<StringProtocol> msg = std::dynamic_pointer_cast<StringProtocol>(messages[i]);
+            std::cout << "hahaha" << ' ' << msg->m_info.c_str() << ' ' << msg->m_info.size() << std::endl;
             out_buffer->write_to_buffer(msg->m_info.c_str(), msg->m_info.size());
         }
     }

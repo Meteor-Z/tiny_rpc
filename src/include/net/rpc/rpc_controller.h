@@ -140,7 +140,7 @@ public:
      *
      * @return std::shared_ptr<IPv4NetAddr>
      */
-    std::shared_ptr<IPv4NetAddr>                                                                  get_peer_addr();
+    std::shared_ptr<IPv4NetAddr> get_peer_addr();
 
     /**
      * @brief 设置超时时间，如果超过这个时间，也算失败
@@ -166,7 +166,7 @@ private:
     std::shared_ptr<IPv4NetAddr> m_local_addr; ///< 本地地址
     std::shared_ptr<IPv4NetAddr> m_peer_addr;  ///< 对端地址
 
-    int m_timeout_ms { 1000 }; ///< 超时时间，单位是毫秒 默认是1秒 
+    int m_timeout_ms { 1000 }; ///< 超时时间，单位是毫秒 默认是1秒
 };
 } // namespace rpc
 #endif
