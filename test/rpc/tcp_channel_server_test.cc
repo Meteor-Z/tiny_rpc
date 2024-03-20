@@ -9,6 +9,7 @@
 #include "net/tcp/ipv4_net_addr.h"
 #include "common/log_config.h"
 
+// 继承于 Service
 class OrderImpl : public Order {
 public:
     void makeOrder(google::protobuf::RpcController* controller, const ::makeOrderRequest* request,
