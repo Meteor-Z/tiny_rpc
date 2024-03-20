@@ -10,19 +10,14 @@ TcpBuffer::TcpBuffer(int size) : m_size(size) { m_buffer.resize(size); }
 
 TcpBuffer::~TcpBuffer() {}
 
-//
 int TcpBuffer::can_read_bytes_num() const noexcept { return m_write_index - m_read_index; }
 
-//
 int TcpBuffer::can_write_bytes_num() const noexcept { return m_buffer.size() - m_write_index; }
 
-//
 int TcpBuffer::read_index() const noexcept { return m_read_index; }
 
-//
 int TcpBuffer::write_index() const noexcept { return m_write_index; }
 
-//
 void TcpBuffer::write_to_buffer(const char* buffer, int size) {
     if (size > can_write_bytes_num()) {
         int new_size = { static_cast<int>(1.5 * (m_write_index + size)) };
