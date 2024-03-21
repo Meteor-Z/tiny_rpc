@@ -6,7 +6,9 @@
 
 namespace rpc {
 WakeUpFdEvent::WakeUpFdEvent(int fd) : FdEvent(fd) {}
-WakeUpFdEvent::~WakeUpFdEvent() {}
+WakeUpFdEvent::~WakeUpFdEvent() {
+    INFO_LOG("~WakeUpFdEvent");
+}
 // 相当于触发事件，这里向这个文件描述符里面写入东西，eventloop就会检测到，所以就会唤醒
 void WakeUpFdEvent::wakeup() {
     char buf[8] = { 'a' };

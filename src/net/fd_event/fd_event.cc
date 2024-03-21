@@ -2,15 +2,17 @@
 #include <sys/epoll.h>
 #include <fcntl.h>
 #include "net/fd_event/fd_event.h"
+#include "common/log.h"
 
 namespace rpc {
-FdEvent::FdEvent(int fd) : m_fd(fd) {
-    std::memset(&m_listen_events, 0, sizeof(m_listen_events));
-}
+FdEvent::FdEvent(int fd) : m_fd(fd) { std::memset(&m_listen_events, 0, sizeof(m_listen_events)); }
 
 // FdEvent::FdEvent() {}
 
-FdEvent::~FdEvent() { memset(&m_listen_events, 0, sizeof(m_listen_events)); }
+FdEvent::~FdEvent() {
+    INFO_LOG("~FdEvent");
+    memset(&m_listen_events, 0, sizeof(m_listen_events));
+}
 
 int FdEvent::get_fd() const noexcept { return m_fd; }
 
@@ -55,15 +57,13 @@ void FdEvent::listen(TriggerEvent event_type, std::function<void()> callback,
 }
 
 void FdEvent::cancel(TriggerEvent type_event) {
-// 取反，相当于消除这个 type_event
-// EPOLLIN 和 EPOLLOUT 是全局定义的一个文件描述符
+    // 取反，相当于消除这个 type_event
+    // EPOLLIN 和 EPOLLOUT 是全局定义的一个文件描述符
     if (type_event == TriggerEvent::IN_EVENT) {
-        m_listen_events.events &= (~EPOLLIN); 
+        m_listen_events.events &= (~EPOLLIN);
     } else {
         m_listen_events.events &= (~EPOLLOUT);
     }
 }
-void FdEvent::set_error_callback(std::function<void()> call_back) {
-    m_error_callback = call_back;
-}
+void FdEvent::set_error_callback(std::function<void()> call_back) { m_error_callback = call_back; }
 } // namespace rpc

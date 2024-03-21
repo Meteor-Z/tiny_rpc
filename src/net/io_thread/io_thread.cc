@@ -45,6 +45,8 @@ IOThread::~IOThread() {
 
     // 等到线程结束
     pthread_join(m_thread, nullptr); // 等待线程结束
+
+    INFO_LOG("~IOTHread()");
 }
 
 void* IOThread::Main(void* args) {

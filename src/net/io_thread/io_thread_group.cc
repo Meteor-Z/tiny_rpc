@@ -1,5 +1,6 @@
 #include <cstddef>
 #include "net/io_thread/io_thread_group.h"
+#include "common/log.h"
 #include "net/io_thread/io_thread.h"
 
 namespace rpc {
@@ -11,7 +12,7 @@ IOThreadGroup::IOThreadGroup(int size) : m_size { size } {
     }
 }
 
-IOThreadGroup::~IOThreadGroup() {}
+IOThreadGroup::~IOThreadGroup() { INFO_LOG("~IOThreadGroup()"); }
 
 void IOThreadGroup::start() {
     for (size_t i = 0; i < m_io_thread_groups.size(); i++) {

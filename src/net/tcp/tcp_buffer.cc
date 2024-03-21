@@ -8,7 +8,7 @@ namespace rpc {
 
 TcpBuffer::TcpBuffer(int size) : m_size(size) { m_buffer.resize(size); }
 
-TcpBuffer::~TcpBuffer() {}
+TcpBuffer::~TcpBuffer() { INFO_LOG("~TcpBuffer()"); }
 
 int TcpBuffer::can_read_bytes_num() const noexcept { return m_write_index - m_read_index; }
 

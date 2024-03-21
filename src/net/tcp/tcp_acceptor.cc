@@ -9,11 +9,9 @@
 #include "net/tcp/tcp_acceptor.h"
 
 namespace rpc {
-TcpAcceptor::TcpAcceptor(std::shared_ptr<IPv4NetAddr> local_addr)
-    : m_local_addr(local_addr) {
+TcpAcceptor::TcpAcceptor(std::shared_ptr<IPv4NetAddr> local_addr) : m_local_addr(local_addr) {
     if (!local_addr->check_valid()) {
-        ERROR_LOG(
-            fmt::format("invalid local addr {}", local_addr->to_string()));
+        ERROR_LOG(fmt::format("invalid local addr {}", local_addr->to_string()));
         std::exit(0);
     }
 
@@ -22,8 +20,7 @@ TcpAcceptor::TcpAcceptor(std::shared_ptr<IPv4NetAddr> local_addr)
     m_listenfd = socket(m_family, SOCK_STREAM, 0);
 
     if (m_listenfd < 0) {
-        ERROR_LOG(
-            fmt::format("TcpAcceptor() init error, beacuse socket() error"));
+        ERROR_LOG(fmt::format("TcpAcceptor() init error, beacuse socket() error"));
         std::exit(0);
     }
 
@@ -34,23 +31,20 @@ TcpAcceptor::TcpAcceptor(std::shared_ptr<IPv4NetAddr> local_addr)
 
     // 非必需
     if (rt == -1) {
-        ERROR_LOG(
-            fmt::format("setsockopt errno = {}, error = {}", errno, strerror(errno)));
+        ERROR_LOG(fmt::format("setsockopt errno = {}, error = {}", errno, strerror(errno)));
     }
 
     socklen_t sock_len = m_local_addr->get_sock_len();
     sockaddr* sock_addr = m_local_addr->get_sock_addr();
-    
+
     if (bind(m_listenfd, sock_addr, sock_len) != 0) {
-        ERROR_LOG(
-            fmt::format("bind() error  errno = {}, errno = {}", errno, strerror(errno)));
+        ERROR_LOG(fmt::format("bind() error  errno = {}, errno = {}", errno, strerror(errno)));
         std::exit(0);
     }
 
     // 服务端
     if (listen(m_listenfd, 1000) != 0) {
-        ERROR_LOG(fmt::format("listend() error, errno = {}, error = {}",
-                                          errno, strerror(errno)));
+        ERROR_LOG(fmt::format("listend() error, errno = {}, error = {}", errno, strerror(errno)));
         std::exit(0);
     }
 }
@@ -61,23 +55,20 @@ std::pair<int, std::shared_ptr<IPv4NetAddr>> TcpAcceptor::accept() {
 
     socklen_t client_addr_len { sizeof(client_addr) };
 
-    int client_fd =
-        ::accept(m_listenfd, reinterpret_cast<sockaddr*>(&client_addr), &client_addr_len);
+    int client_fd = ::accept(m_listenfd, reinterpret_cast<sockaddr*>(&client_addr), &client_addr_len);
 
     if (client_fd < 0) {
-        ERROR_LOG(fmt::format("accept() error, errno = {}, error = {}", errno,
-                                          strerror(errno)));
+        ERROR_LOG(fmt::format("accept() error, errno = {}, error = {}", errno, strerror(errno)));
         std::exit(0);
     }
 
     // IPv4NetAddr peer_addr(client_addr);
     std::shared_ptr<IPv4NetAddr> peer_addr = std::make_shared<IPv4NetAddr>(client_addr);
-    INFO_LOG(
-        fmt::format("a client accept() success, addr = {}", peer_addr->to_string()));
+    INFO_LOG(fmt::format("a client accept() success, addr = {}", peer_addr->to_string()));
     return std::make_pair(client_fd, peer_addr);
 }
 
 int TcpAcceptor::get_listend_fd() { return m_listenfd; }
 
-TcpAcceptor::~TcpAcceptor() {}
+TcpAcceptor::~TcpAcceptor() { INFO_LOG("~TcpAcceptor()"); }
 } // namespace rpc

@@ -125,9 +125,9 @@ private:
 
     std::shared_ptr<EventLoop> m_event_loop { nullptr }; ///< 当前指向的IO线程 当前主EventLoop函数
 
-    std::shared_ptr<FdEvent> m_fd_event { nullptr }; // 监听的文件描述符
+    std::shared_ptr<FdEvent> m_fd_event { nullptr }; ///< 监听的文件描述符
 
-    std::shared_ptr<AbstractCoder> m_coder { nullptr }; // 编解码器
+    std::shared_ptr<AbstractCoder> m_coder { nullptr }; ///< 编解码器
 
     TcpState m_state { TcpState::NotConnected }; // 连接状态
 

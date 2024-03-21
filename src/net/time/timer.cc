@@ -13,7 +13,7 @@
 #include "net/time/time_event.h"
 
 namespace rpc {
-Timer::~Timer() { DEBUG_LOG("~Timer()"); }
+Timer::~Timer() { INFO_LOG("~Timer()"); }
 
 Timer::Timer() : FdEvent() {
     // 创建定时器任务，调用系统调用的非堵塞的任务
