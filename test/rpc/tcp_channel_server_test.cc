@@ -37,6 +37,7 @@ void test_tcp_server() {
 int main() {
     rpc::LogConfig::SET_GLOBAL_CONFIG("/home/lzc/code/tiny_rpc/conf/rpc.xml");
 
+    std::cout << "yes" << std::endl;
     rpc::Logger::INIT_GLOBAL_LOGGER();
 
     // 注册方法

@@ -23,6 +23,7 @@
 #include "fmt/core.h" ///< 需要这个
 #include "net/time/time_event.h"
 
+// rpc::Logger::GET_GLOBAL_LOGGER()->log();
 /**
  * @brief 根据xml格式进行调整的信息格式
  *
@@ -32,7 +33,6 @@
         std::unique_ptr<rpc::LogEvent> ptr = std::make_unique<rpc::LogEvent>(rpc::LogLevel::Debug);                    \
         std::string new_message = ptr->get_log(__FILE__, __LINE__) + " " + std::string { message };                    \
         rpc::Logger::GET_GLOBAL_LOGGER()->push_log(new_message);                                                       \
-        rpc::Logger::GET_GLOBAL_LOGGER()->log();                                                                       \
     }
 
 /**
@@ -44,7 +44,6 @@
         std::unique_ptr<rpc::LogEvent> ptr = std::make_unique<rpc::LogEvent>(rpc::LogLevel::Info);                     \
         std::string new_message = ptr->get_log(__FILE__, __LINE__) + " " + std::string { message };                    \
         rpc::Logger::GET_GLOBAL_LOGGER()->push_log(new_message);                                                       \
-        rpc::Logger::GET_GLOBAL_LOGGER()->log();                                                                       \
     }
 
 /**
@@ -56,7 +55,6 @@
         std::unique_ptr<rpc::LogEvent> ptr = std::make_unique<rpc::LogEvent>(rpc::LogLevel::Error);                    \
         std::string new_message = ptr->get_log(__FILE__, __LINE__) + " " + std::string { message };                    \
         rpc::Logger::GET_GLOBAL_LOGGER()->push_log(new_message);                                                       \
-        rpc::Logger::GET_GLOBAL_LOGGER()->log();                                                                       \
     }
 
 namespace rpc {

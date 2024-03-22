@@ -1,3 +1,4 @@
+#include <cassert>
 #include <cstdio>
 #include <ctime>
 #include <pthread.h>
@@ -5,7 +6,6 @@
 #include <semaphore.h>
 #include <sys/select.h>
 #include <chrono>
-#include <iostream>
 #include <memory>
 #include <mutex>
 #include <queue>
@@ -38,20 +38,22 @@ void Logger::sync_loop() {
     lock.unlock();
 
     // 交换到 tmp_vec中
-    m_async_logger->push_log_buffer(tmp_vec);
+    if (!tmp_vec.empty()) {
+        m_async_logger->push_log_buffer(tmp_vec);
+    }
 }
 
 Logger::Logger(LogLevel log_level) : m_set_level { log_level } {
 
-    m_async_logger = std::make_shared<AsyncLogger>(LogConfig::GET_GLOBAL_CONFIG()->m_file_path,
-                                                   LogConfig::GET_GLOBAL_CONFIG()->m_file_name,
-                                                   LogConfig::GET_GLOBAL_CONFIG()->m_file_max_size);
+    // m_async_logger = std::make_shared<AsyncLogger>(LogConfig::GET_GLOBAL_CONFIG()->m_file_path,
+    //                                                LogConfig::GET_GLOBAL_CONFIG()->m_file_name,
+    //                                                LogConfig::GET_GLOBAL_CONFIG()->m_file_max_size);
 
-    m_timer_evnet = std::make_shared<TimerEvent>(LogConfig::GET_GLOBAL_CONFIG()->m_log_sync_inteval, true,
-                                                 std::bind(&Logger::sync_loop, this));
+    // m_timer_evnet = std::make_shared<TimerEvent>(LogConfig::GET_GLOBAL_CONFIG()->m_log_sync_inteval, true,
+    //                                              std::bind(&Logger::sync_loop, this));
 
-    // 添加到日志器里面，让他去执行
-    EventLoop::Get_Current_Eventloop()->add_timer_event(m_timer_evnet);
+    // // 添加到日志器里面，让他去执行
+    // EventLoop::Get_Current_Eventloop()->add_timer_event(m_timer_evnet);
 }
 
 void Logger::init() {
@@ -87,11 +89,17 @@ void Logger::INIT_GLOBAL_LOGGER() {
 }
 
 void Logger::log() {
-    // 现在是单线程的，马上就是多线程的了
-    std::lock_guard<std::mutex> lock_ptr { pop_log_mtx };
-    while (!m_buffer.empty()) {
-        std::cout << m_buffer.front() << std::endl;
-        m_buffer.pop_back();
+
+    std::vector<std::string> tmp_vec {};
+
+    std::unique_lock<std::mutex> lock { m_mutex };
+
+    tmp_vec.swap(m_buffer);
+
+    lock.unlock();
+
+    if (!tmp_vec.empty()) {
+        m_async_logger->push_log_buffer(tmp_vec);
     }
 }
 
@@ -190,76 +198,83 @@ std::string rpc::LogEvent::get_log(const std::string& file_name, int file_line) 
 
 void* AsyncLogger::Loop(void* arg) {
     AsyncLogger* logger = reinterpret_cast<AsyncLogger*>(arg);
-    // 告知已经初始化好了
-    sem_post(&(logger->m_sempahore));
 
-    while (true) {
-        std::unique_lock<std::mutex> lock { logger->m_mutex };
-        while (logger->m_buff.empty()) {
-            logger->m_condtion.wait(lock);
+    pthread_cond_init(&logger->m_condtion, NULL);
+
+    sem_post(&logger->m_sempahore);
+
+    while (1) {
+        ScopeMutex<Mutex> lock(logger->m_mutex);
+        while (logger->m_buffer.empty()) {
+            // printf("begin pthread_cond_wait back \n");
+            pthread_cond_wait(&(logger->m_condtion), logger->m_mutex.getMutex());
         }
+        // printf("pthread_cond_wait back \n");
+
         std::vector<std::string> tmp;
-        tmp.swap(logger->m_buff.front());
-        logger->m_buff.pop();
+        tmp.swap(logger->m_buffer.front());
+        logger->m_buffer.pop();
 
         lock.unlock();
 
         timeval now;
-        gettimeofday(&now, nullptr);
+        gettimeofday(&now, NULL);
 
-        struct tm now_time {};
+        struct tm now_time;
         localtime_r(&(now.tv_sec), &now_time);
 
-        const char* format { "%Y%m%d" };
-        char date[32] {};
+        const char* format = "%Y%m%d";
+        char date[32];
         strftime(date, sizeof(date), format, &now_time);
 
-        // 如果当前日期是不等于现在这个日期
         if (std::string(date) != logger->m_date) {
-            logger->m_number = 0;
+            logger->m_no = 0;
             logger->m_reopen_flag = true;
             logger->m_date = std::string(date);
         }
+        if (logger->m_file_hanlder == NULL) {
+            logger->m_reopen_flag = true;
+        }
 
-        std::stringstream ss {};
-        ss << logger->m_file_path << logger->m_file_name << '_' << std::string(date) << ".";
-
-        std::string logger_file_name { ss.str() + std::to_string(logger->m_number) };
+        std::stringstream ss;
+        ss << logger->m_file_path << logger->m_file_name << "_" << std::string(date) << "_log.";
+        std::string log_file_name = ss.str() + std::to_string(logger->m_no);
 
         if (logger->m_reopen_flag) {
-            if (logger->m_file_handler) {
-                fclose(logger->m_file_handler);
+            if (logger->m_file_hanlder) {
+                fclose(logger->m_file_hanlder);
             }
-            logger->m_file_handler = fopen(logger_file_name.c_str(), "a");
+            logger->m_file_hanlder = fopen(log_file_name.c_str(), "a");
             logger->m_reopen_flag = false;
         }
 
-        // 大于当前字节的大小
-        if (ftell(logger->m_file_handler) > logger->m_file_max_size) {
-            fclose(logger->m_file_handler);
-            logger_file_name = ss.str() + std::to_string(logger->m_number++);
-            logger->m_file_handler = fopen(logger_file_name.c_str(), "a");
+        if (ftell(logger->m_file_hanlder) > logger->m_max_file_size) {
+            fclose(logger->m_file_hanlder);
+
+            log_file_name = ss.str() + std::to_string(logger->m_no++);
+            logger->m_file_hanlder = fopen(log_file_name.c_str(), "a");
             logger->m_reopen_flag = false;
         }
 
-        // 将其写入到日志文件中
-        for (auto& item : tmp) {
-            if (!item.empty()) {
-                fwrite(item.c_str(), 1, item.size(), logger->m_file_handler);
+        for (auto& i : tmp) {
+            if (!i.empty()) {
+                fwrite(i.c_str(), 1, i.length(), logger->m_file_hanlder);
             }
         }
-
-        fflush(logger->m_file_handler);
+        fflush(logger->m_file_hanlder);
 
         if (logger->m_stop_flag) {
-            return nullptr;
+            return NULL;
         }
     }
 
-    return nullptr;
+    return NULL;
+}
+
 }
 AsyncLogger::AsyncLogger(const std::string& file_path, const std::string& file_name, int m_file_max_size)
     : m_file_path(file_path), m_file_name(file_name), m_file_max_size(m_file_max_size) {
+    fmt::println("file_path = {}, m_file_name = {}, m_file_max_size = {}", m_file_path, m_file_name, m_file_max_size);
     // 信号量初始化
     sem_init(&m_sempahore, 0, 0);
     // 这个this指针传入到loop里面，也就是那个参数
@@ -281,10 +296,10 @@ void AsyncLogger::push_log_buffer(std::vector<std::string>& vec) {
     std::unique_lock<std::mutex> lock { m_mutex };
 
     m_buff.push(vec);
+    m_condtion.notify_one();
 
     lock.unlock();
 
     // 进行唤醒
-    m_condtion.notify_one();
 }
 } // namespace rpc

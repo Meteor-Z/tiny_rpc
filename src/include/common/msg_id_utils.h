@@ -10,7 +10,7 @@
  */
 
 #ifndef RPC_COMMON_MSG_ID_UTILS_H
-#define RPC_NET_RPC_RPC_CHANNEL_H
+#define RPC_COMMON_MSG_ID_UTILS_H
 
 #include <string>
 
