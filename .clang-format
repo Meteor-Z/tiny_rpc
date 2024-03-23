@@ -16,6 +16,8 @@ SortIncludes: false
 # 指针和引用的对齐: Left, Right, Middle
 PointerAlignment: Left
 
+# 模板换行
+AlwaysBreakTemplateDeclarations: Yes
 
 # 允许重新排版注释
 ReflowComments: true
@@ -23,7 +25,7 @@ ReflowComments: true
 # 对齐连续的尾随的注释
 AlignTrailingComments: true
 
-ColumnLimit: 120
+ColumnLimit: 90
 
 # 设置初始化的
 Cpp11BracedListStyle: false

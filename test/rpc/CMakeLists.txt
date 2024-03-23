@@ -15,6 +15,7 @@ add_library(tcp_channel_libs STATIC
     ${CMAKE_SOURCE_DIR}/src/common/config.cc
     ${CMAKE_SOURCE_DIR}/src/common/log.cc
     ${CMAKE_SOURCE_DIR}/src/common/utils.cc
+    ${CMAKE_SOURCE_DIR}/src/common/mutex.cc
     ${CMAKE_SOURCE_DIR}/src/net/time/time_event.cc
     ${CMAKE_SOURCE_DIR}/src/net/time/timer.cc
     ${CMAKE_SOURCE_DIR}/src/net/eventloop.cc
@@ -34,7 +35,6 @@ add_library(tcp_channel_libs STATIC
     ${CMAKE_SOURCE_DIR}/src/net/rpc/rpc_closure.cc
     ${CMAKE_SOURCE_DIR}/src/net/tcp/tcp_client.cc
     ${CMAKE_SOURCE_DIR}/src/net/tcp/tcp_server.cc
-    
     ${CMAKE_SOURCE_DIR}/src/net/rpc/rpc_channel.cc
     ${CMAKE_SOURCE_DIR}/src/common/msg_id_utils.cc
     order.pb.cc

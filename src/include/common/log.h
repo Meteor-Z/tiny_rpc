@@ -20,6 +20,7 @@
 #include <semaphore.h>
 #include <string>
 #include <vector>
+#include "common/mutex.h"
 #include "fmt/core.h" ///< 需要这个
 #include "net/time/time_event.h"
 
@@ -28,33 +29,39 @@
  * @brief 根据xml格式进行调整的信息格式
  *
  */
-#define DEBUG_LOG(message)                                                                                             \
-    if (rpc::Logger::GET_GLOBAL_LOGGER()->get_log_level() <= rpc::LogLevel::Debug) {                                   \
-        std::unique_ptr<rpc::LogEvent> ptr = std::make_unique<rpc::LogEvent>(rpc::LogLevel::Debug);                    \
-        std::string new_message = ptr->get_log(__FILE__, __LINE__) + " " + std::string { message };                    \
-        rpc::Logger::GET_GLOBAL_LOGGER()->push_log(new_message);                                                       \
+#define DEBUG_LOG(message)                                                               \
+    if (rpc::Logger::GET_GLOBAL_LOGGER()->get_log_level() <= rpc::LogLevel::Debug) {     \
+        std::unique_ptr<rpc::LogEvent> ptr =                                             \
+            std::make_unique<rpc::LogEvent>(rpc::LogLevel::Debug);                       \
+        std::string new_message =                                                        \
+            ptr->get_log(__FILE__, __LINE__) + " " + std::string { message };            \
+        rpc::Logger::GET_GLOBAL_LOGGER()->push_log(new_message);                         \
     }
 
 /**
  * @brief 根据xml文件进行调整的信息格式
  *
  */
-#define INFO_LOG(message)                                                                                              \
-    if (rpc::Logger::GET_GLOBAL_LOGGER()->get_log_level() <= rpc::LogLevel::Info) {                                    \
-        std::unique_ptr<rpc::LogEvent> ptr = std::make_unique<rpc::LogEvent>(rpc::LogLevel::Info);                     \
-        std::string new_message = ptr->get_log(__FILE__, __LINE__) + " " + std::string { message };                    \
-        rpc::Logger::GET_GLOBAL_LOGGER()->push_log(new_message);                                                       \
+#define INFO_LOG(message)                                                                \
+    if (rpc::Logger::GET_GLOBAL_LOGGER()->get_log_level() <= rpc::LogLevel::Info) {      \
+        std::unique_ptr<rpc::LogEvent> ptr =                                             \
+            std::make_unique<rpc::LogEvent>(rpc::LogLevel::Info);                        \
+        std::string new_message =                                                        \
+            ptr->get_log(__FILE__, __LINE__) + " " + std::string { message };            \
+        rpc::Logger::GET_GLOBAL_LOGGER()->push_log(new_message);                         \
     }
 
 /**
  * @brief 错误信息，根据xml调整，是最高等级的信息调试
  *
  */
-#define ERROR_LOG(message)                                                                                             \
-    if (rpc::Logger::GET_GLOBAL_LOGGER()->get_log_level() <= rpc::LogLevel::Error) {                                   \
-        std::unique_ptr<rpc::LogEvent> ptr = std::make_unique<rpc::LogEvent>(rpc::LogLevel::Error);                    \
-        std::string new_message = ptr->get_log(__FILE__, __LINE__) + " " + std::string { message };                    \
-        rpc::Logger::GET_GLOBAL_LOGGER()->push_log(new_message);                                                       \
+#define ERROR_LOG(message)                                                               \
+    if (rpc::Logger::GET_GLOBAL_LOGGER()->get_log_level() <= rpc::LogLevel::Error) {     \
+        std::unique_ptr<rpc::LogEvent> ptr =                                             \
+            std::make_unique<rpc::LogEvent>(rpc::LogLevel::Error);                       \
+        std::string new_message =                                                        \
+            ptr->get_log(__FILE__, __LINE__) + " " + std::string { message };            \
+        rpc::Logger::GET_GLOBAL_LOGGER()->push_log(new_message);                         \
     }
 
 namespace rpc {
@@ -86,9 +93,11 @@ public:
      *
      * @param file_path 日志输出的文件路径
      * @param file_name 日志的名称
-     * @param m_file_max_size 最大的输出大小，如果大于这个大小，那么就会发生滚动， .1->.2->.3这样滚动
+     * @param m_file_max_size 最大的输出大小，如果大于这个大小，那么就会发生滚动，
+     * .1->.2->.3这样滚动
      */
-    AsyncLogger(const std::string& file_path, const std::string& file_name, int m_file_max_size);
+    AsyncLogger(const std::string& file_path, const std::string& file_name,
+                int m_file_max_size);
 
     /**
      * @brief 停止
@@ -110,15 +119,15 @@ public:
     void push_log_buffer(std::vector<std::string>& vec);
 
 private:
-    std::queue<std::vector<std::string>> m_buff {}; ///< buffer
-    std::string m_file_path {};                     ///< 文件路径
-    std::string m_file_name {};                     ///< 文件名
-    int m_file_max_size {};                         ///< 单个文件最大的大小
-    sem_t m_sempahore {};                           ///< 通知的信号量
+    std::queue<std::vector<std::string>> m_buffer {}; ///< buffer
+    std::string m_file_path {};                       ///< 文件路径
+    std::string m_file_name {};                       ///< 文件名
+    int m_file_max_size {};                           ///< 单个文件最大的大小
+    sem_t m_sempahore {};                             ///< 通知的信号量
 
-    pthread_t m_thread {};                 ///< 输出日志的当前线程
-    std::condition_variable m_condtion {}; ///< 条件变量
-    std::mutex m_mutex {};                 ///< 互斥锁，配合条件变量的使用
+    pthread_t m_thread {};        ///< 输出日志的当前线程
+    pthread_cond_t m_condtion {}; ///< 条件变量
+    Mutex m_mutex {};        ///< 互斥锁，配合条件变量的使用
 
     std::string m_date;           ///< 上次打印日志的文件日期
     FILE* m_file_handler {};      ///< 当前文件打开的的文件句柄

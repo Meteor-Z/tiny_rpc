@@ -15,9 +15,9 @@ public:
     void makeOrder(google::protobuf::RpcController* controller, const ::makeOrderRequest* request,
                    ::makeOrderResponse* response, ::google::protobuf::Closure* done) {
         // 测试超时的时间的限制
-        DEBUG_LOG("start sleep 5s");
+        // DEBUG_LOG("start sleep 5s");
         sleep(5);
-        DEBUG_LOG("end sleep 5s");
+        // DEBUG_LOG("end sleep 5s");
         if (request->price() < 10) {
             response->set_ret_code(-1);
             response->set_res_info("short balance");
