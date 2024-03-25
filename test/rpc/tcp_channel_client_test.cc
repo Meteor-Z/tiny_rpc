@@ -79,11 +79,11 @@ void test_rpc_channel_client() {
                                      request->ShortDebugString(),
                                      response->ShortDebugString()));
                 fmt::println("call rpc success, request = {}, response = {}",
-                            request->ShortDebugString(), response->ShortDebugString());
-                    // sleep(5);
+                             request->ShortDebugString(), response->ShortDebugString());
+                // sleep(5);
                 // 退出 loop循环
                 INFO_LOG("exit eventloop")
-                channel->get_client()->stop();
+                // channel->get_client()->stop();
                 // channel.reset();
 
                 // 业务逻辑

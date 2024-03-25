@@ -65,8 +65,9 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
     std::shared_ptr<google::protobuf::Service> service { (*iter).second };
 
     // 这里有可能发生内存泄漏
-    const google::protobuf::MethodDescriptor* method =
-        service->GetDescriptor()->FindMethodByName(method_name);
+    const google::protobuf::MethodDescriptor* method {
+        service->GetDescriptor()->FindMethodByName(method_name)
+    };
 
     // may be is error
     if (method == nullptr) {
@@ -77,9 +78,8 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
     }
 
     // 方法名
-    google::protobuf::Message* req_message = service->GetRequestPrototype(method).New();
-
-    DEBUG_LOG("2 到这里是对的");
+    google::protobuf::Message* req_message =
+        service->GetRequestPrototype(method).New();
 
     // 反序列化， pb_data 反序列化成 req_message;
     // 反序列化错误
@@ -95,13 +95,12 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
         }
         return;
     }
-    DEBUG_LOG("3 到这里是对的");
     INFO_LOG(fmt::format("request id [{}], get rpc request, info =[{}]",
                          req_protobuf_protocol->m_msg_id,
                          req_message->ShortDebugString()));
 
-    google::protobuf::Message* rsp_message = service->GetResponsePrototype(method).New();
-    DEBUG_LOG("4 这里是对的");
+    google::protobuf::Message* rsp_message =
+        service->GetResponsePrototype(method).New();
 
     //  virtual void CallMethod(const MethodDescriptor* method,
     //   RpcController* controller, const Message* request,
@@ -119,7 +118,7 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
                           rpc_controller.get_peer_addr()->to_string(),
                           rpc_controller.get_msg_id()));
 
-    // Rpc方法 CallMethod 
+    // Rpc方法 CallMethod
     service->CallMethod(method, &rpc_controller, req_message, rsp_message, nullptr);
 
     // 使用序列化
@@ -151,6 +150,11 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
 
     delete rsp_message;
     rsp_message = nullptr;
+
+    // if (method) {
+    //     delete method;
+    //     method = nullptr;
+    // }
 }
 
 void RpcDispatcher::register_service(std::shared_ptr<google::protobuf::Service> service) {
