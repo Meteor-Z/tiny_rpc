@@ -83,7 +83,7 @@ void test_rpc_channel_client() {
                 // sleep(5);
                 // 退出 loop循环
                 INFO_LOG("exit eventloop")
-                // channel->get_client()->stop();
+                channel->get_client()->stop();
                 // channel.reset();
 
                 // 业务逻辑

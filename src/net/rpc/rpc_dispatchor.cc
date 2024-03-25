@@ -25,7 +25,7 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
                                std::shared_ptr<AbstractProtocol> response,
                                TcpConnection* conection) {
 
-    // 智能指针转换
+    // 智能指针转换，如果以后有其他协议的话，
     std::shared_ptr<ProtobufProtocol> req_protobuf_protocol =
         std::dynamic_pointer_cast<ProtobufProtocol>(request);
 
@@ -61,13 +61,15 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
                            "service not found");
         return;
     }
-    DEBUG_LOG("1 到这里是对的");
+
     std::shared_ptr<google::protobuf::Service> service { (*iter).second };
 
-    // 这里有可能发生内存泄漏
-    const google::protobuf::MethodDescriptor* method {
+    // 这里有可能发生内存泄漏，妈的，为什么不析构掉？
+    std::unique_ptr<const google::protobuf::MethodDescriptor> method {
         service->GetDescriptor()->FindMethodByName(method_name)
     };
+
+    
 
     // may be is error
     if (method == nullptr) {
@@ -78,8 +80,9 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
     }
 
     // 方法名
-    google::protobuf::Message* req_message =
-        service->GetRequestPrototype(method).New();
+    std::unique_ptr<google::protobuf::Message> req_message {
+        service->GetRequestPrototype(method.get()).New()
+    };
 
     // 反序列化， pb_data 反序列化成 req_message;
     // 反序列化错误
@@ -89,18 +92,19 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
                               req_protobuf_protocol->m_method_name, service_name));
         set_protubuf_error(rsp_protobuf_protocol, ERROR_FAILED_DESERIALIZE,
                            "serialize error");
-        if (!req_message) {
-            delete req_message;
-            req_message = nullptr;
-        }
+        // if (!req_message) {
+        //     delete req_message;
+        //     req_message = nullptr;
+        // }
         return;
     }
     INFO_LOG(fmt::format("request id [{}], get rpc request, info =[{}]",
                          req_protobuf_protocol->m_msg_id,
                          req_message->ShortDebugString()));
 
-    google::protobuf::Message* rsp_message =
-        service->GetResponsePrototype(method).New();
+    std::unique_ptr<google::protobuf::Message> rsp_message {
+        service->GetResponsePrototype(method.get()).New()
+    };
 
     //  virtual void CallMethod(const MethodDescriptor* method,
     //   RpcController* controller, const Message* request,
@@ -119,7 +123,7 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
                           rpc_controller.get_msg_id()));
 
     // Rpc方法 CallMethod
-    service->CallMethod(method, &rpc_controller, req_message, rsp_message, nullptr);
+    service->CallMethod(method.get(), &rpc_controller, req_message.get(), rsp_message.get(), nullptr);
 
     // 使用序列化
     if (!rsp_message->SerializeToString(&(rsp_protobuf_protocol->m_pb_data))) {
@@ -128,14 +132,14 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
         set_protubuf_error(rsp_protobuf_protocol, ERROR_SERVICE_NOT_FOUND,
                            "serilize error");
 
-        if (!req_message) {
-            delete req_message;
-            req_message = nullptr;
-        }
-        if (!rsp_message) {
-            delete rsp_message;
-            rsp_message = nullptr;
-        }
+        // if (!req_message) {
+        //     delete req_message;
+        //     req_message = nullptr;
+        // }
+        // if (!rsp_message) {
+        //     delete rsp_message;
+        //     rsp_message = nullptr;
+        // }
         return;
     }
 
@@ -145,11 +149,11 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
     INFO_LOG(fmt::format("{} | dispatchor success!!!, request = {}, response = {}",
                          request->m_msg_id, req_message->ShortDebugString(),
                          req_message->ShortDebugString()));
-    delete req_message;
-    req_message = nullptr;
+    // delete req_message;
+    // req_message = nullptr;
 
-    delete rsp_message;
-    rsp_message = nullptr;
+    // delete rsp_message;
+    // rsp_message = nullptr;
 
     // if (method != nullptr) {
     //     delete method;
