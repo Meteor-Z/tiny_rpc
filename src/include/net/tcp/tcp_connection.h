@@ -21,6 +21,8 @@ write(): 将RPC相应发送到客户端
 
 */
 
+#pragma once
+
 #ifndef RPC_NET_TCP_TCP_CONNECTION_H
 #define RPC_NET_TCP_TCP_CONNECTION_H
 

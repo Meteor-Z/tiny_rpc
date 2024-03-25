@@ -14,8 +14,22 @@ namespace rpc {
 TcpServer::~TcpServer() { DEBUG_LOG("~TcpServer()"); }
 
 TcpServer::TcpServer(std::shared_ptr<IPv4NetAddr> local_addr) : m_local_addr(local_addr) {
-    // TODO():这里要有修改
-    init();
+    m_acceptor = std::make_shared<TcpAcceptor>(m_local_addr);
+
+    // 主线程的MainReactor 就是主线程的EventLoop
+    m_main_event_loop = EventLoop::Get_Current_Eventloop();
+
+    // io线程组要开多大，和当前的的CPU数量大小，
+    m_io_thread_group = std::make_shared<IOThreadGroup>(
+        std::max(std::thread::hardware_concurrency() / 2, 4u));
+
+    // 监听的客户端，有新连接的时候，就是可读事件
+    m_listen_fd_event = std::make_shared<FdEvent>(m_acceptor->get_listend_fd());
+    m_listen_fd_event->listen(FdEvent::TriggerEvent::IN_EVENT,
+                              std::bind(&TcpServer::on_accept, this));
+
+    // 将这个文件描述符加入到mainReactor里面，相当于处理请求了
+    m_main_event_loop->add_epoll_event(m_listen_fd_event);
 
     INFO_LOG(fmt::format("tcp server success on {}", m_local_addr->to_string()));
 }
@@ -26,7 +40,6 @@ void TcpServer::start() {
     m_main_event_loop->loop();
 }
 
-// TODO: 将 clientfd加入到io线程中;
 void TcpServer::on_accept() {
     // int client_fd = m_acceptor->accept();
 
@@ -34,7 +47,8 @@ void TcpServer::on_accept() {
     //     first: fd;          // 套接字
     //     second: IPv4NetAddr // 地址
     // };
-
+    
+    // 得到新连接
     std::pair<int, std::shared_ptr<IPv4NetAddr>> client = m_acceptor->accept();
     int client_fd = client.first;
     std::shared_ptr<IPv4NetAddr> peer_addr = client.second;
@@ -55,22 +69,5 @@ void TcpServer::on_accept() {
     INFO_LOG(fmt::format("tcp_server success get client, fd = {}", client_fd));
 }
 
-void TcpServer::init() {
-    m_acceptor = std::make_shared<TcpAcceptor>(m_local_addr);
-
-    // 主线程的MainReactor 就是主线程的EventLoop
-    m_main_event_loop = EventLoop::Get_Current_Eventloop();
-
-    // io线程组要开多大
-    size_t thread_number = std::max(std::thread::hardware_concurrency() / 2, 4u);
-    m_io_thread_group = std::make_shared<IOThreadGroup>(thread_number);
-
-    m_listen_fd_event = std::make_shared<FdEvent>(m_acceptor->get_listend_fd());
-    m_listen_fd_event->listen(FdEvent::TriggerEvent::IN_EVENT,
-                              std::bind(&TcpServer::on_accept, this));
-
-    // 加入到主Reactor里面
-    m_main_event_loop->add_epoll_event(m_listen_fd_event);
-}
 
 } // namespace rpc

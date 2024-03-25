@@ -1,4 +1,3 @@
-
 #include <memory>
 #include <mutex>
 #include "net/fd_event/fd_event_group.h"

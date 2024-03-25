@@ -15,6 +15,8 @@ write(): 将rpc相应发送给客户端
 其他error就是直接报错了。 并且两者都要去掉可写事件监听。
 */
 
+#pragma once
+
 #ifndef RPC_NET_TCP_TCP_CLIENT_H
 #define RPC_NET_TCP_TCP_CLIENT_H
 

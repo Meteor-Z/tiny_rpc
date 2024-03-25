@@ -15,8 +15,9 @@
 #include "net/wakeup_fd_event.h"
 
 namespace rpc {
-// 每一个线程独有的线程对象。
-static thread_local std::shared_ptr<EventLoop> thread_current_eventloop { nullptr };
+static thread_local std::shared_ptr<EventLoop> thread_current_eventloop {
+    nullptr
+}; ///< 每一个线程独有的EventLoop对象
 
 static constexpr int G_EPOLL_MAX_TIMEOUT { 10000 }; ///< epoll 最大的事件间隔
 

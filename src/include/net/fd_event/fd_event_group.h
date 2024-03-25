@@ -1,6 +1,6 @@
 /**
  * @file fd_event_group.h
- * @author liuzechen (liuzechen.coder@qq.com)
+ * @author lzc (liuzechen.coder@qq.com)
  * @brief 对FdEvent的再次封装 
  * @version 0.1
  * @date 2024-03-15
@@ -8,6 +8,8 @@
  * @copyright Copyright (c) 2024
  * 
  */
+
+#pragma once
 
 #ifndef RPC_NET_FD_EVENT_GROUP_H
 #define RPC_NET_FD_EVENT_GROUP_H

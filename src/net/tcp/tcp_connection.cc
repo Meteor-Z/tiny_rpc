@@ -1,6 +1,5 @@
 #include <cerrno>
 #include <cstddef>
-#include <google/protobuf/descriptor.h>
 #include <memory>
 #include <sys/socket.h>
 #include <unistd.h>

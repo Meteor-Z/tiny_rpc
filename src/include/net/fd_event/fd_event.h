@@ -60,7 +60,7 @@ public:
     std::function<void()> handler(TriggerEvent event_type);
 
     /**
-     * @brief 设置监听时间
+     * @brief 设置监听事件
      * 
      * @param event_type 事件类型
      * @param callback 要执行的函数
