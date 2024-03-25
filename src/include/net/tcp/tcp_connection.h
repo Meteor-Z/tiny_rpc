@@ -65,7 +65,8 @@ public:
     // buffer_size: 初始化buffer的大小
     // peer_addr: 地址
     TcpConnection(std::shared_ptr<EventLoop> event_loop, int fd, int buffer_size,
-                  std::shared_ptr<IPv4NetAddr> local_addr, std::shared_ptr<IPv4NetAddr> peer_addr,
+                  std::shared_ptr<IPv4NetAddr> local_addr,
+                  std::shared_ptr<IPv4NetAddr> peer_addr,
                   TcpConnectionType type = TcpConnectionType::TcpConnectionByServer);
 
     ~TcpConnection();
@@ -100,7 +101,8 @@ public:
     void push_send_message(std::shared_ptr<AbstractProtocol> message,
                            std::function<void(std::shared_ptr<AbstractProtocol>)> done);
 
-    void push_read_message(const std::string& req_id, std::function<void(std::shared_ptr<AbstractProtocol>)> done);
+    void push_read_message(const std::string& req_id,
+                           std::function<void(std::shared_ptr<AbstractProtocol>)> done);
 
     /**
      * @brief 得到本地地址
@@ -123,7 +125,9 @@ private:
     std::shared_ptr<TcpBuffer> m_in_buffer { nullptr };  ///< 接收缓冲区
     std::shared_ptr<TcpBuffer> m_out_buffer { nullptr }; ///< 发送缓冲区
 
-    std::shared_ptr<EventLoop> m_event_loop { nullptr }; ///< 当前指向的IO线程 当前主EventLoop函数
+    std::shared_ptr<EventLoop> m_event_loop {
+        nullptr
+    }; ///< 当前指向的IO线程 当前主EventLoop函数
 
     std::shared_ptr<FdEvent> m_fd_event { nullptr }; ///< 监听的文件描述符
 
@@ -131,17 +135,21 @@ private:
 
     TcpState m_state { TcpState::NotConnected }; // 连接状态
 
-    int m_fd { -1 }; // 指向的套接字
+    int m_fd { -1 }; ///< 指向的套接字
 
-    TcpConnectionType m_connection_type { TcpConnectionType::TcpConnectionByServer }; // 默认server类型
+    TcpConnectionType m_connection_type {
+        TcpConnectionType::TcpConnectionByServer
+    }; // 默认server类型
 
-    std::vector<std::pair<std::shared_ptr<AbstractProtocol>, std::function<void(std::shared_ptr<AbstractProtocol>)>>>
+    std::vector<std::pair<std::shared_ptr<AbstractProtocol>,
+                          std::function<void(std::shared_ptr<AbstractProtocol>)>>>
         m_write_dones;
 
     // AbstractProtocol::req_id 唯一的请求号
     // std::function: 回调函数
     // 使用map,方便找这个std::string的req_id
-    std::map<std::string, std::function<void(std::shared_ptr<AbstractProtocol>)>> m_read_dones;
+    std::map<std::string, std::function<void(std::shared_ptr<AbstractProtocol>)>>
+        m_read_dones;
 
     // std::shared_ptr<RpcDispatcher> m_dispatcher;
 };

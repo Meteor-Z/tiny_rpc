@@ -65,7 +65,7 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
     std::shared_ptr<google::protobuf::Service> service { (*iter).second };
 
     // 这里有可能发生内存泄漏，妈的，为什么不析构掉？
-    std::unique_ptr<const google::protobuf::MethodDescriptor> method {
+   const google::protobuf::MethodDescriptor* method {
         service->GetDescriptor()->FindMethodByName(method_name)
     };
 
@@ -81,7 +81,7 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
 
     // 方法名
     std::unique_ptr<google::protobuf::Message> req_message {
-        service->GetRequestPrototype(method.get()).New()
+        service->GetRequestPrototype(method).New()
     };
 
     // 反序列化， pb_data 反序列化成 req_message;
@@ -103,7 +103,7 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
                          req_message->ShortDebugString()));
 
     std::unique_ptr<google::protobuf::Message> rsp_message {
-        service->GetResponsePrototype(method.get()).New()
+        service->GetResponsePrototype(method).New()
     };
 
     //  virtual void CallMethod(const MethodDescriptor* method,
@@ -123,7 +123,7 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
                           rpc_controller.get_msg_id()));
 
     // Rpc方法 CallMethod
-    service->CallMethod(method.get(), &rpc_controller, req_message.get(), rsp_message.get(), nullptr);
+    service->CallMethod(method, &rpc_controller, req_message.get(), rsp_message.get(), nullptr);
 
     // 使用序列化
     if (!rsp_message->SerializeToString(&(rsp_protobuf_protocol->m_pb_data))) {
