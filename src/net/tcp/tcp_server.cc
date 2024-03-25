@@ -1,25 +1,23 @@
-#include <bits/iterator_concepts.h>
 #include <functional>
+#include <thread>
+#include <algorithm>
 #include "net/tcp/ipv4_net_addr.h"
 #include "net/tcp/tcp_connection.h"
 #include "net/tcp/tcp_server.h"
-#include "common/log.h"
-#include "net/eventloop.h"
+#include "net/tcp/tcp_acceptor.h"
 #include "net/fd_event/fd_event.h"
 #include "net/io_thread/io_thread_group.h"
-#include "net/tcp/tcp_acceptor.h"
+#include "net/eventloop.h"
+#include "common/log.h"
 
 namespace rpc {
-TcpServer::~TcpServer() {
-    DEBUG_LOG("~TcpServer()");
-}
+TcpServer::~TcpServer() { DEBUG_LOG("~TcpServer()"); }
 
 TcpServer::TcpServer(std::shared_ptr<IPv4NetAddr> local_addr) : m_local_addr(local_addr) {
     // TODO():这里要有修改
     init();
 
-    INFO_LOG(
-        fmt::format("tcp server success on {}", m_local_addr->to_string()));
+    INFO_LOG(fmt::format("tcp server success on {}", m_local_addr->to_string()));
 }
 
 void TcpServer::start() {
@@ -42,21 +40,19 @@ void TcpServer::on_accept() {
     std::shared_ptr<IPv4NetAddr> peer_addr = client.second;
     ++m_client_counts;
 
+    // 在这里得到对应的某一个线程
     std::shared_ptr<IOThread> io_thread = m_io_thread_group->get_io_thread();
 
     //  构造
-    std::shared_ptr<TcpConnection> connection =
-        std::make_shared<TcpConnection>(io_thread->get_eventloop(), client_fd, 128, m_local_addr, peer_addr);
+    std::shared_ptr<TcpConnection> connection = std::make_shared<TcpConnection>(
+        io_thread->get_eventloop(), client_fd, 128, m_local_addr, peer_addr);
 
     // 设置已经连接
     connection->set_state(TcpConnection::TcpState::Connected);
-    
-    
+
     // 不会析构
     m_client.insert(connection);
-    INFO_LOG(
-        fmt::format("tcp_server success get client, fd = {}", client_fd));
-
+    INFO_LOG(fmt::format("tcp_server success get client, fd = {}", client_fd));
 }
 
 void TcpServer::init() {
@@ -65,8 +61,9 @@ void TcpServer::init() {
     // 主线程的MainReactor 就是主线程的EventLoop
     m_main_event_loop = EventLoop::Get_Current_Eventloop();
 
-    // io线程组
-    m_io_thread_group = std::make_shared<IOThreadGroup>(4);
+    // io线程组要开多大
+    size_t thread_number = std::max(std::thread::hardware_concurrency() / 2, 4u);
+    m_io_thread_group = std::make_shared<IOThreadGroup>(thread_number);
 
     m_listen_fd_event = std::make_shared<FdEvent>(m_acceptor->get_listend_fd());
     m_listen_fd_event->listen(FdEvent::TriggerEvent::IN_EVENT,

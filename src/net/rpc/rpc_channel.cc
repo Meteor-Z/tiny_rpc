@@ -66,7 +66,7 @@ void RpcChannel::CallMethod(const google::protobuf::MethodDescriptor* method,
         my_controller->set_error(ERROR_RPC_CHANNEL_NOT_INIT, error_info);
         return;
     }
-    // 序列化
+    // 在发送之前，将其序列化，
     if (!request->SerializeToString(&(req_protocol->m_pb_data))) {
         std::string error_info = "failed to serizlize";
         my_controller->set_error(ERROR_FAILED_SERIALIZE, error_info);

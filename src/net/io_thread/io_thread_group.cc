@@ -21,6 +21,7 @@ void IOThreadGroup::start() {
 }
 
 std::shared_ptr<IOThread> IOThreadGroup::get_io_thread() {
+    // 找到最小的文件描述符的eventloop，然后加入到这个里面
     int ans_idx = 0;
     int number_fd = m_io_thread_groups[0]->get_evnetloop_task_size();
 
