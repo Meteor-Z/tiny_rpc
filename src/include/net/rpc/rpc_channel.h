@@ -49,13 +49,13 @@ public:
               std::shared_ptr<google::protobuf::Closure> done);
 
     /**
-     * @brief
+     * @brief 客户端的函数，调用这个函数，跟调用服务端的CallMethod是差不多的，
      *
-     * @param method
-     * @param controller
-     * @param request
-     * @param response
-     * @param done
+     * @param method 方法名
+     * @param controller 控制
+     * @param request 请求
+     * @param response 回应
+     * @param done 回调函数
      */
     void CallMethod(const google::protobuf::MethodDescriptor* method, google::protobuf::RpcController* controller,
                     const google::protobuf::Message* request, google::protobuf::Message* response,
