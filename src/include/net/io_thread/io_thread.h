@@ -39,6 +39,9 @@ public:
      */
     std::shared_ptr<EventLoop> get_eventloop() const noexcept;
 
+    int get_evnetloop_task_size();
+
+
 public:
     static void* Main(void* arg);
 

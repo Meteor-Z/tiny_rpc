@@ -28,6 +28,11 @@ namespace rpc {
  *
  */
 class EventLoop : public std::enable_shared_from_this<EventLoop> {
+
+public:
+    // 得到全局对象EventLoop
+    static std::shared_ptr<EventLoop> Get_Current_Eventloop();
+
 public:
     /**
      * @brief Construct a new Event Loop object
@@ -35,7 +40,7 @@ public:
      */
     /**
      * @brief Construct a new Event Loop object
-     * 
+     *
      */
     EventLoop();
 
@@ -92,9 +97,7 @@ public:
      */
     bool is_looping() const noexcept;
 
-public:
-    // 得到全局对象EventLoop
-    static std::shared_ptr<EventLoop> Get_Current_Eventloop();
+    int get_pending_tasks_size();
 
 private:
     // 处理wake_up事件
@@ -128,16 +131,16 @@ private:
     void add_task(std::function<void()> task, bool is_wake_up = false);
 
 private:
-    pid_t m_thread_id { 0 };                                      ///< 线程号
-    int m_epoll_fd { 0 };                                         ///< epoll文件描述符句柄
-    int m_wakeup_fd { 0 };                                        ///< 唤醒的文件描述符
+    pid_t m_thread_id { 0 }; ///< 线程号
+    int m_epoll_fd { 0 };    ///< epoll文件描述符句柄
+    int m_wakeup_fd { 0 };   ///< 唤醒的文件描述符
     std::shared_ptr<WakeUpFdEvent> m_wakeup_fd_event { nullptr }; ///< 要进行唤醒
-    bool m_stop_flag { false };                                   ///< eventloop是否暂停？
-    std::set<int> m_listen_fds;                                   ///< 正在监听的套接字
-    std::queue<std::function<void()>> m_pending_tasks;            ///< 待执行的任务队列。
-    std::mutex m_mtx;                                             ///< 互斥锁
-    std::shared_ptr<Timer> m_timer { nullptr };                   ///< 定时任务
-    bool m_is_looping { false };                                  ///< 是否正在loop中
+    bool m_stop_flag { false };                        ///< eventloop是否暂停？
+    std::set<int> m_listen_fds;                        ///< 正在监听的套接字
+    std::queue<std::function<void()>> m_pending_tasks; ///< 待执行的任务队列。
+    std::mutex m_mtx;                                  ///< 互斥锁
+    std::shared_ptr<Timer> m_timer { nullptr };        ///< 定时任务
+    bool m_is_looping { false };                       ///< 是否正在loop中
 };
 } // namespace rpc
 

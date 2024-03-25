@@ -8,7 +8,9 @@
 #include "net/eventloop.h"
 
 namespace rpc {
-std::shared_ptr<EventLoop> IOThread::get_eventloop() const noexcept { return m_event_loop; }
+std::shared_ptr<EventLoop> IOThread::get_eventloop() const noexcept {
+    return m_event_loop;
+}
 
 // 将信号量post一下就可以直接启动了
 void IOThread::start() { sem_post(&m_start_semphore); }
@@ -36,7 +38,7 @@ IOThread::IOThread() {
 
     assert(rt == 0);
 }
-
+int IOThread::get_evnetloop_task_size() { return m_event_loop->get_pending_tasks_size(); }
 IOThread::~IOThread() {
     m_event_loop->stop();
 

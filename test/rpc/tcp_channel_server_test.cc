@@ -20,7 +20,7 @@ public:
         // DEBUG_LOG("end sleep 5s");
         if (request->price() > 10) {
             response->set_ret_code(-1);
-            response->set_res_info("short balance");
+            response->set_res_info("shahahhaha");
             return;
         }
         response->set_order_id("20230514");
@@ -37,7 +37,6 @@ void test_tcp_server() {
 int main() {
     rpc::LogConfig::SET_GLOBAL_CONFIG("/home/lzc/code/tiny_rpc/conf/rpc.xml");
 
-    std::cout << "yes" << std::endl;
     rpc::Logger::INIT_GLOBAL_LOGGER();
 
     // 注册方法
