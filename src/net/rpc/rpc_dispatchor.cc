@@ -151,6 +151,11 @@ void RpcDispatcher::dispatcher(std::shared_ptr<AbstractProtocol> request,
     delete rsp_message;
     rsp_message = nullptr;
 
+    // if (method != nullptr) {
+    //     delete method;
+    //     method = nullptr;
+    // }
+
     // if (method) {
     //     delete method;
     //     method = nullptr;
