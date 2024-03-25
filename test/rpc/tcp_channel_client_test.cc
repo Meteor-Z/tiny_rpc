@@ -1,4 +1,5 @@
 #include <memory>
+#include <unistd.h>
 #include "fmt/core.h"
 #include "net/rpc/rpc_channel.h"
 #include "net/rpc/rpc_closure.h"
@@ -77,11 +78,13 @@ void test_rpc_channel_client() {
                 INFO_LOG(fmt::format("call rpc success, request = {}, response = {}",
                                      request->ShortDebugString(),
                                      response->ShortDebugString()));
-
+                fmt::println("call rpc success, request = {}, response = {}",
+                            request->ShortDebugString(), response->ShortDebugString());
+                    sleep(5);
                 // 退出 loop循环
                 INFO_LOG("exit eventloop")
                 channel->get_client()->stop();
-                channel.reset();
+                // channel.reset();
 
                 // 业务逻辑
             } else {

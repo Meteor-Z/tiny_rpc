@@ -7,6 +7,7 @@
 #include <semaphore.h>
 #include <sys/select.h>
 #include <chrono>
+#include <iostream>
 #include <memory>
 #include <mutex>
 #include <queue>
@@ -268,6 +269,7 @@ void* AsyncLogger::Loop(void* arg) {
 
         for (auto& item : tmp) {
             item += '\n';
+            std::cout << item;
             if (!item.empty()) {
                 fwrite(item.c_str(), 1, item.size(), logger->m_file_handler);
             }
