@@ -6,10 +6,15 @@ namespace rpc {
 template <typename T>
 class ScopeMutex {
 public:
-    ScopeMutex(T& mutex) : m_mutex(mutex) {
+    explicit ScopeMutex(T& mutex) : m_mutex(mutex) {
         m_mutex.lock();
         m_is_lock = true;
     }
+
+    ScopeMutex(T&&) = delete;
+    ScopeMutex& operator=(const ScopeMutex&) = delete;
+    ScopeMutex& operator=(ScopeMutex&&) = delete;
+
     ~ScopeMutex() {
         m_mutex.unlock();
         m_is_lock = false;
@@ -34,7 +39,12 @@ private:
 
 class Mutex {
 public:
-    Mutex();
+    explicit Mutex();
+
+    Mutex(const Mutex&) = delete;
+    Mutex(Mutex&&) = delete;
+    Mutex& operator=(const Mutex&) = delete;
+    Mutex& operator=(Mutex&&) = delete;
 
     ~Mutex();
 
@@ -43,6 +53,7 @@ public:
     void unlock();
 
     pthread_mutex_t* get_mutex();
+
 private:
     pthread_mutex_t m_mutex {};
 };

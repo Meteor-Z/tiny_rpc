@@ -1,6 +1,6 @@
 #include <memory>
-#include <google/protobuf/descriptor.h>
-#include <google/protobuf/message.h>
+#include "google/protobuf/descriptor.h"
+#include "google/protobuf/message.h"
 #include "net/rpc/rpc_channel.h"
 #include "common/error_code.h"
 #include "common/msg_id_utils.h"
