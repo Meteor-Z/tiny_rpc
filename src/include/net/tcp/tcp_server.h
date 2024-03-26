@@ -12,6 +12,7 @@
  * @copyright Copyright (c) 2024
  *
  */
+#pragma once
 
 #ifndef RPC_NET_TCP_TCP_SERVER_H
 #define RPC_NET_TCP_TCP_SERVER_H
@@ -31,13 +32,22 @@ public:
     TcpServer(std::shared_ptr<IPv4NetAddr> local_addr);
     ~TcpServer();
 
-    // 开启server端的EventLoop
+    TcpServer() = delete;
+    TcpServer(const TcpServer&) = delete;
+    TcpServer(TcpServer&&) = delete;
+    TcpServer& operator=(const TcpServer&) = delete;
+    TcpServer& operator=(TcpServer&&) = delete;
+
+    /**
+     * @brief 开始循环，服务端的EventLoop循环
+     *
+     */
     void start();
 
 private:
     /**
      * @brief 客户端连接之后，要执行的函数，
-     * 
+     *
      */
     void on_accept();
 

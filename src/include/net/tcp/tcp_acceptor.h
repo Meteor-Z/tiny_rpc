@@ -14,10 +14,12 @@
  *  socket()            bind()            listen()         accept()
  *   创建一个监听套接字     绑定到一个端口上     变成监听套接字     一直进行监听
  */
+#pragma once
 
 #ifndef RPC_NET_TCP_TCP_ACCEPTOR_H
 #define RPC_NET_TCP_TCP_ACCEPTOR_H
 
+#include <google/protobuf/arenastring.h>
 #include <memory>
 #include <net/tcp/ipv4_net_addr.h>
 
@@ -32,7 +34,10 @@ public:
 
     ~TcpAcceptor();
 
-    // return : pair<套接字，地址>
+    TcpAcceptor(const TcpAcceptor&) = delete;
+    TcpAcceptor(TcpAcceptor&&) = delete;
+    TcpAcceptor& operator=(const TcpAcceptor&) = delete;
+    TcpAcceptor& operator=(TcpAcceptor&&) = delete;
 
     /**
      * @brief 封装的是底层accept()函数，返回的是套接字和相关地址

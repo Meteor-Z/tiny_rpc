@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef RPC_NET_TCP_STRING_PROTOCOL_H
 #define RPC_NET_TCP_STRING_PROTOCOL_H
 

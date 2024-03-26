@@ -32,23 +32,28 @@ write(): 将rpc相应发送给客户端
 namespace rpc {
 class TcpClient {
 public:
-    
     explicit TcpClient(std::shared_ptr<IPv4NetAddr> peer_addr);
+
+    TcpClient(const TcpClient&) = delete;
+    TcpClient(TcpClient&&) = delete;
+
+    TcpClient& operator=(const TcpClient&) = delete;
+    TcpClient& operator=(TcpClient&&) = delete;
 
     ~TcpClient();
 
     /**
      * @brief 异步的进行连接
-     * 
+     *
      * @param done 如果connect(),成功，那么donw就会成功执行
      */
     void connect(std::function<void()> done);
 
     /**
      * @brief 异步的发送message,
-     * 
+     *
      * @param message 协议结构
-     * @param done 
+     * @param done
      */
     void write_message(std::shared_ptr<AbstractProtocol> message,
                        std::function<void(std::shared_ptr<AbstractProtocol>)> done);
@@ -62,7 +67,8 @@ public:
      * @param req_id 请求号
      * @param done 执行的回调函数
      */
-    void read_message(const std::string& req_id, std::function<void(std::shared_ptr<AbstractProtocol>)> done);
+    void read_message(const std::string& req_id,
+                      std::function<void(std::shared_ptr<AbstractProtocol>)> done);
 
     /**
      * @brief 客户端能够停止下来，不要一直循环

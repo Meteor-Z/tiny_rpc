@@ -73,6 +73,13 @@ public:
 
     ~TcpConnection();
 
+    TcpConnection() = delete;
+    TcpConnection(const TcpConnection&) = delete;
+    TcpConnection(TcpConnection&&) = delete;
+    
+    TcpConnection& operator=(const TcpConnection&) = delete;
+    TcpConnection& operator=(TcpConnection&&) = delete;
+
     // 可读时间发生之后就会执行这个函数
     void on_read();
 

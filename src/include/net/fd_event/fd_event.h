@@ -8,6 +8,7 @@
  * @copyright Copyright (c) 2024
  *
  */
+#pragma once
 
 #ifndef RPC_NET_FD_EVENT_FD_EVENT_H
 #define RPC_NET_FD_EVENT_FD_EVENT_H
@@ -24,7 +25,7 @@ class FdEvent {
 public:
     /**
      * @brief 触发的可读事件
-     * 
+     *
      */
     enum class TriggerEvent {
         IN_EVENT = EPOLLIN,    ///< epollin
@@ -41,19 +42,24 @@ public:
 
     /**
      * @brief Construct a new Fd Event object
-     * 
+     *
      */
     FdEvent() = default;
-    
+
+    // FdEvent(const FdEvent&) = delete;
+    // FdEvent(FdEvent&&) = delete;
     /**
      * @brief Destroy the Fd Event object
-     * 
+     *
      */
     ~FdEvent();
 
+    // FdEvent& operator=(const FdEvent&) = delete;
+    // FdEvent& operator=(FdEvent&&) = delete;
+
     /**
      * @brief 处理相关事件
-     * 
+     *
      * @param event_type 事件类型
      * @return std::function<void()> 返回要执行的函数
      */
@@ -61,7 +67,7 @@ public:
 
     /**
      * @brief 设置监听事件
-     * 
+     *
      * @param event_type 事件类型
      * @param callback 要执行的函数
      * @param error_callback 错误的时候要执行的函数
@@ -71,8 +77,8 @@ public:
 
     /**
      * @brief 取消监听
-     * 
-     * @param type_event 
+     *
+     * @param type_event
      */
     void cancel(TriggerEvent type_event);
 

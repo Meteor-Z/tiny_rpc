@@ -9,9 +9,12 @@
  *
  */
 
+#pragma once
+
 #ifndef RPC_NET_EVENTLOOP_H
 #define RPC_NET_EVENTLOOP_H
 
+#include <cmath>
 #include <functional>
 #include <memory>
 #include <mutex>
@@ -42,10 +45,14 @@ public:
      * @brief Construct a new Event Loop object
      *
      */
-    EventLoop();
+    explicit EventLoop();
 
     ~EventLoop();
 
+    EventLoop(const EventLoop&) = delete;
+    EventLoop(EventLoop&&) = delete;
+    EventLoop& operator=(const EventLoop&) = delete;
+    EventLoop& operator=(EventLoop&&) = delete;
     /**
      * @brief loop循环启动
      *

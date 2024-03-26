@@ -8,6 +8,9 @@
  * @copyright Copyright (c) 2024
  *
  */
+
+#pragma once
+
 #ifndef RPC_NET_IO_THREAD_GROUP_H
 #define RPC_NET_IO_THREAD_GROUP_H
 

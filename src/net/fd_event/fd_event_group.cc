@@ -1,14 +1,15 @@
 #include <memory>
 #include <mutex>
 #include "net/fd_event/fd_event_group.h"
+#include "common/log.h"
 #include "net//fd_event/fd_event.h"
 
 namespace rpc {
-constexpr double FD_EVENT_GROUP_EXPEND_FACTOR = 1.5f;
+constexpr double FD_EVENT_GROUP_EXPEND_FACTOR { 1.5f }; ///< 扩大因素
 
 static std::shared_ptr<FdEventGroup> g_fd_event_group { nullptr };
 
-FdEventGroup::~FdEventGroup() {}
+FdEventGroup::~FdEventGroup() { INFO_LOG("~FdEventGroup::~FdEventGroup()"); }
 
 FdEventGroup::FdEventGroup(int size) : m_size(size) {
     for (int i = 0; i < m_size; i++) {

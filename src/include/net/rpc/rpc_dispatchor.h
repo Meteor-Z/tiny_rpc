@@ -13,6 +13,7 @@ service OrderService {
 5. func(request, response)
 6. 将 response 对象序列化成 pb_data, 做 encode 然后塞入 buffer 里面，就会发送回包了。
 */
+#pragma once
 
 #ifndef RPC_NET_RPC_RPC_DISPATCHOR_H
 #define RPC_NET_RPC_RPC_DISPATCHOR_H
@@ -30,7 +31,14 @@ class TcpConnection;
 class RpcDispatcher {
 public:
     static std::shared_ptr<RpcDispatcher> GET_RPC_DISPATCHER();
+
 public:
+    explicit RpcDispatcher() = default;
+    RpcDispatcher(const RpcDispatcher&) = delete;
+    RpcDispatcher(RpcDispatcher&&) = delete;
+    RpcDispatcher& operator=(const RpcDispatcher&) = delete;
+    RpcDispatcher& operator=(RpcDispatcher&&) = delete;
+
     /**
      * @brief 进行分发,在这里就会将数据反序列化
      *

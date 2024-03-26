@@ -8,6 +8,7 @@
  * @copyright Copyright (c) 2024
  *
  */
+#pragma once
 
 #ifndef RPC_NET_RPC_RPC_CONTROLLER_H
 #define RPC_NET_RPC_RPC_CONTROLLER_H

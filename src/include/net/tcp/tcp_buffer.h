@@ -8,6 +8,7 @@
  * @copyright Copyright (c) 2024
  *
  */
+#pragma once
 
 #ifndef RPC_NET_TCP_BUFFER_H
 #define RPC_NET_TCP_BUFFER_H

@@ -8,6 +8,9 @@
  * @copyright Copyright (c) 2024
  *
  */
+
+#pragma once
+
 #ifndef RPC_NET_IO_THREAD_H
 #define RPC_NET_IO_THREAD_H
 
@@ -49,8 +52,8 @@ public:
 
     /**
      * @brief 获取任务的数量
-     * 
-     * @return int 
+     *
+     * @return int
      */
     int get_evnetloop_task_size();
 

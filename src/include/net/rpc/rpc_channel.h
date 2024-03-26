@@ -9,6 +9,8 @@
  *
  */
 
+#pragma once
+
 #ifndef RPC_NET_RPC_RPC_CHANNEL_H
 #define RPC_NET_RPC_RPC_CHANNEL_H
 
@@ -21,7 +23,8 @@
 #include <google/protobuf/stubs/callback.h>
 
 namespace rpc {
-class RpcChannel : public google::protobuf::RpcChannel, public std::enable_shared_from_this<RpcChannel> {
+class RpcChannel : public google::protobuf::RpcChannel,
+                   public std::enable_shared_from_this<RpcChannel> {
 public:
     /**
      * @brief Construct a new Rpc Channel object
@@ -36,6 +39,11 @@ public:
      */
     ~RpcChannel();
 
+    RpcChannel(const RpcChannel&) = delete;
+    RpcChannel(RpcChannel&&) = delete;
+    RpcChannel& operator=(const RpcChannel&) = delete;
+    RpcChannel& operator=(RpcChannel&&) = delete;
+
     /**
      * @brief 初始化方法，保存各个对象的智能指针
      *
@@ -45,7 +53,8 @@ public:
      * @param done
      */
     void init(std::shared_ptr<google::protobuf::RpcController> controller,
-              std::shared_ptr<google::protobuf::Message> req, std::shared_ptr<google::protobuf::Message> rsp,
+              std::shared_ptr<google::protobuf::Message> req,
+              std::shared_ptr<google::protobuf::Message> rsp,
               std::shared_ptr<google::protobuf::Closure> done);
 
     /**
@@ -57,8 +66,10 @@ public:
      * @param response 回应
      * @param done 回调函数
      */
-    void CallMethod(const google::protobuf::MethodDescriptor* method, google::protobuf::RpcController* controller,
-                    const google::protobuf::Message* request, google::protobuf::Message* response,
+    void CallMethod(const google::protobuf::MethodDescriptor* method,
+                    google::protobuf::RpcController* controller,
+                    const google::protobuf::Message* request,
+                    google::protobuf::Message* response,
                     google::protobuf::Closure* done) override;
 
     std::shared_ptr<google::protobuf::RpcController> get_controller();

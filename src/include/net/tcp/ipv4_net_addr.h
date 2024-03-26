@@ -8,6 +8,7 @@
  * @copyright Copyright (c) 2024
  *
  */
+#pragma once
 
 #ifndef RPC_NET_TCP_IPV4_NET_ADDR_H
 #define RPC_NET_TCP_IPV4_NET_ADDR_H
@@ -36,31 +37,37 @@ namespace rpc {
 
 /**
  * @brief Ipv4的套阶层 C-Style的封装
- * 
+ *
  */
 class IPv4NetAddr {
 public:
     /**
      * @brief Construct a new IPv4NetAddr object
-     * 
+     *
      * @param ip ip地址
      * @param port 端口号
      */
     IPv4NetAddr(std::string_view ip, uint16_t port);
-    
+
     /**
      * @brief Construct a new IPv4NetAddr object
-     * 
+     *
      * @param addr 地址 整合一起的地址
      */
     IPv4NetAddr(std::string_view addr);
 
     /**
      * @brief Construct a new IPv4NetAddr object
-     * 
+     *
      * @param addr 通过 sockaddr_in 初始化地址
      */
     IPv4NetAddr(sockaddr_in addr);
+
+    IPv4NetAddr() = delete;
+    IPv4NetAddr(const IPv4NetAddr&) = delete;
+    IPv4NetAddr(IPv4NetAddr&&) = delete;
+    IPv4NetAddr& operator=(const IPv4NetAddr&) = delete;
+    IPv4NetAddr& operator=(IPv4NetAddr&&) = delete;
 
     sockaddr* get_sock_addr() noexcept;
 
@@ -75,7 +82,7 @@ public:
 
     /**
      * @brief 格式化
-     * 
+     *
      * @return std::string 格式化得到的字符串
      * @note 差不多是 127.0.0.1:1234 这样子
      */
@@ -83,7 +90,7 @@ public:
 
     /**
      * @brief 检验合法性
-     * 
+     *
      * @return true 正确
      * @return false 错误
      */

@@ -26,11 +26,23 @@ namespace rpc {
  */
 class FdEventGroup {
 public:
-    FdEventGroup(int size);
+    explicit FdEventGroup(int size);
 
     ~FdEventGroup();
+    
+    FdEventGroup(const FdEventGroup&) = delete;
+    FdEventGroup(FdEventGroup&&) = delete;
+    FdEventGroup& operator=(const FdEventGroup&) = delete;
+    FdEventGroup& operator=(FdEventGroup&&) = delete;    
 
-    // 得到事件，如果有，就返回，如果没有，就创建再返回
+
+
+    /**
+     * @brief Get the fd event object
+     * 
+     * @param fd 
+     * @return std::shared_ptr<FdEvent> 文件描述符
+     */
     std::shared_ptr<FdEvent> get_fd_event(int fd);
 
 public:

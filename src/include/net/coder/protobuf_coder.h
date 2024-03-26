@@ -8,6 +8,8 @@
  * @copyright Copyright (c) 2024
  * 
  */
+ #pragma once
+
 #ifndef RPC_NET_CODER_PROTOBUF_CODER_H
 #define RPC_NET_CODER_PROTOBUF_CODER_H
 

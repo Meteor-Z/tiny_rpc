@@ -18,6 +18,7 @@ protobuf字节序
 
 
 */
+#pragma once
 
 #ifndef RPC_NET_CODER_PROTOBUF_PROTOCOL_H
 #define RPC_NET_CODER_PROTOBUF_PROTOCOL_H
@@ -31,6 +32,14 @@ struct ProtobufProtocol : public AbstractProtocol {
 public:
     const static char s_start = 0x02; ///< 开始符
     const static char s_end = 0x03;   ///< 结束符
+public:
+    explicit ProtobufProtocol() = default;
+    ~ProtobufProtocol() = default;
+    ProtobufProtocol(const ProtobufProtocol&) = delete;
+    ProtobufProtocol(ProtobufProtocol&&) = delete;
+    ProtobufProtocol& operator=(const ProtobufProtocol&) = delete;
+    ProtobufProtocol& operator=(ProtobufProtocol&&) = delete;
+
 public:
     // std::string m_msg_id { };     ///< 请求id, 继承于父类
     int32_t m_pk_len { 0 };          ///< 整包长度

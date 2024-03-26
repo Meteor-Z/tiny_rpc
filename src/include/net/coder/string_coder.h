@@ -2,6 +2,7 @@
 abstract_coder的实现类
 是std::string的实现
 */
+#pragma once
 
 #ifndef RPC_NET_TCP_STRING_CODER_H
 #define RPC_NET_TCP_STRING_CODER_H

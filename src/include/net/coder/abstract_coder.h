@@ -18,6 +18,8 @@
 具体功能交给每一个子类实现
 */
 
+#pragma once
+
 #ifndef RPC_NET_TCP_ABSTRACT_CODER_H
 #define RPC_NET_TCP_ABSTRACT_CODER_H
 
@@ -35,7 +37,15 @@ public:
     // 解码
     virtual void decode(std::vector<std::shared_ptr<AbstractProtocol>>& out_messages,
                         std::shared_ptr<TcpBuffer> buffer) = 0;
-    virtual ~AbstractCoder() {}
+
+    AbstractCoder() = default;
+    virtual ~AbstractCoder() = default;
+
+    AbstractCoder(const AbstractCoder&) = delete;
+    AbstractCoder(AbstractCoder&&) = delete;
+
+    AbstractCoder& operator=(const AbstractCoder&) = delete;
+    AbstractCoder& operator=(AbstractCoder&&) = delete;    
 };
 } // namespace rpc
 

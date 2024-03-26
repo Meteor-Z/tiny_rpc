@@ -9,6 +9,8 @@
  *
  */
 
+#pragma once
+
 #ifndef RPC_NET_TIMER_H
 #define RPC_NET_TIMER_H
 
@@ -24,30 +26,35 @@ public:
     Timer();
     ~Timer();
 
+    Timer(const Timer&) = delete;
+    Timer(Timer&&) = delete;
+    Timer& operator=(const Timer&) = delete;
+    Timer& operator=(Timer&&) = delete;
+
     /**
      * @brief 添加事件
-     * 
+     *
      * @param event 事件
      */
     void add_time_event(std::shared_ptr<TimerEvent> event);
 
     /**
      * @brief 删除定时事件
-     * 
+     *
      * @param event 事件
      */
     void delete_time_event(std::shared_ptr<TimerEvent> event);
 
     /**
      * @brief 发生相关事件的时候才会执行
-     * 
+     *
      */
     void on_timer();
 
 private:
     /**
      * @brief 重新设置时间
-     * 
+     *
      */
     void reset_arrive_time();
 
