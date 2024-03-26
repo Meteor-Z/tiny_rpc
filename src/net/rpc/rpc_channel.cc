@@ -1,12 +1,12 @@
 #include <memory>
 #include "google/protobuf/descriptor.h"
 #include "google/protobuf/message.h"
-#include "net/rpc/rpc_channel.h"
 #include "common/error_code.h"
 #include "common/msg_id_utils.h"
 #include "common/log.h"
 #include "net/coder/abstract_protocol.h"
 #include "net/coder/protobuf_protocol.h"
+#include "net/rpc/rpc_channel.h"
 #include "net/rpc/rpc_controller.h"
 #include "net/tcp/tcp_client.h"
 #include "net/time/time_event.h"
@@ -40,6 +40,8 @@ void RpcChannel::CallMethod(const google::protobuf::MethodDescriptor* method,
 
     std::shared_ptr<ProtobufProtocol> req_protocol = std::make_shared<ProtobufProtocol>();
     RpcController* my_controller = dynamic_cast<RpcController*>(controller);
+
+
 
     if (!my_controller) {
         ERROR_LOG("RpcController cconver error");

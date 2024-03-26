@@ -19,7 +19,15 @@
 namespace rpc {
 class IOThread {
 public:
-    IOThread();
+    static void* Main(void* arg);
+
+public:
+    explicit IOThread();
+
+    IOThread(const IOThread&) = delete;
+    IOThread(IOThread&&) = delete;
+    IOThread& operator=(const IOThread&) = delete;
+    IOThread& operator=(IOThread&&) = delete;
 
     ~IOThread();
 
@@ -34,16 +42,17 @@ public:
 
     /**
      * @brief 得到当前的EventLoop
-     * 
+     *
      * @return std::shared_ptr<EventLoop> 当前的EventLoop对象
      */
     std::shared_ptr<EventLoop> get_eventloop() const noexcept;
 
+    /**
+     * @brief 获取任务的数量
+     * 
+     * @return int 
+     */
     int get_evnetloop_task_size();
-
-
-public:
-    static void* Main(void* arg);
 
 private:
     pid_t m_thread_id { -1 };                            ///< 线程号

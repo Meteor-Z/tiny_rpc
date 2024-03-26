@@ -28,7 +28,13 @@ namespace rpc {
  */
 class TcpBuffer {
 public:
-    TcpBuffer(int size);
+    explicit TcpBuffer(int size);
+
+    TcpBuffer(const TcpBuffer&) = delete;
+    TcpBuffer(TcpBuffer&&) = delete;
+    TcpBuffer& operator=(const TcpBuffer&) = delete;
+    TcpBuffer& operator=(TcpBuffer&&) = delete;
+
     ~TcpBuffer();
 
     // 可以读的字节数

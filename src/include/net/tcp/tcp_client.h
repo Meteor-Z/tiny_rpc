@@ -32,7 +32,8 @@ write(): 将rpc相应发送给客户端
 namespace rpc {
 class TcpClient {
 public:
-    TcpClient(std::shared_ptr<IPv4NetAddr> peer_addr);
+    
+    explicit TcpClient(std::shared_ptr<IPv4NetAddr> peer_addr);
 
     ~TcpClient();
 

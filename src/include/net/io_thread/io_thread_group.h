@@ -22,7 +22,12 @@ namespace rpc {
  */
 class IOThreadGroup {
 public:
-    IOThreadGroup(int size);
+    explicit IOThreadGroup(int size);
+
+    IOThreadGroup(const IOThreadGroup&) = delete;
+    IOThreadGroup(IOThreadGroup&&) = delete;
+    IOThreadGroup& operator=(const IOThreadGroup&) = delete;
+    IOThreadGroup& operator=(IOThreadGroup&&) = delete;
 
     ~IOThreadGroup();
 
