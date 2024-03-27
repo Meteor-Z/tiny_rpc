@@ -18,7 +18,7 @@
 
 namespace rpc {
 /**
- * @brief 封装的  FD_Event
+ * @brief 封装的 Fd_Event
  *
  */
 class FdEvent {

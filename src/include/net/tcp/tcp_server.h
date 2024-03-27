@@ -12,6 +12,7 @@
  * @copyright Copyright (c) 2024
  *
  */
+
 #pragma once
 
 #ifndef RPC_NET_TCP_TCP_SERVER_H
@@ -56,9 +57,9 @@ private:
     std::shared_ptr<IPv4NetAddr> m_local_addr {};        ///< 本地监听地址
     std::shared_ptr<EventLoop> m_main_event_loop {};     ///< mainReactor
     std::shared_ptr<IOThreadGroup> m_io_thread_group {}; ///< subReactor (子Reactor组)
-    std::shared_ptr<FdEvent> m_listen_fd_event {};       ///< 监听的FdEvent
+    std::shared_ptr<FdEvent> m_listen_fd_event {};       ///< 监听的FdEvent 
     int m_client_counts { 0 };                           ///< 当前连接的数量
-    std::set<std::shared_ptr<TcpConnection>> m_client;   ///< 客户端
+    std::set<std::shared_ptr<TcpConnection>> m_client;   ///< 客户端的连接，因为是服务端，所以说肯定有多个
 };
 } // namespace rpc
 

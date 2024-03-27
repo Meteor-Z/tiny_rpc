@@ -34,7 +34,7 @@ TcpClient::TcpClient(std::shared_ptr<IPv4NetAddr> peer_addr) : m_peer_addr(peer_
                                                    TcpConnection::TcpConnectionType::TcpConnectionByClient);
 
     // 设置成客户端的
-    m_connection->set_connection_type(TcpConnection::TcpConnectionType::TcpConnectionByClient);
+    // m_connection->set_connection_type(TcpConnection::TcpConnectionType::TcpConnectionByClient);
 }
 
 TcpClient::~TcpClient() {
@@ -64,6 +64,7 @@ void TcpClient::read_message(const std::string& req_id, std::function<void(std::
 void TcpClient::connect(std::function<void()> done) {
     // 系统的 connect 函数
     int rt = ::connect(m_fd, m_peer_addr->get_sock_addr(), m_peer_addr->get_sock_len());
+    // 如果正常的话 
     if (rt == 0) {
         DEBUG_LOG(fmt::format("connect [%s] sussess", m_peer_addr->to_string().c_str()));
         m_connection->set_state(TcpConnection::TcpState::Connected);

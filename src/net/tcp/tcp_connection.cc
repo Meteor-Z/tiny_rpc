@@ -121,10 +121,8 @@ void TcpConnection::on_read() {
     excute();
 }
 
-// ok
-// 将RPC请求执行业务逻辑，获取RPC相应，再将RPC响应发送回去
 void TcpConnection::excute() {
-    // 这个是服务端的做法
+    // 服务端的做法
     if (m_connection_type == TcpConnectionType::TcpConnectionByServer) {
         // // 先将数据读取出来
         // std::vector<char> temp;
@@ -141,6 +139,7 @@ void TcpConnection::excute() {
 
         m_coder->decode(result, m_in_buffer);
 
+        // 将从 buffer 读完的内容进行转发，然后将其加入到Dispatcher里面里面
         for (size_t i = 0; i < result.size(); i++) {
             DEBUG_LOG(fmt::format("success get request from client {}, info [{}]",
                                   result[i]->m_msg_id, m_peer_addr->to_string()));
@@ -285,7 +284,7 @@ void TcpConnection::on_write() {
         int size = m_out_buffer->can_read_bytes_num();
         int read_index = m_out_buffer->read_index();
 
-        // 发送
+        // 发送回去
         int result = ::write(m_fd, &(m_out_buffer->get_buffer()[read_index]), size);
 
         // 发送完了

@@ -1,7 +1,7 @@
 /**
  * @file tcp_connection.h
  * @author liuzechen (liuzechen.coder@qq.com)
- * @brief TcpConnection 连接
+ * @brief TcpConnection 一次请求
  * @version 0.1
  * @date 2024-03-15
  *
@@ -76,17 +76,26 @@ public:
     TcpConnection() = delete;
     TcpConnection(const TcpConnection&) = delete;
     TcpConnection(TcpConnection&&) = delete;
-    
+
     TcpConnection& operator=(const TcpConnection&) = delete;
     TcpConnection& operator=(TcpConnection&&) = delete;
 
-    // 可读时间发生之后就会执行这个函数
+    /**
+     * @brief 一次性将其全部读完
+     *
+     */
     void on_read();
 
-    // excute进行
+    /**
+     * @brief 执行函数，根据req_id找到这些函数，然后执行这些函数
+     * 
+     */
     void excute();
 
-    // 回调函数
+    /**
+     * @brief 发送回去
+     * 
+     */
     void on_write();
 
     void set_state(const TcpConnection::TcpState& state);
@@ -96,7 +105,10 @@ public:
     // 清除连接
     void clear();
 
-    // 主动关闭
+    /**
+     * @brief 这个是让其处于半关闭状态,封装shutdown这个函数
+     *
+     */
     void shutdown();
 
     void set_connection_type(TcpConnectionType type) noexcept;
@@ -138,13 +150,13 @@ private:
         nullptr
     }; ///< 当前指向的IO线程 当前主EventLoop函数
 
-    std::shared_ptr<FdEvent> m_fd_event { nullptr }; ///< 监听的文件描述符
+    std::shared_ptr<FdEvent> m_fd_event { nullptr }; ///< 这个是被动监听的那个，就是listen() 的到的m_fd_event
 
     std::shared_ptr<AbstractCoder> m_coder { nullptr }; ///< 编解码器
 
-    TcpState m_state { TcpState::NotConnected }; // 连接状态
+    TcpState m_state { TcpState::NotConnected }; ///< 连接状态
 
-    int m_fd { -1 }; ///< 指向的套接字
+    int m_fd { -1 }; ///< 指向连接的套接字
 
     TcpConnectionType m_connection_type {
         TcpConnectionType::TcpConnectionByServer

@@ -1,7 +1,7 @@
 /**
  * @file tcp_acceptor.h
  * @author liuzechen (liuzechen.coder@qq.com)
- * @brief 维护的是 socket() -> bind() 这一过程
+ * @brief 维护的是 socket() -> bind() -> accept() 这一过程
  * @version 0.1
  * @date 2024-03-15
  * @note

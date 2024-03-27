@@ -45,7 +45,7 @@ public:
     /**
      * @brief 异步的进行连接
      *
-     * @param done 如果connect(),成功，那么donw就会成功执行
+     * @param done 如果成功，那么done这个回调函数就会执行
      */
     void connect(std::function<void()> done);
 
@@ -121,10 +121,11 @@ private:
     std::shared_ptr<IPv4NetAddr> m_local_addr { nullptr }; ///< 本地地址
     std::shared_ptr<IPv4NetAddr> m_peer_addr { nullptr };  ///< 对端地址
 
-    std::shared_ptr<EventLoop> m_event_loop { nullptr };     ///< 主 Reactor
+    std::shared_ptr<EventLoop> m_event_loop { nullptr };     ///< Reactor地址
     int m_fd { -1 };                                         ///< 文件描述符
     std::shared_ptr<FdEvent> m_fd_event { nullptr };         ///< 事件描述符
-    std::shared_ptr<TcpConnection> m_connection { nullptr }; ///< 处理连接
+
+    std::shared_ptr<TcpConnection> m_connection { nullptr }; ///< 处理连接 因为是客户端，所以说只是一个TcpConnection 
 
     int m_connect_error_code { 0 };      ///< 连接对端的错误码
     std::string m_connect_error_info {}; ///< 错误信息

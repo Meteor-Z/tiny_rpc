@@ -1,7 +1,8 @@
 /**
  * @file fd_event_group.h
  * @author lzc (liuzechen.coder@qq.com)
- * @brief 对FdEvent的再次封装 
+ * @brief 对FdEvent的再次封装，
+ * 文件描述符都是递增增长的，那么用这个可以包装一下
  * @version 0.1
  * @date 2024-03-15
  * 
@@ -21,7 +22,7 @@
 
 namespace rpc {
 /**
- * @brief 处理事件的Group，默认开启4个线程
+ * @brief 文件描述符的再度封装
  * 
  */
 class FdEventGroup {
@@ -40,7 +41,7 @@ public:
     /**
      * @brief Get the fd event object
      * 
-     * @param fd 
+     * @param fd 当前这个文件描述符
      * @return std::shared_ptr<FdEvent> 文件描述符
      */
     std::shared_ptr<FdEvent> get_fd_event(int fd);
@@ -50,9 +51,9 @@ public:
     static std::shared_ptr<FdEventGroup> Get_Fd_Event_Group();
 
 private:
-    int m_size { 0 };                                        // 大小
+    int m_size { 0 };                                        ///< 文件描述符的大小
     std::vector<std::shared_ptr<FdEvent>> m_fd_event_groups; // fd_event的群
     std::mutex m_mutex;                                      // 锁
 };
-} // namespace rpc
+} // namespace rpc 
 #endif

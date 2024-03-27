@@ -27,7 +27,7 @@ TcpAcceptor::TcpAcceptor(std::shared_ptr<IPv4NetAddr> local_addr)
 
     int valid = 0;
 
-    // 设置成非阻塞
+    // 设置成非阻塞，就是复用time_wait这一个状态的端口号
     int rt = setsockopt(m_listenfd, SOL_SOCKET, SO_REUSEPORT, &valid, sizeof(valid));
 
     // 非必需
