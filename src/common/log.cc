@@ -224,11 +224,17 @@ void* AsyncLogger::Loop(void* arg) {
     AsyncLogger* logger = reinterpret_cast<AsyncLogger*>(arg);
 
     pthread_cond_init(&logger->m_condtion, NULL);
-
+    std::cout << "通知到这里了" << std::endl;
     sem_post(&logger->m_sempahore);
 
+    std::cout << "hello world" << std::endl;
+
     while (true) {
+        if (logger->m_stop_flag) {
+            return nullptr;
+        }
         ScopeMutex<Mutex> lock(logger->m_mutex);
+        INFO_LOG("加入了");
         while (logger->m_buffer.empty()) {
             pthread_cond_wait(&(logger->m_condtion), logger->m_mutex.get_mutex());
         }

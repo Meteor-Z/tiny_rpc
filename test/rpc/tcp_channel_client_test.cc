@@ -69,6 +69,7 @@ void test_rpc_channel_client() {
 
     std::shared_ptr<rpc::RpcController> controller =
         std::make_shared<rpc::RpcController>();
+
     controller->set_msg_id("114514");
 
     std::shared_ptr<rpc::RpcClosure> closure = std::make_shared<rpc::RpcClosure>(
@@ -84,7 +85,7 @@ void test_rpc_channel_client() {
                 // 退出 loop循环
                 INFO_LOG("exit eventloop")
                 channel->get_client()->stop();
-               
+
                 // channel.reset();
 
                 // 业务逻辑
@@ -102,7 +103,7 @@ void test_rpc_channel_client() {
 
     // controller->set_timeout(5000);
     stub.makeOrder(controller.get(), request.get(), response.get(), closure.get());
-
+    std::cout << "执行到这里了" << std::endl;
     rpc::Logger::GET_GLOBAL_LOGGER()->stop();
 }
 
