@@ -99,6 +99,13 @@ public:
     AsyncLogger(const std::string& file_path, const std::string& file_name,
                 int m_file_max_size);
 
+    ~AsyncLogger();
+
+    /**
+     * @brief 线程join析构掉
+     *
+     */
+    void join();
     /**
      * @brief 停止
      *
@@ -110,6 +117,8 @@ public:
      *
      */
     void flush();
+
+    bool get_stop_flag() { return m_stop_flag; }
 
     /**
      * @brief 将文件唤醒到日志器里面
@@ -127,7 +136,7 @@ private:
 
     pthread_t m_thread {};        ///< 输出日志的当前线程
     pthread_cond_t m_condtion {}; ///< 条件变量
-    Mutex m_mutex {};        ///< 互斥锁，配合条件变量的使用
+    Mutex m_mutex {};             ///< 互斥锁，配合条件变量的使用
 
     std::string m_date;           ///< 上次打印日志的文件日期
     FILE* m_file_handler {};      ///< 当前文件打开的的文件句柄
@@ -194,6 +203,12 @@ public:
      *
      */
     void sync_loop();
+
+    /**
+     * @brief 停止Logger
+     *
+     */
+    void stop();
 
 private:
     LogLevel m_set_level;                           ///< 设置的等级

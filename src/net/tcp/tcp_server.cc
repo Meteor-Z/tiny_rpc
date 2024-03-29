@@ -11,7 +11,10 @@
 #include "common/log.h"
 
 namespace rpc {
-TcpServer::~TcpServer() { DEBUG_LOG("~TcpServer()"); }
+TcpServer::~TcpServer() {
+    DEBUG_LOG("~TcpServer()");
+    m_main_event_loop->stop();
+}
 
 TcpServer::TcpServer(std::shared_ptr<IPv4NetAddr> local_addr) : m_local_addr(local_addr) {
     // accepter

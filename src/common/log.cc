@@ -46,6 +46,20 @@ void Logger::sync_loop() {
     }
 }
 
+void Logger::stop() {
+    std::cout << "yes" << std::endl;
+    std::unique_lock<std::mutex> lock { m_mutex };
+    m_async_logger->stop();
+    if (m_async_logger->get_stop_flag()) {
+        std::cout << "true" << std::endl;
+    } else {
+        std::cout << "false" << std::endl;
+    }
+    std::cout << "测试" << std::endl;
+    m_async_logger->join();
+    std::cout << "hahaha" << std::endl;
+}
+
 Logger::Logger(LogLevel log_level) : m_set_level { log_level } {
 
     // m_async_logger =
@@ -216,10 +230,13 @@ void* AsyncLogger::Loop(void* arg) {
     while (true) {
         ScopeMutex<Mutex> lock(logger->m_mutex);
         while (logger->m_buffer.empty()) {
-            // printf("begin pthread_cond_wait back \n");
             pthread_cond_wait(&(logger->m_condtion), logger->m_mutex.get_mutex());
         }
-        // printf("pthread_cond_wait back \n");
+        std::cout << "hello" << std::endl;
+        if (logger->m_stop_flag) {
+            std::cout << "yes" << std::endl;
+            return nullptr;
+        }
 
         std::vector<std::string> tmp;
         tmp.swap(logger->m_buffer.front());
@@ -269,7 +286,7 @@ void* AsyncLogger::Loop(void* arg) {
 
         for (auto& item : tmp) {
             item += '\n';
-            std::cout << item;
+            // std::cout << item;
             if (!item.empty()) {
                 fwrite(item.c_str(), 1, item.size(), logger->m_file_handler);
             }
@@ -299,6 +316,16 @@ rpc::AsyncLogger::AsyncLogger(const std::string& file_path, const std::string& f
 
     sem_wait(&m_sempahore);
 }
+
+AsyncLogger::~AsyncLogger() {}
+
+void AsyncLogger::join() {
+    // stop();
+    std::cout << "寄了" << std::endl;
+    pthread_join(m_thread, nullptr);
+    std::cout << "哈哈哈" << std::endl;
+}
+
 void AsyncLogger::stop() { m_stop_flag = true; }
 
 void AsyncLogger::flush() {

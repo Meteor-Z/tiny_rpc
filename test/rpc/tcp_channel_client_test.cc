@@ -84,6 +84,7 @@ void test_rpc_channel_client() {
                 // 退出 loop循环
                 INFO_LOG("exit eventloop")
                 channel->get_client()->stop();
+               
                 // channel.reset();
 
                 // 业务逻辑
@@ -101,6 +102,8 @@ void test_rpc_channel_client() {
 
     // controller->set_timeout(5000);
     stub.makeOrder(controller.get(), request.get(), response.get(), closure.get());
+
+    rpc::Logger::GET_GLOBAL_LOGGER()->stop();
 }
 
 int main() {

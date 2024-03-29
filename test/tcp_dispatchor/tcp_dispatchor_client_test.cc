@@ -37,6 +37,7 @@ void test_tcp_dispatchor_client() {
                               [](std::shared_ptr<rpc::AbstractProtocol> msg_ptr) {
                                   DEBUG_LOG("send mssage success");
                               });
+                              
         DEBUG_LOG("YES,下面是收到的信息");
         client->read_message(
             "114514", [](std::shared_ptr<rpc::AbstractProtocol> msg_ptr) {

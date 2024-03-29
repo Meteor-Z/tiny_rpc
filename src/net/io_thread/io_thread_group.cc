@@ -40,4 +40,5 @@ void IOThreadGroup::join() {
         m_io_thread_groups[i]->join();
     }
 }
+
 } // namespace rpc
