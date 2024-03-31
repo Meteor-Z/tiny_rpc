@@ -8,11 +8,11 @@
 #include <mutex>
 #include <queue>
 #include "net/eventloop.h"
-#include "common/log.h"
-#include "common/utils.h"
 #include "net/fd_event/fd_event.h"
 #include "net/time/time_event.h"
 #include "net/wakeup_fd_event.h"
+#include "common/utils.h"
+#include "common/log.h"
 
 namespace rpc {
 static thread_local std::shared_ptr<EventLoop> thread_current_eventloop {
@@ -108,7 +108,7 @@ void EventLoop::loop() {
         lock.unlock();
         // ---------------------
 
-        // 执行相关的任务
+        // 在这里执行相关的函数，注意，这里是堵塞的。
         while (!temp_tasks.empty()) {
             std::function<void()> cb = temp_tasks.front();
             temp_tasks.pop();
@@ -122,7 +122,7 @@ void EventLoop::loop() {
 
         epoll_event result_event[G_EPOLL_MAX_EVENTS];
 
-        // 返回的是 number fd
+        // 返回的是 数量
         int epoll_num =
             epoll_wait(m_epoll_fd, result_event, G_EPOLL_MAX_EVENTS, time_out);
         DEBUG_LOG(fmt::format("epoll_wait。。。 rt = {}", epoll_num));
@@ -132,7 +132,8 @@ void EventLoop::loop() {
         } else {
             // 将事件进行处理
             for (int i = 0; i < epoll_num; i++) {
-                // trigger 意思： 触发
+                // trigger 意思：
+                // 触发，将其转换成FdEvent,就是里面的union指针，要将其转发成FdEvent
                 epoll_event trigger_event = result_event[i];
                 std::shared_ptr<FdEvent> fd_event_ptr = std::make_shared<FdEvent>(
                     *static_cast<FdEvent*>(trigger_event.data.ptr));

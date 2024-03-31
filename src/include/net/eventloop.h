@@ -1,6 +1,6 @@
 /**
  * @file eventloop.h
- * @author liuzechen (liuzechen.coder@qq.com)
+ * @author lzc (liuzechen.coder@qq.com)
  * @brief 主从Reactor模块的重要文件
  * @version 0.1
  * @date 2024-03-11

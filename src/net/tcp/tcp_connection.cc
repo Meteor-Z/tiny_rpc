@@ -20,7 +20,7 @@
 
 namespace rpc {
 TcpConnection::TcpConnection(
-    std::shared_ptr<EventLoop> event_loop, int fd, int buffer_size, 
+    std::shared_ptr<EventLoop> event_loop, int fd, int buffer_size,
     std::shared_ptr<IPv4NetAddr> local_addr, std::shared_ptr<IPv4NetAddr> peer_addr,
     TcpConnectionType type /* = TcpConnectionType::TcpConnectionByServer */)
     : m_local_addr(local_addr), m_peer_addr(peer_addr), m_event_loop(event_loop),
@@ -239,7 +239,7 @@ void TcpConnection::push_read_message(
     const std::string& req_id,
     std::function<void(std::shared_ptr<AbstractProtocol>)> done) {
     //    m_read_dones[req_id] = done;
-    // ？
+    // ?
     m_read_dones.insert(std::make_pair(req_id, done));
 }
 
@@ -293,7 +293,7 @@ void TcpConnection::on_write() {
             is_write_all = true;
             break;
         }
-        // 缓冲区已经满了
+        // 缓冲区已经满了，EAGAIN 表示已经读完了
         if (result == -1 && errno == EAGAIN) {
             ERROR_LOG(fmt::format("write data error, errno = EAGIN and result = -1"));
             break;

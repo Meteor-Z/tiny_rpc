@@ -81,7 +81,7 @@ public:
     TcpConnection& operator=(TcpConnection&&) = delete;
 
     /**
-     * @brief 一次性将其全部读完
+     * @brief 一次性将其全部读完，这个函数最终是放到了EventLoop中进行执行，如果有可读事件了，那么就会触发这个函数
      *
      */
     void on_read();

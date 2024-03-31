@@ -33,7 +33,7 @@ TcpServer::TcpServer(std::shared_ptr<IPv4NetAddr> local_addr) : m_local_addr(loc
     m_listen_fd_event->listen(FdEvent::TriggerEvent::IN_EVENT,
                               std::bind(&TcpServer::on_accept, this));
 
-    // 将这个文件描述符加入到mainReactor里面，相当于处理请求了
+    // 将这个文件描述符加入到mainReactor里面，相当于处理请求了，当有事件请求的时候，就会触发 on_accept 这个函数。
     m_main_event_loop->add_epoll_event(m_listen_fd_event);
 
     INFO_LOG(fmt::format("tcp server success on {}", m_local_addr->to_string()));

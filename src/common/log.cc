@@ -47,17 +47,9 @@ void Logger::sync_loop() {
 }
 
 void Logger::stop() {
-    std::cout << "yes" << std::endl;
     std::unique_lock<std::mutex> lock { m_mutex };
     m_async_logger->stop();
-    if (m_async_logger->get_stop_flag()) {
-        std::cout << "true" << std::endl;
-    } else {
-        std::cout << "false" << std::endl;
-    }
-    std::cout << "测试" << std::endl;
     m_async_logger->join();
-    std::cout << "hahaha" << std::endl;
 }
 
 Logger::Logger(LogLevel log_level) : m_set_level { log_level } {
@@ -224,10 +216,8 @@ void* AsyncLogger::Loop(void* arg) {
     AsyncLogger* logger = reinterpret_cast<AsyncLogger*>(arg);
 
     pthread_cond_init(&logger->m_condtion, NULL);
-    std::cout << "通知到这里了" << std::endl;
     sem_post(&logger->m_sempahore);
 
-    std::cout << "hello world" << std::endl;
 
     while (true) {
         if (logger->m_stop_flag) {
