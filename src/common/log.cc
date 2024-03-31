@@ -15,6 +15,7 @@
 #include <vector>
 #include <sstream>
 #include "common/mutex.h"
+#include "common/spin_lock.h"
 #include "fmt/core.h"
 #include "common/log.h"
 #include "common/log_config.h"
@@ -23,6 +24,7 @@
 
 namespace rpc {
 static std::mutex pop_log_mtx;
+static SpinLock spin_lock;
 static std::mutex push_log_mtx;
 
 // 全局 Logger
@@ -88,7 +90,8 @@ std::string LogEvent::get_file_name() const noexcept { return m_file_name; }
 
 // 这里也要加锁
 void Logger::push_log(const std::string& message) {
-    std::lock_guard<std::mutex> guard { push_log_mtx };
+    // std::lock_guard<std::mutex> guard { push_log_mtx };
+    std::lock_guard<SpinLock> guard { spin_lock };
     m_buffer.push_back(message);
 }
 
@@ -217,7 +220,6 @@ void* AsyncLogger::Loop(void* arg) {
 
     pthread_cond_init(&logger->m_condtion, NULL);
     sem_post(&logger->m_sempahore);
-
 
     while (true) {
         if (logger->m_stop_flag) {
