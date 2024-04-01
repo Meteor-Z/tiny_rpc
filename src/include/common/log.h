@@ -11,7 +11,6 @@
 #ifndef RPC_COMMON_LOG_H
 #define RPC_COMMON_LOG_H
 
-#include <condition_variable>
 #include <cstdio>
 #include <memory>
 #include <mutex>
