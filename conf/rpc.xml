@@ -8,4 +8,9 @@
         <log_file_max_size>100000</log_file_max_size>
         <log_file_sync_interval>500</log_file_sync_interval>
     </log>
+    
+    <server>
+        <ip>101.132.72.74</ip>
+        <port>12345</port>
+    </server>
 </root>  
