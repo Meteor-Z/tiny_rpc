@@ -13,7 +13,7 @@ TcpAcceptor::TcpAcceptor(std::shared_ptr<IPv4NetAddr> local_addr)
     : m_local_addr(local_addr) {
     if (!local_addr->check_valid()) {
         ERROR_LOG(fmt::format("invalid local addr {}", local_addr->to_string()));
-        std::exit(0);
+        std::exit(2);
     }
 
     m_family = m_local_addr->get_family();
@@ -22,7 +22,7 @@ TcpAcceptor::TcpAcceptor(std::shared_ptr<IPv4NetAddr> local_addr)
 
     if (m_listenfd < 0) {
         ERROR_LOG(fmt::format("TcpAcceptor() init error, beacuse socket() error"));
-        std::exit(0);
+        std::exit(2);
     }
 
     int valid = 0;
@@ -43,14 +43,14 @@ TcpAcceptor::TcpAcceptor(std::shared_ptr<IPv4NetAddr> local_addr)
     if (bind(m_listenfd, sock_addr, sock_len) != 0) {
         ERROR_LOG(
             fmt::format("bind() error  errno = {}, errno = {}", errno, strerror(errno)));
-        std::exit(0);
+        std::exit(2);
     }
 
     // 服务端的listen, 变成被动监听
     if (listen(m_listenfd, 1000) != 0) {
         ERROR_LOG(fmt::format("listend() error, errno = {}, error = {}", errno,
                               strerror(errno)));
-        std::exit(0);
+        std::exit(2);
     }
 }
 
@@ -66,7 +66,7 @@ std::pair<int, std::shared_ptr<IPv4NetAddr>> TcpAcceptor::accept() {
     if (client_fd < 0) {
         ERROR_LOG(fmt::format("accept() error, errno = {}, error = {}", errno,
                               strerror(errno)));
-        std::exit(0);
+        std::exit(2);
     }
 
     // IPv4NetAddr peer_addr(client_addr);
