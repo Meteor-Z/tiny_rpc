@@ -12,8 +12,9 @@
 // 继承于 Service
 class OrderImpl : public Order {
 public:
-    void makeOrder(google::protobuf::RpcController* controller, const ::makeOrderRequest* request,
-                   ::makeOrderResponse* response, ::google::protobuf::Closure* done) {
+    void makeOrder(google::protobuf::RpcController* controller,
+                   const ::makeOrderRequest* request, ::makeOrderResponse* response,
+                   ::google::protobuf::Closure* done) {
         // 测试超时的时间的限制
         // DEBUG_LOG("start sleep 5s");
         // sleep(5);
@@ -28,7 +29,8 @@ public:
 };
 
 void test_tcp_server() {
-    std::shared_ptr<rpc::IPv4NetAddr> addr = std::make_shared<rpc::IPv4NetAddr>("127.0.0.1", 12345);
+    std::shared_ptr<rpc::IPv4NetAddr> addr = std::make_shared<rpc::IPv4NetAddr>(
+        rpc::LogConfig::GET_GLOBAL_CONFIG()->m_ip, rpc::LogConfig::GET_GLOBAL_CONFIG()->m_port);
     DEBUG_LOG(fmt::format("create addr = {}", addr->to_string()));
 
     std::shared_ptr<rpc::TcpServer> tcp_server = std::make_shared<rpc::TcpServer>(addr);

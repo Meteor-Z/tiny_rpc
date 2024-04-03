@@ -63,6 +63,10 @@ void test_rpc_channel_client() {
     std::shared_ptr<rpc::IPv4NetAddr> addr =
         std::make_shared<rpc::IPv4NetAddr>(rpc::LogConfig::GET_GLOBAL_CONFIG()->m_ip,
                                            rpc::LogConfig::GET_GLOBAL_CONFIG()->m_port);
+    std::cout << rpc::LogConfig::GET_GLOBAL_CONFIG()->m_ip << std::endl;
+    std::cout << rpc::LogConfig::GET_GLOBAL_CONFIG()->m_port << std::endl;
+    std::cout << rpc::LogConfig::GET_GLOBAL_CONFIG()->m_ip << std::endl;
+    std::cout << rpc::LogConfig::GET_GLOBAL_CONFIG()->m_port << std::endl;
     std::shared_ptr<rpc::RpcChannel> channel = std::make_shared<rpc::RpcChannel>(addr);
 
     std::shared_ptr<makeOrderRequest> request = std::make_shared<makeOrderRequest>();
@@ -108,11 +112,11 @@ void test_rpc_channel_client() {
     // controller->set_timeout(5000);
     stub.makeOrder(controller.get(), request.get(), response.get(), closure.get());
     std::cout << "执行到这里了" << std::endl;
-    rpc::Logger::GET_GLOBAL_LOGGER()->stop();
+    // rpc::Logger::GET_GLOBAL_LOGGER()->stop();
 }
 
 int main() {
-    rpc::LogConfig::SET_GLOBAL_CONFIG("rpc.xml");
+    rpc::LogConfig::SET_GLOBAL_CONFIG("/home/lzc/code/tiny_rpc/conf/rpc.xml");
 
     rpc::Logger::INIT_GLOBAL_LOGGER();
 

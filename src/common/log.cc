@@ -51,7 +51,7 @@ void Logger::sync_loop() {
 void Logger::stop() {
     std::unique_lock<std::mutex> lock { m_mutex };
     m_async_logger->stop();
-    m_async_logger->join();
+    // m_async_logger->join();
 }
 
 Logger::Logger(LogLevel log_level) : m_set_level { log_level } {
@@ -317,12 +317,6 @@ rpc::AsyncLogger::AsyncLogger(const std::string& file_path, const std::string& f
 
 AsyncLogger::~AsyncLogger() {}
 
-void AsyncLogger::join() {
-    // stop();
-    std::cout << "寄了" << std::endl;
-    pthread_join(m_thread, nullptr);
-    std::cout << "哈哈哈" << std::endl;
-}
 
 void AsyncLogger::stop() { m_stop_flag = true; }
 

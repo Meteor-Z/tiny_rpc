@@ -101,11 +101,6 @@ public:
     ~AsyncLogger();
 
     /**
-     * @brief 线程join析构掉
-     *
-     */
-    void join();
-    /**
      * @brief 停止
      *
      */
