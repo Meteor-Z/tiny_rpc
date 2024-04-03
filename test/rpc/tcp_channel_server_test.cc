@@ -28,14 +28,14 @@ public:
 };
 
 void test_tcp_server() {
-    std::shared_ptr<rpc::IPv4NetAddr> addr = std::make_shared<rpc::IPv4NetAddr>("127.0.0.1", 12347);
+    std::shared_ptr<rpc::IPv4NetAddr> addr = std::make_shared<rpc::IPv4NetAddr>("127.0.0.1", 12345);
     DEBUG_LOG(fmt::format("create addr = {}", addr->to_string()));
 
     std::shared_ptr<rpc::TcpServer> tcp_server = std::make_shared<rpc::TcpServer>(addr);
     tcp_server->start();
 }
 int main() {
-    rpc::LogConfig::SET_GLOBAL_CONFIG("/home/lzc/code/tiny_rpc/conf/rpc.xml");
+    rpc::LogConfig::SET_GLOBAL_CONFIG("rpc.xml");
 
     rpc::Logger::INIT_GLOBAL_LOGGER();
 

@@ -37,6 +37,9 @@ public:
     std::string m_file_name;    ///< 读取的文件名字
     int m_file_max_size {};     ///< 文件大小
     int m_log_sync_inteval {};  ///< 同步间隔 单位是 ms
+
+    std::string m_ip {}; ///< 连接对方的ip地址
+    int m_port {}; ///< 连接对方的端口
 };
 } // namespace rpc
 

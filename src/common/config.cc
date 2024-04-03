@@ -50,15 +50,26 @@ LogConfig::LogConfig(const std::string& xml_file) {
 
     TiXmlElement* root_log_file_path_ptr = get_son_node(root_log_ptr, "log_file_path");
     TiXmlElement* root_log_file_name_ptr = get_son_node(root_log_ptr, "log_file_name");
-    TiXmlElement* root_log_file_max_size = get_son_node(root_log_ptr, "log_file_max_size");
-    TiXmlElement* root_log_log_sync_interval_ptr = get_son_node(root_log_ptr, "log_file_sync_interval");
+    TiXmlElement* root_log_file_max_size =
+        get_son_node(root_log_ptr, "log_file_max_size");
+    TiXmlElement* root_log_log_sync_interval_ptr =
+        get_son_node(root_log_ptr, "log_file_sync_interval");
+
+    TiXmlElement* root_server_ptr = get_son_node(root_ptr, "server");
+    TiXmlElement* root_sever_ip_ptr = get_son_node(root_server_ptr, "ip");
+    TiXmlElement* root_server_port_ptr = get_son_node(root_server_ptr, "port");
     //  赋值
     m_log_level = root_log_level_ptr->GetText();
     m_file_path = root_log_file_path_ptr->GetText();
     m_file_name = root_log_file_name_ptr->GetText();
     m_file_max_size = atoi(root_log_file_max_size->GetText());
     m_log_sync_inteval = atoi(root_log_log_sync_interval_ptr->GetText());
-    fmt::println("log_level = {}, file_path = {}, file_name = {}, file_max_size = {}, log_sync_inteval = {}",
-                 m_log_level.c_str(), m_file_path.c_str(), m_file_name.c_str(), m_file_max_size, m_log_sync_inteval);
+
+    m_ip = root_sever_ip_ptr->GetText();
+    m_port = atoi(root_server_port_ptr->GetText());
+    fmt::println("log_level = {}, file_path = {}, file_name = {}, file_max_size = {}, "
+                 "log_sync_inteval = {}",
+                 m_log_level.c_str(), m_file_path.c_str(), m_file_name.c_str(),
+                 m_file_max_size, m_log_sync_inteval);
 }
 } // namespace rpc

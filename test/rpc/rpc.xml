@@ -1,0 +1,15 @@
+<?xml version = "1.0" encoding="UTF-8"?>
+<root>
+    <log>
+        <log_level>Debug</log_level>    
+        <log_file_path>./log/</log_file_path>
+        <log_app_file_path>./log/</log_app_file_path>
+        <log_file_name>test_tcp_server</log_file_name>
+        <log_file_max_size>100000</log_file_max_size>
+        <log_file_sync_interval>500</log_file_sync_interval>
+    </log>
+    <server>
+        <ip>101.132.72.74</ip>
+        <port>12345</port>
+    </server>
+</root>  
