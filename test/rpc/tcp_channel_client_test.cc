@@ -60,13 +60,12 @@ void test_rpc_channel_client() {
     // std::shared_ptr<rpc::IPv4NetAddr> addr =
     //     std::make_shared<rpc::IPv4NetAddr>("127.0.0.1", 12347);
 
-    std::shared_ptr<rpc::IPv4NetAddr> addr =
-        std::make_shared<rpc::IPv4NetAddr>(rpc::LogConfig::GET_GLOBAL_CONFIG()->m_ip,
-                                           rpc::LogConfig::GET_GLOBAL_CONFIG()->m_port);
+    std::shared_ptr<rpc::IPv4NetAddr> addr = std::make_shared<rpc::IPv4NetAddr>(
+        "127.0.0.1", rpc::LogConfig::GET_GLOBAL_CONFIG()->m_port);
+        
     std::cout << rpc::LogConfig::GET_GLOBAL_CONFIG()->m_ip << std::endl;
     std::cout << rpc::LogConfig::GET_GLOBAL_CONFIG()->m_port << std::endl;
-    std::cout << rpc::LogConfig::GET_GLOBAL_CONFIG()->m_ip << std::endl;
-    std::cout << rpc::LogConfig::GET_GLOBAL_CONFIG()->m_port << std::endl;
+
     std::shared_ptr<rpc::RpcChannel> channel = std::make_shared<rpc::RpcChannel>(addr);
 
     std::shared_ptr<makeOrderRequest> request = std::make_shared<makeOrderRequest>();
@@ -116,7 +115,7 @@ void test_rpc_channel_client() {
 }
 
 int main() {
-    rpc::LogConfig::SET_GLOBAL_CONFIG("/home/lzc/code/tiny_rpc/conf/rpc.xml");
+    rpc::LogConfig::SET_GLOBAL_CONFIG("/root/code/tiny_rpc/conf/rpc.xml");
 
     rpc::Logger::INIT_GLOBAL_LOGGER();
 
