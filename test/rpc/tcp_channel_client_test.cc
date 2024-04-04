@@ -60,17 +60,21 @@ void test_rpc_channel_client() {
     // std::shared_ptr<rpc::IPv4NetAddr> addr =
     //     std::make_shared<rpc::IPv4NetAddr>("127.0.0.1", 12347);
 
-    std::shared_ptr<rpc::IPv4NetAddr> addr = std::make_shared<rpc::IPv4NetAddr>(
-        "127.0.0.1", rpc::LogConfig::GET_GLOBAL_CONFIG()->m_port);
-        
+    std::shared_ptr<rpc::IPv4NetAddr> addr =
+        std::make_shared<rpc::IPv4NetAddr>(rpc::LogConfig::GET_GLOBAL_CONFIG()->m_ip,
+                                           rpc::LogConfig::GET_GLOBAL_CONFIG()->m_port);
+
     std::cout << rpc::LogConfig::GET_GLOBAL_CONFIG()->m_ip << std::endl;
     std::cout << rpc::LogConfig::GET_GLOBAL_CONFIG()->m_port << std::endl;
 
     std::shared_ptr<rpc::RpcChannel> channel = std::make_shared<rpc::RpcChannel>(addr);
 
     std::shared_ptr<makeOrderRequest> request = std::make_shared<makeOrderRequest>();
+
     request->set_price(100);
     request->set_goods("apple");
+
+    std::cout << "111" << std::endl;
 
     std::shared_ptr<makeOrderResponse> response = std::make_shared<makeOrderResponse>();
 
@@ -79,10 +83,14 @@ void test_rpc_channel_client() {
 
     controller->set_msg_id("114514");
 
+    std::cout << "hahah" << std::endl;
+
     std::shared_ptr<rpc::RpcClosure> closure = std::make_shared<rpc::RpcClosure>(
         [request, response, channel, controller]() mutable {
-            // 只有表示不等于0， 才算是调用失败
+            std::cout << "nihao" << std::endl;
+            // 只有表示不等于0，才算是调用失败
             if (controller->get_error_code() == 0) {
+
                 INFO_LOG(fmt::format("call rpc success, request = {}, response = {}",
                                      request->ShortDebugString(),
                                      response->ShortDebugString()));
@@ -90,6 +98,8 @@ void test_rpc_channel_client() {
                              request->ShortDebugString(), response->ShortDebugString());
                 // sleep(5);
                 // 退出 loop循环
+
+                std::cout << "你好" << std::endl;
                 INFO_LOG("exit eventloop")
                 channel->get_client()->stop();
 
@@ -115,7 +125,7 @@ void test_rpc_channel_client() {
 }
 
 int main() {
-    rpc::LogConfig::SET_GLOBAL_CONFIG("/root/code/tiny_rpc/conf/rpc.xml");
+    rpc::LogConfig::SET_GLOBAL_CONFIG("/home/lzc/code/tiny_rpc/conf/rpc.xml");
 
     rpc::Logger::INIT_GLOBAL_LOGGER();
 

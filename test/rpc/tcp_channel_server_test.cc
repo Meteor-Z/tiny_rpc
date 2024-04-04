@@ -32,8 +32,10 @@ void test_tcp_server() {
     std::shared_ptr<rpc::IPv4NetAddr> addr =
         std::make_shared<rpc::IPv4NetAddr>(rpc::LogConfig::GET_GLOBAL_CONFIG()->m_ip,
                                            rpc::LogConfig::GET_GLOBAL_CONFIG()->m_port);
+                                           
     std::cout << rpc::LogConfig::GET_GLOBAL_CONFIG()->m_ip << std::endl;
     std::cout << rpc::LogConfig::GET_GLOBAL_CONFIG()->m_port << std::endl;
+
     DEBUG_LOG(fmt::format("create addr = {}", addr->to_string()));
 
     std::shared_ptr<rpc::TcpServer> tcp_server = std::make_shared<rpc::TcpServer>(addr);
@@ -46,6 +48,7 @@ int main() {
 
     // 注册方法
     std::shared_ptr<OrderImpl> order_ptr = std::make_shared<OrderImpl>();
+
     rpc::RpcDispatcher::GET_RPC_DISPATCHER()->register_service(order_ptr);
 
     // test_tcp_dispatchor();
