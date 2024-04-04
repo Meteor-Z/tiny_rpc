@@ -92,6 +92,7 @@ std::string LogEvent::get_file_name() const noexcept { return m_file_name; }
 void Logger::push_log(const std::string& message) {
     // std::lock_guard<std::mutex> guard { push_log_mtx };
     std::lock_guard<SpinLock> guard { spin_lock };
+    std::cout << message << std::endl;
     m_buffer.push_back(message);
 }
 
@@ -316,7 +317,6 @@ rpc::AsyncLogger::AsyncLogger(const std::string& file_path, const std::string& f
 }
 
 AsyncLogger::~AsyncLogger() {}
-
 
 void AsyncLogger::stop() { m_stop_flag = true; }
 

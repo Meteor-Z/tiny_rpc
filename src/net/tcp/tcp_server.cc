@@ -20,6 +20,8 @@ TcpServer::TcpServer(std::shared_ptr<IPv4NetAddr> local_addr) : m_local_addr(loc
     // accepter
     m_acceptor = std::make_shared<TcpAcceptor>(m_local_addr);
 
+    std::cout << "test" << std::endl;
+
     // 主线程的MainReactor 就是主线程的EventLoop
     m_main_event_loop = EventLoop::Get_Current_Eventloop();
 
