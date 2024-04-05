@@ -78,6 +78,7 @@ void test_rpc_channel_client() {
 
     std::shared_ptr<makeOrderResponse> response = std::make_shared<makeOrderResponse>();
 
+    // controller 就是一个 参数集合
     std::shared_ptr<rpc::RpcController> controller =
         std::make_shared<rpc::RpcController>();
 

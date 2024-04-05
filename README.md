@@ -141,4 +141,5 @@ protoc --cpp_out=./ order.proto
 
 ## 其他
 
-[grpc快速使用](https://grpc.io/docs/languages/cpp/quickstart)
+- [grpc快速使用](https://grpc.io/docs/languages/cpp/quickstart)
+- [brpc的相关文档](https://brpc.apache.org/zh/)
