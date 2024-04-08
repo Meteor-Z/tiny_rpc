@@ -1,7 +1,7 @@
 /**
  * @file error_code.h
  * @author lzc (liuzechen.coder@qq.com)
- * @brief 里面全部都是错误信息的
+ * @brief 里面全部都是错误信息
  * @version 0.1
  * @date 2024-01-21
  *

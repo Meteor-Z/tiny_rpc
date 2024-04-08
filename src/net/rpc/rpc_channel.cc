@@ -39,9 +39,9 @@ void RpcChannel::CallMethod(const google::protobuf::MethodDescriptor* method,
                             google::protobuf::Closure* done) {
 
     std::shared_ptr<ProtobufProtocol> req_protocol = std::make_shared<ProtobufProtocol>();
-    RpcController* my_controller = dynamic_cast<RpcController*>(controller);
-
-
+    // RpcController* my_controller = dynamic_cast<RpcController*>(controller);
+    std::shared_ptr<RpcController> my_controller { dynamic_cast<RpcController*>(
+        controller) };
 
     if (!my_controller) {
         ERROR_LOG("RpcController cconver error");
@@ -52,7 +52,7 @@ void RpcChannel::CallMethod(const google::protobuf::MethodDescriptor* method,
     /// TODO: 这里需要改一下
     if (my_controller->get_msg_id().empty()) {
         req_protocol->m_msg_id = rpc::utils::MsgIdUtils::gen_msg_id();
-        my_controller->set_msg_id(req_protocol->m_msg_id); 
+        my_controller->set_msg_id(req_protocol->m_msg_id);
     } else {
         req_protocol->m_msg_id = my_controller->get_msg_id();
     }
