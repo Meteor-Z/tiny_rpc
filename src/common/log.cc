@@ -231,9 +231,8 @@ void* AsyncLogger::Loop(void* arg) {
         while (logger->m_buffer.empty()) {
             pthread_cond_wait(&(logger->m_condtion), logger->m_mutex.get_mutex());
         }
-        std::cout << "hello" << std::endl;
+
         if (logger->m_stop_flag) {
-            std::cout << "yes" << std::endl;
             return nullptr;
         }
 

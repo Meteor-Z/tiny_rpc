@@ -16,6 +16,7 @@
 
 namespace rpc {
 TcpClient::TcpClient(std::shared_ptr<IPv4NetAddr> peer_addr) : m_peer_addr(peer_addr) {
+    /// TODO: WTF?
     m_event_loop = EventLoop::Get_Current_Eventloop();
     m_fd = socket(peer_addr->get_family(), SOCK_STREAM, 0);
 

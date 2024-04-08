@@ -34,7 +34,7 @@ class EventLoop : public std::enable_shared_from_this<EventLoop> {
 
 public:
     // 得到全局对象EventLoop
-    static std::shared_ptr<EventLoop> Get_Current_Eventloop();
+    static std::unique_ptr<EventLoop> Get_Current_Eventloop();
 
 public:
     /**

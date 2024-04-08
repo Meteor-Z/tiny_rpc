@@ -16,7 +16,7 @@ TcpServer::~TcpServer() {
     m_main_event_loop->stop();
 }
 
-TcpServer::TcpServer(std::shared_ptr<IPv4NetAddr> local_addr) : m_local_addr(local_addr) {
+TcpServer::TcpServer(const std::shared_ptr<IPv4NetAddr>& local_addr) : m_local_addr(local_addr) {
     // accepter
     m_acceptor = std::make_shared<TcpAcceptor>(m_local_addr);
 

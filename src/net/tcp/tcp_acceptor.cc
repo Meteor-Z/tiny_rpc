@@ -9,7 +9,7 @@
 #include "net/tcp/tcp_acceptor.h"
 
 namespace rpc {
-TcpAcceptor::TcpAcceptor(std::shared_ptr<IPv4NetAddr> local_addr)
+TcpAcceptor::TcpAcceptor(const std::shared_ptr<IPv4NetAddr>& local_addr)
     : m_local_addr(local_addr) {
     if (!local_addr->check_valid()) {
         ERROR_LOG(fmt::format("invalid local addr {}", local_addr->to_string()));

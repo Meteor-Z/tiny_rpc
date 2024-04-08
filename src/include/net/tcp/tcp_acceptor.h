@@ -30,7 +30,7 @@ namespace rpc {
  */
 class TcpAcceptor {
 public:
-    TcpAcceptor(std::shared_ptr<IPv4NetAddr> local_addr);
+    TcpAcceptor(const std::shared_ptr<IPv4NetAddr>& local_addr);
 
     ~TcpAcceptor();
 

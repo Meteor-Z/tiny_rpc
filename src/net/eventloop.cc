@@ -15,7 +15,7 @@
 #include "common/log.h"
 
 namespace rpc {
-static thread_local std::shared_ptr<EventLoop> thread_current_eventloop {
+static thread_local std::unique_ptr<EventLoop> thread_current_eventloop {
     nullptr
 }; ///< 每一个线程独有的EventLoop对象
 
@@ -195,12 +195,12 @@ void EventLoop::stop() {
 
 int EventLoop::get_pending_tasks_size() { return m_pending_tasks.size(); }
 
-std::shared_ptr<EventLoop> EventLoop::Get_Current_Eventloop() {
+std::unique_ptr<EventLoop> EventLoop::Get_Current_Eventloop() {
     if (!thread_current_eventloop) {
-        thread_current_eventloop = std::make_shared<EventLoop>();
+        thread_current_eventloop = std::make_unique<EventLoop>();
     }
 
-    return thread_current_eventloop;
+    return std::move(thread_current_eventloop);
 }
 // 这里为啥要判断是当前线程啊
 void EventLoop::add_epoll_event(std::shared_ptr<FdEvent> event) {

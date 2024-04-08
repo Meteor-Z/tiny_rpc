@@ -10,7 +10,7 @@
     </log>
     
     <server>
-        <ip>101.132.72.74</ip>
+        <ip>127.0.0.1</ip>
         <port>12345</port>
     </server>
 </root>  
